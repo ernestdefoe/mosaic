@@ -57,6 +57,26 @@
   a:hover { color: var(--primary); }
 }
 
+/* Group badges container — keep it inline with the username so the
+ * group badge (the colored circle with the wrench/star/etc icon) sits
+ * RIGHT NEXT TO the name instead of wrapping to its own line. */
+.PostUser-badges {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  list-style: none;
+  margin: 0 0 0 8px;
+  padding: 0;
+  vertical-align: middle;
+}
+
+.PostUser {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
 .Post-body {
   font-size: 14.5px;
   line-height: 1.65;
@@ -130,16 +150,18 @@
   border-top: 1px solid var(--border);
 }
 
-/* Role badges (Staff, Mod, Expert) */
-.UserCard-badges,
-.Post .Badge {
-  border-radius: var(--r-pill);
-  font-size: 10.5px;
-  font-weight: 700;
-  letter-spacing: 0.03em;
-  text-transform: uppercase;
-  padding: 1px 7px;
-  background-color: var(--primary-ghost);
-  color: var(--primary);
-  box-shadow: none;
-}
+/* Group badges — INTENTIONALLY no .Post .Badge override here.
+ *
+ * Flarum 2 renders group badges (.Badge.Badge--group--N) as 22x22
+ * circles colored by each group's admin-configured color, passed in
+ * inline via `style="--badge-bg: #B72A2A"`. An override here that
+ * forces background-color / padding / border-radius stomps that and
+ * makes the badge invisible.
+ *
+ * Our own preview "role-badge" pills (Staff/Mod/Expert text chips)
+ * are a different concept and live under .EdonlineRoleBadge in
+ * sidebar.less. Keep the two separate.
+ *
+ * If we ever want to tweak the badge container (.PostUser-badges)
+ * — e.g. tighten its alignment with the username — do it on the
+ * container, not on .Badge itself. */
