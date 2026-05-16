@@ -1,8 +1,6 @@
 import app from 'flarum/forum/app';
 import LinkButton from 'flarum/common/components/LinkButton';
 import Button from 'flarum/common/components/Button';
-import DiscussionComposer from 'flarum/forum/components/DiscussionComposer';
-import LogInModal from 'flarum/forum/components/LogInModal';
 
 /**
  * Builds the items injected into HeaderPrimary + HeaderSecondary.
@@ -133,29 +131,50 @@ function translate(suffix, fallback) {
   }
 }
 
+/**
+ * Open the new-discussion composer.
+ *
+ * Flarum 2 chunk-splits forum/components/DiscussionComposer and
+ * forum/components/LogInModal — they aren't in flarum.reg at boot.
+ * A static `import DiscussionComposer from 'flarum/forum/components/DiscussionComposer'`
+ * externalizes to `flarum.reg.get('core', '...')` which returns
+ * undefined until something triggers the chunk to load, after which
+ * passing that undefined to app.composer.load() throws on .prototype.
+ *
+ * Rather than re-implement the chunk loader (which would couple us
+ * to Flarum internals), we delegate to Flarum's own working button:
+ * .IndexPage-newDiscussion is rendered (and hidden by our layout
+ * CSS) whenever IndexPage is the current route. Programmatically
+ * clicking that button uses Flarum's bundled handler, which lazy-
+ * loads the composer chunk and handles the logged-out → LogInModal
+ * branch for us. No exports needed.
+ *
+ * If the user isn't on IndexPage, we route them to it first and then
+ * click after the next render tick.
+ */
 function startDiscussion() {
-  if (!app.session.user) {
-    app.modal.show(LogInModal);
+  const existing = document.querySelector('.IndexPage-newDiscussion');
+  if (existing) {
+    existing.click();
     return;
   }
-  app.composer.load(DiscussionComposer, { user: app.session.user });
-  app.composer.show();
+  m.route.set(app.route('index'));
+  /* Wait two macrotasks: one for Mithril to swap pages, one for the
+   * IndexPage to populate its action items into the DOM. */
+  setTimeout(() => {
+    document.querySelector('.IndexPage-newDiscussion')?.click();
+  }, 350);
 }
 
 /**
  * Navigate to the support extension's new-ticket page.
  *
- * We intentionally don't try to instantiate a TicketComposer modal —
  * linkrobins/support exposes /support/new as the composition surface
- * (per its README), and that's the supported public API. Going
- * through the URL keeps us decoupled from the extension's internal
- * component names so a rename in their code won't break us.
+ * (per its README) — we use the public URL rather than poking at
+ * their internal components. supportUrl forum attribute is honored
+ * if set.
  */
 function startTicket() {
-  if (!app.session.user) {
-    app.modal.show(LogInModal);
-    return;
-  }
   const base = String(app.forum.attribute('supportUrl') || '/support').replace(/\/+$/, '');
   m.route.set(`${base}/new`);
 }
