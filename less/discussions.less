@@ -46,13 +46,16 @@
   }
 
   .DiscussionListItem-info {
-    color: var(--text-muted);
+    /* --text-secondary not --text-muted: on a white card the muted
+       slate reads as nearly-illegible 4:1 contrast. Secondary gives a
+       comfortable read for the "X replied N hours ago" meta. */
+    color: var(--text-secondary);
     font-size: 12.25px;
   }
 
   .DiscussionListItem-count {
-    color: var(--text-muted);
-    font-weight: 500;
+    color: var(--text-secondary);
+    font-weight: 600;
 
     &.unread {
       color: var(--primary);

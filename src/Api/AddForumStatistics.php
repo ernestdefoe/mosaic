@@ -13,8 +13,7 @@ namespace Ernestdefoe\Edonline\Api;
 
 use Carbon\Carbon;
 use Flarum\User\User;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\ConnectionInterface;
 use Throwable;
 
 /**
@@ -23,15 +22,15 @@ use Throwable;
  * current-online count, and resolved-ticket count from
  * linkrobins/support.
  *
- * Exposed as static helpers so they can be called directly from the
- * Schema::Integer->get() closures in extend.php without a constructor
- * dependency chain.
+ * We deliberately avoid the Schema and DB facades here — depending on
+ * how Flarum 2's container is set up during the ForumResource fields
+ * closure, the facade root may not be registered, and a call to
+ * `Schema::hasTable()` will throw "A facade root has not been set."
+ * The try/catch swallowed that silently and the tile rendered "—"
+ * even when the tickets table did in fact exist.
  *
- * Each value is computed in its own try/catch — any failure (missing
- * table, renamed column, DB hiccup) returns null for that one
- * attribute rather than poisoning the whole forum payload. The
- * Schema fields are declared ->nullable() so null renders as "—" on
- * the front-end tile instead of 0.
+ * Resolving Illuminate\Database\ConnectionInterface from the container
+ * gives us a Connection directly and bypasses facade registration.
  */
 class AddForumStatistics
 {
@@ -63,18 +62,37 @@ class AddForumStatistics
     /**
      * Count of tickets in the resolved state from linkrobins/support.
      *
-     * Returns null when the support extension isn't installed (no
-     * table) so the hero tile renders "—" instead of a misleading 0.
+     * Returns null when the table can't be queried (extension not
+     * installed, table name differs, DB error) so the hero tile
+     * renders "—" rather than a misleading 0.
      */
     public static function resolvedTicketCount(): ?int
     {
         try {
-            if (! Schema::hasTable('linkrobins_support_tickets')) {
-                return null;
+            /** @var ConnectionInterface $db */
+            $db = resolve(ConnectionInterface::class);
+
+            /*
+             * Try the table name documented in linkrobins/support's
+             * migration first; fall back to a bare 'support_tickets'
+             * in case an older install used the shorter name. If both
+             * queries throw (typical sign of a missing table) we
+             * resolve to null and the JS renders "—".
+             */
+            $candidates = ['linkrobins_support_tickets', 'support_tickets'];
+
+            foreach ($candidates as $table) {
+                try {
+                    return (int) $db->table($table)
+                        ->where('status', 'resolved')
+                        ->count();
+                } catch (Throwable $tableErr) {
+                    /* This table didn't exist — try the next candidate. */
+                    continue;
+                }
             }
-            return DB::table('linkrobins_support_tickets')
-                ->where('status', 'resolved')
-                ->count();
+
+            return null;
         } catch (Throwable $e) {
             return null;
         }
