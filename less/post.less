@@ -1,65 +1,228 @@
 /* =====================================================================
-   Post stream — discussion view, replies, code blocks
+   Discussion page — full post stream styling.
+
+   DOM reference (confirmed via live probe of Flarum 2 install):
+
+   .DiscussionPage
+     .Hero.DiscussionHero.DiscussionHero--colored   (style="--hero-bg:#9b1212")
+       .container
+         ul.DiscussionHero-items
+           li.item-tags > .TagsLabel > a.TagLabel
+           li.item-title > h1.DiscussionHero-title
+     .PostStream
+       .PostStream-item
+         article.CommentPost.Post.Post--by-start-user
+           .Post-container
+             .Post-side
+               a > img.Avatar.Post-avatar          (64x64)
+             .Post-main
+               header.Post-header > ul
+                 li.item-user > .PostUser (name + badges)
+                 li.item-meta > Dropdown.PostMeta
+               .Post-body
+               aside.Post-actions > ul
+               footer.Post-footer
+       .PostStream-item  (PostStream-timestamp divider — "6 DAYS LATER")
+       .PostStream-item
+         button.Post.ReplyPlaceholder  (inline "Write a Reply..." at bottom)
+     nav.DiscussionPage-nav            (right-side scrubber + Reply button)
    ===================================================================== */
 
-.DiscussionPage-discussion {
-  .DiscussionHero {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--r-md);
-    padding: 22px 24px 20px;
-    margin-bottom: 16px;
-    box-shadow: var(--shadow-sm);
-    color: var(--text);
+/* -------- Discussion hero -------- */
 
-    .DiscussionHero-title {
-      font-size: 22px;
-      font-weight: 700;
-      letter-spacing: -0.02em;
-      line-height: 1.3;
-      margin: 0 0 10px;
-      color: var(--text);
-    }
+/* Override Flarum's "colored hero" (tag color flooded across full
+   width) with our clean card treatment from the render. The tag itself
+   stays visible as a pill inside the hero so the color isn't lost. */
+.DiscussionHero {
+  background: var(--surface) !important;
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 22px 28px 22px;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow-sm);
+  color: var(--text);
+
+  /* Flarum sets --hero-bg from the tag color and text-contrast--light
+     class for white text on dark — neutralize both so our tokens win. */
+  --hero-bg: var(--surface);
+
+  &.text-contrast--light,
+  &.text-contrast--dark {
+    color: var(--text);
+  }
+
+  .container { padding: 0; max-width: none; }
+
+  .DiscussionHero-items {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  /* Tag pill — drop the inline --tag-bg gradient style into our pill */
+  .item-tags { order: -1; }
+
+  .TagsLabel,
+  .item-tags { display: inline-flex; align-items: center; gap: 6px; }
+
+  .TagLabel {
+    display: inline-flex !important;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: var(--r-pill);
+    font-size: 12px;
+    font-weight: 600;
+    background: var(--tag-bg, var(--surface-inset));
+    color: #fff;
+    text-decoration: none;
+
+    /* Flarum applies text-contrast--light/dark to set ink color on
+       its colored tag pill — keep that behavior. */
+    &.text-contrast--light { color: #fff; }
+    &.text-contrast--dark { color: #0f172a; }
+
+    .TagLabel-icon { font-size: 11px; }
+  }
+
+  .DiscussionHero-title {
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.3;
+    margin: 0;
+    color: var(--text);
   }
 }
 
-.PostStream-item .Post {
+/* -------- Post card -------- */
+
+.PostStream-item .Post,
+.PostStream-item article.Post {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--r-md);
-  margin-bottom: 12px;
-  padding: 18px 22px;
+  margin-bottom: 14px;
   box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  transition: border-color 0.15s, box-shadow 0.15s;
 
-  &.Post--firstPost {
+  &:hover {
+    border-color: var(--border-strong);
+  }
+
+  /* The starting post gets a primary-color side accent for hierarchy */
+  &.Post--by-start-user .Post-container,
+  &.Post--firstPost .Post-container {
     border-left: 3px solid var(--primary);
   }
 }
 
-.PostUser {
+/* The internal flex layout: 96px avatar rail + flexible content */
+.Post-container {
   display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 14px;
+  gap: 0;
+  padding: 0;
 }
 
-.PostUser .Avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 11px;
+.Post-side {
+  flex: 0 0 96px;
+  padding: 22px 0 22px 22px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+
+  > a { display: inline-flex; }
+
+  .Avatar.Post-avatar {
+    width: 56px;
+    height: 56px;
+    border-radius: 14px;
+    box-shadow: var(--shadow-sm);
+  }
+}
+
+.Post-main {
+  flex: 1;
+  min-width: 0;
+  padding: 18px 24px 20px;
+}
+
+/* Post header — name + badges + meta on one row */
+.Post-header {
+  margin-bottom: 14px;
+
+  > ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px 12px;
+  }
+
+  .item-user { display: flex; align-items: center; }
+  .item-meta {
+    margin-left: auto;
+    color: var(--text-muted);
+    font-size: 12.5px;
+  }
+
+  .PostMeta button {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-size: 12.5px;
+
+    &:hover { color: var(--text); }
+  }
+}
+
+/* PostUser — the username + online dot + group badges cluster.
+   Flarum hides a duplicate avatar inside PostUser-name (the visible
+   one lives in Post-side); we keep ours from over-styling that. */
+.PostUser {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
 }
 
 .PostUser-name {
   font-weight: 600;
-  font-size: 14px;
+  font-size: 14.5px;
+  margin: 0;
 
-  a { color: var(--text); }
+  a {
+    color: var(--text);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
   a:hover { color: var(--primary); }
+
+  /* The duplicate inline avatar that Flarum renders in the name link.
+     Post-side already shows it large; hide here to dedupe. */
+  .Avatar.Post-avatar {
+    display: none !important;
+  }
+
+  .UserOnline {
+    color: #22c55e;
+    font-size: 8px;
+  }
+
+  .username { font-weight: 600; }
 }
 
-/* Group badges container — keep it inline with the username so the
- * group badge (the colored circle with the wrench/star/etc icon) sits
- * RIGHT NEXT TO the name instead of wrapping to its own line. */
+/* Group badges inline with the name. .Badge styling itself is
+   intentionally untouched (Flarum paints it from --badge-bg). */
 .PostUser-badges {
   display: inline-flex;
   align-items: center;
@@ -70,19 +233,20 @@
   vertical-align: middle;
 }
 
-.PostUser {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 6px;
-}
+/* -------- Post body -------- */
 
 .Post-body {
-  font-size: 14.5px;
+  font-size: 14.75px;
   line-height: 1.65;
   color: var(--text);
 
   p { margin: 0 0 12px; }
+  p:last-child { margin-bottom: 0; }
+
+  h1, h2, h3, h4 { margin-top: 18px; }
+
+  a { color: var(--primary); }
+  a:hover { text-decoration: underline; }
 
   code {
     background: var(--surface-inset);
@@ -113,9 +277,177 @@
     font-size: 13.75px;
     color: var(--text-secondary);
   }
+
+  img {
+    max-width: 100%;
+    border-radius: var(--r-sm);
+  }
 }
 
-/* Best Answer highlight (used by support extension or fof/best-answer) */
+/* -------- Post actions (reactions row) -------- */
+.Post-actions {
+  margin-top: 14px;
+
+  > ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+}
+
+/* -------- Post footer (Reply/Like/etc controls) -------- */
+.Post-footer {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+
+  > ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-wrap: wrap;
+  }
+
+  .Button {
+    background: transparent;
+    border: none;
+    padding: 6px 10px;
+    border-radius: var(--r-sm);
+    font-size: 13px;
+    color: var(--text-secondary);
+    font-weight: 500;
+
+    &:hover {
+      background: var(--surface-inset);
+      color: var(--text);
+    }
+  }
+}
+
+/* -------- Time gap divider ("6 DAYS LATER") -------- */
+.PostStream-timestamp,
+.PostStream-item--timestamp,
+.PostStream-divider {
+  text-align: center;
+  margin: 18px 0;
+  font-size: 11.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  position: relative;
+
+  &::before,
+  &::after {
+    content: '';
+    display: inline-block;
+    width: 80px;
+    height: 1px;
+    background: var(--border-strong);
+    vertical-align: middle;
+    margin: 0 14px;
+  }
+}
+
+/* -------- Reply placeholder (bottom inline "Write a Reply...") -------- */
+.Post.ReplyPlaceholder,
+button.ReplyPlaceholder {
+  display: block;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  background: var(--surface);
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--r-md);
+  margin-top: 14px;
+  padding: 0;
+  overflow: hidden;
+  transition: border-color 0.15s, background 0.15s;
+
+  &:hover {
+    border-color: var(--primary);
+    background: var(--primary-ghost);
+  }
+
+  .Post-container { padding: 0; }
+  .Post-side {
+    flex: 0 0 96px;
+    padding: 18px 0 18px 22px;
+  }
+  .Post-side .Avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 11px;
+    background: var(--surface-inset);
+    display: inline-block;
+  }
+  .Post-main {
+    padding: 22px 24px;
+    color: var(--text-muted);
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+  }
+  .Post-header {
+    margin: 0;
+    color: var(--text-muted);
+    font-weight: 500;
+    background: none;
+    border: none;
+  }
+}
+
+/* -------- Right-side scrubber (.DiscussionPage-nav) -------- */
+nav.DiscussionPage-nav {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 16px 16px 16px;
+  box-shadow: var(--shadow-sm);
+
+  > ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  /* The primary "Reply" / "Log In to Reply" split button */
+  .item-controls .Button--primary {
+    background: var(--primary);
+    color: #fff;
+    border: none;
+
+    &:hover { background: var(--primary-dark); }
+  }
+
+  /* PostStream scrubber visual track */
+  .PostStreamScrubber {
+    color: var(--text-secondary);
+
+    .PostStreamScrubber-scrollbar {
+      background: var(--surface-inset);
+      border-radius: var(--r-pill);
+    }
+    .PostStreamScrubber-handle {
+      background: var(--primary);
+      border-radius: var(--r-pill);
+    }
+    .PostStreamScrubber-info { font-size: 12.5px; }
+  }
+}
+
+/* -------- Best Answer highlight (used by support extension or
+   fof/best-answer) -------- */
 .Post--bestAnswer,
 .Post.is-answer {
   border: 2px solid var(--status-resolved) !important;
@@ -129,25 +461,14 @@
     display: block;
     background: var(--status-resolved-bg);
     color: var(--status-resolved);
-    margin: -18px -22px 14px;
-    padding: 9px 20px;
-    font-size: 12.5px;
+    margin: 0;
+    padding: 9px 22px;
+    font-size: 12px;
     font-weight: 700;
-    letter-spacing: 0.02em;
+    letter-spacing: 0.04em;
     text-transform: uppercase;
-    border-radius: var(--r-md) var(--r-md) 0 0;
     border-bottom: 1px solid rgba(5, 150, 105, 0.15);
   }
-}
-
-/* Post footer (controls, reactions) */
-.Post-footer {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-top: 16px;
-  padding-top: 14px;
-  border-top: 1px solid var(--border);
 }
 
 /* Group badges — INTENTIONALLY no .Post .Badge override here.
@@ -156,12 +477,4 @@
  * circles colored by each group's admin-configured color, passed in
  * inline via `style="--badge-bg: #B72A2A"`. An override here that
  * forces background-color / padding / border-radius stomps that and
- * makes the badge invisible.
- *
- * Our own preview "role-badge" pills (Staff/Mod/Expert text chips)
- * are a different concept and live under .EdonlineRoleBadge in
- * sidebar.less. Keep the two separate.
- *
- * If we ever want to tweak the badge container (.PostUser-badges)
- * — e.g. tighten its alignment with the username — do it on the
- * container, not on .Badge itself. */
+ * makes the badge invisible. See post.less history for the burn. */
