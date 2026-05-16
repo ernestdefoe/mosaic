@@ -13,9 +13,28 @@
 /* Higher specificity (.IndexPage prefix) so we win over Flarum's
    stock per-item padding which otherwise pins the avatar flush
    against the card's left edge AND the controls dropdown flush
-   against the right edge. */
+   against the right edge.
+
+   The right padding is intentionally larger than the left — when a
+   moderator/admin views the list, Flarum renders a per-item controls
+   dropdown trigger (⋯) at the end of the row that's hidden from
+   guests, and that trigger needs room past the comment-count badge
+   to read as separate from the card edge. */
 .IndexPage .DiscussionList .DiscussionListItem {
-  padding: 18px 32px 18px 26px;
+  padding: 18px 48px 18px 26px;
+
+  /* Belt-and-suspenders: any dropdown or controls element nested at
+     the end of the row gets its own margin-right reset and a small
+     positive nudge so it sits inside our padding instead of escaping
+     via right: 0 / margin-right: -... that Flarum sometimes applies
+     to inline-list trailing items. */
+  .Dropdown,
+  .DiscussionListItem-controls,
+  .DiscussionListItem-stats + .Dropdown,
+  .ItemList-toggle {
+    margin-right: 0;
+    right: auto;
+  }
   border-bottom: 1px solid var(--border);
   transition: background 0.12s;
 
