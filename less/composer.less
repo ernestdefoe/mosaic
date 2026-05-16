@@ -1,5 +1,19 @@
 /* =====================================================================
-   Composer — Flarum's reply/post composer + custom inline composer
+   Composer — Flarum 2 reply/post composer
+
+   IMPORTANT: keep this file color-only. Earlier rules in here set
+   `.TextEditor-controls .Button { display: grid; width: 30px;
+   height: 30px }` which were written against Flarum 1.x markup and
+   ended up forcing Flarum 2's markdown toolbar into a vertical stack
+   of serif-text glyphs (H, B, I, S in a column rather than icon
+   buttons in a horizontal row). The composer ships with its own
+   internal layout that's responsive to the editor in use (TextArea,
+   ProseMirror, etc.) — we override only colors via token vars, never
+   sizing or display.
+
+   Custom inline composer surfaces in our static preview HTML keep
+   their styles inline in preview/theme.css; this file is for the
+   real Flarum composer that opens via app.composer.show().
    ===================================================================== */
 
 .Composer {
@@ -8,26 +22,15 @@
   box-shadow: var(--shadow-lg);
 }
 
-.Composer-content {
-  padding: 18px 20px;
-}
-
+/* Editor textarea coloring — both the legacy TextEditor and the
+   stock Flarum 2 markdown editor wrappers. We touch background and
+   text color only; the dimensions are Flarum's. */
 .TextEditor textarea,
 .ComposerBody-content textarea,
-.EdonlineComposer-textarea {
-  width: 100%;
-  min-height: 110px;
-  border: 1px solid var(--border);
-  border-radius: var(--r-sm);
+.MarkdownEditor textarea {
   background: var(--surface-inset);
-  padding: 12px 14px;
-  font-family: inherit;
-  font-size: 14px;
-  line-height: 1.55;
   color: var(--text);
-  resize: vertical;
-  outline: none;
-  transition: border-color 0.15s, background 0.15s;
+  border-color: var(--border);
 
   &:focus {
     border-color: var(--primary);
@@ -35,36 +38,17 @@
   }
 }
 
-.TextEditor-controls .Button,
-.EdonlineToolbar-btn {
-  width: 30px;
-  height: 30px;
-  border-radius: 7px;
-  color: var(--text-muted);
-  display: grid;
-  place-items: center;
-  background: transparent;
-  border: none;
-  transition: background 0.12s, color 0.12s;
-
-  &:hover {
-    background: var(--surface-inset);
-    color: var(--text);
-  }
-}
-
-/* "Post reply" primary submit */
+/* Primary submit ("Post reply", "Submit") — color only. We do NOT
+   set width/height; Flarum picks those based on whether we're in the
+   in-page composer or the dock-bar variant. */
 .Composer-controls .Button--primary,
-.EdonlineComposer-submit {
-  height: 34px;
-  padding: 0 16px;
-  border-radius: var(--r-sm);
+.ComposerButton--submit {
   background: var(--primary);
   color: #fff;
-  font-weight: 600;
-  font-size: 13.25px;
-  border: none;
-  transition: background 0.15s;
+  border-color: var(--primary);
 
-  &:hover { background: var(--primary-dark); }
+  &:hover {
+    background: var(--primary-dark);
+    border-color: var(--primary-dark);
+  }
 }
