@@ -14,16 +14,38 @@
    on the left and the sidebar on the right at a fixed 320px width.
    ===================================================================== */
 
+/* Shared content width for the whole IndexPage. Flarum's stock
+   .container clamps to ~1100px which leaves the discussion list
+   cramped once you carve out 320px for the sidebar. Widen the cap to
+   1400px and apply the same width + gutter to .Page-hero so the hero
+   and category tiles align with the grid below — without this the
+   hero spans full viewport width while the grid sits inside a
+   container, giving the "categories are flush with the edge" look. */
+.IndexPage .Page-main {
+  /* limit nothing here — children handle their own width */
+}
+
+.IndexPage .Page-container.container,
+.IndexPage .Page-hero {
+  max-width: 1400px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 24px;
+  padding-right: 24px;
+  box-sizing: border-box;
+}
+
 .IndexPage .Page-container {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 320px;
   grid-template-areas: 'content sidebar';
-  gap: 24px;
+  gap: 28px;
   align-items: start;
 
   @media (max-width: 920px) {
     grid-template-columns: 1fr;
     grid-template-areas: 'content' 'sidebar';
+    gap: 20px;
   }
 }
 
