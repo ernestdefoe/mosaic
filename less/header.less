@@ -48,71 +48,20 @@
   }
 }
 
-/* Header layout — the container is a flex row of Header-title (logo),
-   Header-primary (our injected nav tabs), and Header-secondary (search
-   + cart + signup/login + avatar). Without explicit flex behavior the
-   search was getting squished to its icon-only collapsed width because
-   .Header-secondary didn't claim any of the available row width.
+/* Header layout — DELIBERATELY minimal.
+ *
+ * Past attempts here aggressively flex'd .Header-secondary and forced
+ * .item-search to take flex:1 / min-width:240px so the search input
+ * would expand across the middle. That broke the rest of the header:
+ * other extension items (messages, notifications, cart, avatar)
+ * either overlapped the search or got clipped because the forced
+ * widths fought their natural sizing.
+ *
+ * Instead we trust Flarum 2's stock header layout — search is an
+ * icon-collapsed Search component that expands on focus into a
+ * popover, which is the design intent. We only style the nav tabs we
+ * inject into Header-primary, and let everything else inherit. */
 
-   Layout we want:
-     [Logo] [Nav tabs] [................ Search expands ................] [Cart] [SignUp] [LogIn]
-
-   Logo and nav stay grouped on the left where users expect them, but
-   the search input now takes the wide middle space so it never reads
-   as collapsed past a useful width. */
-
-.App-header .container {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.Header-title,
-.Header-primary {
-  flex-shrink: 0;
-}
-
-.Header-secondary {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  min-width: 0;
-}
-
-.Header-secondary .Header-controls {
-  display: flex;
-  align-items: center;
-  flex: 1;
-  gap: 4px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  min-width: 0;
-}
-
-/* Search input claims the middle space; max-width prevents it eating
-   the whole header on ultra-wide monitors. */
-.Header-secondary .item-search {
-  flex: 1;
-  max-width: 520px;
-  min-width: 0;
-}
-
-.Header-secondary .item-search .Search,
-.Header-secondary .item-search .Search-input,
-.Header-secondary .item-search input {
-  width: 100%;
-  min-width: 240px;
-}
-
-/* Cart / sign-up / log-in / avatar / notifications hug the right edge
-   and never shrink. */
-.Header-secondary .Header-controls > li:not(.item-search) {
-  flex-shrink: 0;
-}
-
-/* Top-level destination tabs we injected into HeaderPrimary
-   (Discussions / Tickets / Marketplace / Categories / extras). */
 .Header-primary {
   display: flex;
   align-items: center;

@@ -1,96 +1,84 @@
 /* =====================================================================
    ram0ng1/colored integration.
 
-   `ramon/colored` paints discussion-related surfaces (post cards,
-   headers, buttons, alerts) using the discussion's primary tag color.
-   It exposes the active tint via the CSS custom property --colored-bg
-   and toggles these markers on html/body:
+   Live probe of an install with the extension active confirmed it
+   uses the following hooks (different from what the README implies):
 
-     body.colored--active            page is in colored mode
-     html.colored--instant           disable transitions during a change
-     html[data-colored-border=left]  list rows get a left-color accent
-     html[data-colored-border=full]  list rows get a full border tint
-     html[data-colored-header=true]  header is tinted with the tag color
+   On <html>:
+     data-theme="light|dark"
+     data-colored-header="true|false"
+     data-colored-border="left|full|off"
+   On <body>:
+     .colored--active                 (on discussion pages)
+   On <html>:
+     .colored--instant                (no-transition flag)
 
-   Our theme's job here is to defer gracefully — let colored's tag
-   color flow through wherever we'd otherwise use a fixed accent.
-   The extension is optional; every rule below safely no-ops when
-   --colored-bg / data-colored-* aren't set.
+   CSS variables it populates / consumes:
+     --hero-bg                 (set by Flarum core from the tag color;
+                                colored extends consumption to more
+                                surfaces)
+     --header-bg               (when data-colored-header=true)
+     --header-color
+     --header-control-bg
+     --header-control-color
+     --header-colored-color
+
+   Note: --colored-bg (which I'd previously assumed existed) is NOT a
+   thing in this extension. Removed the speculative deferrals that
+   referenced it.
+
+   Our integration here is small now — the bulk of the work was making
+   .DiscussionHero in post.less stop overriding --hero-bg. These rules
+   complement that by:
+     - making header nav tabs readable when colored tints the header
+     - clearing our row separator when colored paints a full row border
+     - honoring colored--instant by suppressing our transitions
    ===================================================================== */
 
-/* The first-post primary accent — when colored is active and provides
-   --colored-bg, that wins over our --primary. The var() fallback chain
-   guarantees the rule still works without the extension installed. */
-.Post.Post--firstPost .Post-container,
-.Post.Post--by-start-user .Post-container {
-  border-left-color: var(--colored-bg, var(--primary));
-}
-
 /* When the header is tinted by colored, our injected nav tabs in
-   .Header-primary need contrast — switch them to white-on-tint
-   colors so they're still readable on the colored header surface. */
+   .Header-primary need contrast — Flarum's --header-color and
+   --header-control-color are set to a readable ink for the tint, so
+   defer to those. */
 html[data-colored-header='true'] {
   .EdonlineHeaderNav-item {
-    color: rgba(255, 255, 255, 0.85);
-
-    .Button-icon { opacity: 0.95; }
+    color: var(--header-control-color, rgba(255, 255, 255, 0.85));
 
     &:hover {
-      background: rgba(255, 255, 255, 0.16);
-      color: #fff;
+      background: var(--header-control-bg, rgba(255, 255, 255, 0.16));
+      color: var(--header-colored-color, #fff);
     }
 
     &.active {
-      background: rgba(255, 255, 255, 0.22);
-      color: #fff;
+      background: var(--header-control-bg, rgba(255, 255, 255, 0.22));
+      color: var(--header-colored-color, #fff);
+      font-weight: 600;
     }
   }
 
   .EdonlineHeaderNav-start {
-    background: rgba(255, 255, 255, 0.20);
-    color: #fff;
+    background: var(--header-control-bg, rgba(255, 255, 255, 0.22));
+    color: var(--header-colored-color, #fff);
 
     &:hover {
       background: rgba(255, 255, 255, 0.30);
       color: #fff;
     }
   }
-
-  .Header-controls .icon-btn,
-  .Header-controls .Button {
-    color: rgba(255, 255, 255, 0.85);
-
-    &:hover { background: rgba(255, 255, 255, 0.16); color: #fff; }
-  }
 }
 
-/* When the discussion list opts into colored borders, our usual
-   surface card border is replaced by the tag-colored variant the
-   extension paints. Make sure our hover background and separator
-   don't mask the colored border.
-
-   The extension applies the actual border itself — we just need to:
-     - clear our own border-bottom on the LAST item (the colored
-       extension's full border handles the bottom edge for us)
-     - keep adequate padding so the border doesn't crowd content */
+/* When the discussion list opts into a full colored row border, our
+   row-separator bottom border doubles up — clear it. */
 html[data-colored-border='full'] .DiscussionListItem {
   border-bottom: 0;
   margin-bottom: 6px;
   border-radius: var(--r-sm);
 }
 
-html[data-colored-border='left'] .DiscussionListItem {
-  /* extension paints a colored left bar; our 26px left padding gives
-     it room without overlapping the avatar */
-}
-
-/* Smooth color transition on theme/page change, suppressed by the
-   .colored--instant class during direct manipulation. */
-body.colored--active {
-  transition: background-color 0.25s ease;
-
-  &.colored--instant,
-  html.colored--instant & {
-    transition: none;
-  }
+/* Suppress all our transitions during colored's instant-toggle phase
+   so an admin flipping settings doesn't see flashes of intermediate
+   color states. */
+html.colored--instant,
+html.colored--instant * {
+  transition: none !important;
+  animation-duration: 0s !important;
 }

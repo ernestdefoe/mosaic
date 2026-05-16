@@ -30,26 +30,23 @@
 
 /* -------- Discussion hero -------- */
 
-/* Override Flarum's "colored hero" (tag color flooded across full
-   width) with our clean card treatment from the render. The tag itself
-   stays visible as a pill inside the hero so the color isn't lost. */
+/* DiscussionHero — accept BOTH treatments:
+ *   - When the tag has no color (no --hero-bg set), render as a clean
+ *     neutral card matching the render preview
+ *   - When the discussion's primary tag IS colored (Flarum core sets
+ *     --hero-bg via inline style, and ramon/colored extends this),
+ *     defer to the tag color so the colored treatment flows through
+ *
+ * Earlier versions of this rule used `background: var(--surface)
+ * !important` and `--hero-bg: var(--surface)` which stomped colored's
+ * tag-tinted hero entirely. */
 .DiscussionHero {
-  background: var(--surface) !important;
+  background: var(--hero-bg, var(--surface));
   border: 1px solid var(--border);
   border-radius: var(--r-md);
   padding: 22px 28px 22px;
   margin-bottom: 16px;
   box-shadow: var(--shadow-sm);
-  color: var(--text);
-
-  /* Flarum sets --hero-bg from the tag color and text-contrast--light
-     class for white text on dark — neutralize both so our tokens win. */
-  --hero-bg: var(--surface);
-
-  &.text-contrast--light,
-  &.text-contrast--dark {
-    color: var(--text);
-  }
 
   .container { padding: 0; max-width: none; }
 
@@ -62,7 +59,7 @@
     gap: 10px;
   }
 
-  /* Tag pill — drop the inline --tag-bg gradient style into our pill */
+  /* Tag pill above the title */
   .item-tags { order: -1; }
 
   .TagsLabel,
@@ -76,14 +73,7 @@
     border-radius: var(--r-pill);
     font-size: 12px;
     font-weight: 600;
-    background: var(--tag-bg, var(--surface-inset));
-    color: #fff;
     text-decoration: none;
-
-    /* Flarum applies text-contrast--light/dark to set ink color on
-       its colored tag pill — keep that behavior. */
-    &.text-contrast--light { color: #fff; }
-    &.text-contrast--dark { color: #0f172a; }
 
     .TagLabel-icon { font-size: 11px; }
   }
@@ -94,7 +84,39 @@
     letter-spacing: -0.02em;
     line-height: 1.3;
     margin: 0;
+  }
+
+  /* Neutral (un-colored) hero: text uses our standard token, tag pill
+     uses surface-inset chip */
+  &:not(.DiscussionHero--colored) {
     color: var(--text);
+    border: 1px solid var(--border);
+
+    .DiscussionHero-title { color: var(--text); }
+
+    .TagLabel {
+      background: var(--tag-bg, var(--surface-inset));
+      color: var(--text-secondary);
+    }
+  }
+
+  /* Colored hero (tag has a color, --hero-bg flooded): Flarum applies
+     .text-contrast--light or --dark; honor it so title stays readable
+     and the tag pill gets a white-overlay chip that reads on tint. */
+  &.DiscussionHero--colored {
+    border-color: transparent;
+    box-shadow: var(--shadow-md);
+
+    &.text-contrast--light {
+      color: #fff;
+      .DiscussionHero-title { color: #fff; }
+      .TagLabel { background: rgba(255, 255, 255, 0.22); color: #fff; }
+    }
+    &.text-contrast--dark {
+      color: #0f172a;
+      .DiscussionHero-title { color: #0f172a; }
+      .TagLabel { background: rgba(15, 23, 42, 0.18); color: #0f172a; }
+    }
   }
 }
 
