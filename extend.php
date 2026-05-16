@@ -11,7 +11,9 @@
 
 namespace Ernestdefoe\Edonline;
 
-use Flarum\Api\Serializer\ForumSerializer;
+use Ernestdefoe\Edonline\Api\AddForumStatistics;
+use Flarum\Api\Resource\ForumResource;
+use Flarum\Api\Schema;
 use Flarum\Extend;
 
 return [
@@ -27,10 +29,27 @@ return [
 
     /*
      * Adds edonlineUserCount, edonlineOnlineCount and edonlineResolvedCount
-     * to the forum serializer payload. The hero stats strip reads these
-     * via app.forum.attribute(...) — Flarum 2 core exposes none of them
-     * by default, and we don't want the hero to lie with zeros.
+     * to the forum payload. The hero stats strip reads these via
+     * app.forum.attribute(...) — Flarum 2 core exposes none of them by
+     * default and we don't want the hero to lie with zeros.
+     *
+     * Flarum 2 replaced Extend\ApiSerializer with Extend\ApiResource +
+     * Schema field definitions. Each field declares ->nullable() so
+     * if the underlying computation can't resolve (e.g. linkrobins/
+     * support isn't installed) the JS tile renders "—" instead of 0.
      */
-    (new Extend\ApiSerializer(ForumSerializer::class))
-        ->attributes(Api\AddForumStatistics::class),
+    (new Extend\ApiResource(ForumResource::class))
+        ->fields(fn () => [
+            Schema\Integer::make('edonlineUserCount')
+                ->nullable()
+                ->get(fn () => AddForumStatistics::memberCount()),
+
+            Schema\Integer::make('edonlineOnlineCount')
+                ->nullable()
+                ->get(fn () => AddForumStatistics::onlineCount()),
+
+            Schema\Integer::make('edonlineResolvedCount')
+                ->nullable()
+                ->get(fn () => AddForumStatistics::resolvedTicketCount()),
+        ]),
 ];
