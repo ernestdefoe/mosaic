@@ -1,10 +1,13 @@
 import app from 'flarum/forum/app';
-import { override } from 'flarum/common/extend';
+import { extend, override } from 'flarum/common/extend';
 import IndexPage from 'flarum/forum/components/IndexPage';
+import HeaderPrimary from 'flarum/forum/components/HeaderPrimary';
+import HeaderSecondary from 'flarum/forum/components/HeaderSecondary';
 
 import HeroPanel from './components/HeroPanel';
 import CategoryTiles from './components/CategoryTiles';
 import SidebarPanels from './components/SidebarPanels';
+import { navItems, startDiscussionButton } from './components/HeaderNav';
 
 app.initializers.add('ernestdefoe-edonline', () => {
   /*
@@ -19,10 +22,8 @@ app.initializers.add('ernestdefoe-edonline', () => {
   });
 
   /*
-   * Append our widget stack (Quick Actions / System Status / Top
-   * Contributors / Trending / Marketplace promo) to the existing
-   * IndexPage sidebar so Flarum's tag nav stays at the top and our
-   * panels follow.
+   * Append our widget stack (Quick Actions / Top Contributors /
+   * Trending / Marketplace promo) to the existing IndexPage sidebar.
    *
    * Returning an array makes Mithril render the original sidebar plus
    * our panels as siblings — same DOM container (.Page-sidebar), no
@@ -30,6 +31,26 @@ app.initializers.add('ernestdefoe-edonline', () => {
    */
   override(IndexPage.prototype, 'sidebar', function (original) {
     return [original(), SidebarPanels.component()];
+  });
+
+  /*
+   * Promote the top-level destinations (Discussions / Tickets /
+   * Marketplace / Categories) into HeaderPrimary so the header
+   * becomes the navigation surface — matches the render. The stock
+   * IndexPage-nav is hidden by layout.less.
+   */
+  extend(HeaderPrimary.prototype, 'items', function (items) {
+    navItems().forEach((vnode, i) =>
+      items.add(`edonline-nav-${i}`, vnode, 100 - i)
+    );
+  });
+
+  /*
+   * Move "Start a Discussion" into HeaderSecondary, just before the
+   * sign-up / log-in / avatar items.
+   */
+  extend(HeaderSecondary.prototype, 'items', function (items) {
+    items.add('edonline-start-discussion', startDiscussionButton(), 50);
   });
 });
 

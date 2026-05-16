@@ -48,6 +48,91 @@
   }
 }
 
+/* Top-level destination tabs we injected into HeaderPrimary
+   (Discussions / Tickets / Marketplace / Categories / extras). */
+.Header-primary {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+
+  .Header-controls {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    list-style: none;
+    margin: 0 0 0 8px;
+    padding: 0;
+
+    > li { display: inline-flex; }
+  }
+}
+
+.EdonlineHeaderNav-item.EdonlineHeaderNav-item {
+  /* doubled selector for specificity over Flarum's .Button rules */
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 36px;
+  padding: 0 13px;
+  border-radius: var(--r-sm);
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  font-size: 13.75px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: background 0.15s, color 0.15s;
+
+  .Button-icon { font-size: 13px; opacity: 0.85; }
+  .Button-label { padding: 0; }
+
+  &:hover {
+    background: var(--primary-ghost);
+    color: var(--primary);
+    text-decoration: none;
+  }
+
+  &.active {
+    background: var(--primary-ghost);
+    color: var(--primary);
+    font-weight: 600;
+
+    .Button-icon { opacity: 1; }
+  }
+
+  /* On narrow viewports collapse the labels and show icons only so the
+     header doesn't wrap. */
+  @media (max-width: 720px) {
+    padding: 0 9px;
+    .Button-label { display: none; }
+  }
+}
+
+/* "Start a Discussion" button in HeaderSecondary */
+.EdonlineHeaderNav-start.EdonlineHeaderNav-start {
+  height: 36px;
+  padding: 0 14px;
+  border-radius: var(--r-sm);
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  font-weight: 600;
+  font-size: 13.25px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 4px;
+
+  &:hover { background: var(--primary-dark); color: #fff; }
+
+  @media (max-width: 720px) {
+    .Button-label { display: none; }
+    padding: 0 11px;
+  }
+}
+
 /* Header action icons (notifications, search, etc.) */
 .Header-controls .item .Button.hasIcon,
 .SessionDropdown,
