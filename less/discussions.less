@@ -19,23 +19,21 @@
    moderator/admin views the list, Flarum renders a per-item controls
    dropdown trigger (⋯) at the end of the row that's hidden from
    guests, and that trigger needs room past the comment-count badge
-   to read as separate from the card edge. */
+   to read as separate from the card edge.
+
+   NOTE: do NOT reset `right` or `margin-right` on .Dropdown or
+   .DiscussionListItem-controls here. Flarum positions the dropdown's
+   popup menu with `right:` values; resetting them shifts the menu
+   off-screen or hides it entirely. Trust the padding to keep the
+   trigger inside the card. */
 .IndexPage .DiscussionList .DiscussionListItem {
   padding: 18px 48px 18px 26px;
 
-  /* Belt-and-suspenders: any dropdown or controls element nested at
-     the end of the row gets its own margin-right reset and a small
-     positive nudge so it sits inside our padding instead of escaping
-     via right: 0 / margin-right: -... that Flarum sometimes applies
-     to inline-list trailing items. */
-  .Dropdown,
-  .DiscussionListItem-controls,
-  .DiscussionListItem-stats + .Dropdown,
-  .ItemList-toggle {
-    margin-right: 0;
-    right: auto;
-  }
-  border-bottom: 1px solid var(--border);
+  /* Stronger separator between rows — the default --border at 7%
+     opacity reads as nearly invisible on the white card surface
+     because the surface IS white. --border-strong (12%) gives a
+     clear divider without going harsh. */
+  border-bottom: 1px solid var(--border-strong);
   transition: background 0.12s;
 
   &:last-child { border-bottom: none; }
