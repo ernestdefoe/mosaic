@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>HelpHub — Support Forum</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="theme.css">
+</head>
+<body>
+
+<!-- ============================ HEADER ============================ -->
+<header class="header">
+  <div class="header-inner">
+    <div class="brand">
+      <div class="brand-logo"><i class="fa-solid fa-life-ring"></i></div>
+      <span>HelpHub</span>
+    </div>
+    <nav class="nav">
+      <a class="nav-link active" href="index.html">Discussions</a>
+      <a class="nav-link" href="tickets.html">Tickets</a>
+      <a class="nav-link" href="marketplace.html">Marketplace</a>
+      <a class="nav-link" href="#">Knowledge Base</a>
+      <a class="nav-link" href="#">Status</a>
+    </nav>
+    <div class="header-actions">
+      <button class="icon-btn" title="Search"><i class="fa-solid fa-magnifying-glass"></i></button>
+      <button class="icon-btn cart-btn" title="Cart">
+        <i class="fa-solid fa-cart-shopping"></i>
+        <span class="cart-count">2</span>
+      </button>
+      <button class="icon-btn" title="Notifications">
+        <i class="fa-regular fa-bell"></i>
+        <span class="dot"></span>
+      </button>
+      <a class="btn-primary" href="tickets.html">
+        <i class="fa-solid fa-headset"></i> New Ticket
+      </a>
+      <button class="avatar-btn" title="Account">JD</button>
+    </div>
+  </div>
+</header>
+
+<main class="page">
+  <!-- ============================ HERO ============================ -->
+  <section class="hero">
+    <h1 class="hero-title">How can we help?</h1>
+    <p class="hero-sub">Search the community for answers, or start a new topic to get help from our team and other users.</p>
+    <div class="hero-search">
+      <i class="fa-solid fa-magnifying-glass" style="color: var(--text-muted); font-size: 15px;"></i>
+      <input type="text" placeholder="Try “2FA not working” or “export data”…" />
+      <button class="hero-search-btn">Search</button>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="hero-stat-ic"><i class="fa-solid fa-users"></i></div>
+        <div>
+          <div class="hero-stat-val">12,847</div>
+          <div class="hero-stat-lbl">Members</div>
+        </div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-ic"><i class="fa-regular fa-comments"></i></div>
+        <div>
+          <div class="hero-stat-val">3,412</div>
+          <div class="hero-stat-lbl">Discussions</div>
+        </div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-ic"><i class="fa-solid fa-circle-check"></i></div>
+        <div>
+          <div class="hero-stat-val">18,206</div>
+          <div class="hero-stat-lbl">Tickets resolved</div>
+        </div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-ic"><i class="fa-regular fa-pen-to-square"></i></div>
+        <div>
+          <div class="hero-stat-val">94,521</div>
+          <div class="hero-stat-lbl">Posts</div>
+        </div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-ic"><i class="fa-solid fa-circle" style="font-size: 8px; color: #4ade80;"></i></div>
+        <div>
+          <div class="hero-stat-val">238 <span style="font-size: 11px; font-weight: 500; opacity: 0.75; text-transform: uppercase; letter-spacing: 0.05em; margin-left: 2px;">live</span></div>
+          <div class="hero-stat-lbl">Online now</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ CATEGORIES ============================ -->
+  <div class="cat-grid">
+    <a class="cat-card" href="#">
+      <div class="cat-icon blue"><i class="fa-solid fa-circle-question"></i></div>
+      <div>
+        <div class="cat-title">General Help</div>
+        <div class="cat-meta">412 topics · 38 unanswered</div>
+      </div>
+    </a>
+    <a class="cat-card" href="#">
+      <div class="cat-icon rose"><i class="fa-solid fa-bug"></i></div>
+      <div>
+        <div class="cat-title">Bug Reports</div>
+        <div class="cat-meta">189 topics · 12 active</div>
+      </div>
+    </a>
+    <a class="cat-card" href="#">
+      <div class="cat-icon purple"><i class="fa-solid fa-lightbulb"></i></div>
+      <div>
+        <div class="cat-title">Feature Requests</div>
+        <div class="cat-meta">276 topics · 56 planned</div>
+      </div>
+    </a>
+    <a class="cat-card" href="#">
+      <div class="cat-icon green"><i class="fa-solid fa-graduation-cap"></i></div>
+      <div>
+        <div class="cat-title">Tutorials & Guides</div>
+        <div class="cat-meta">94 topics · curated</div>
+      </div>
+    </a>
+    <a class="cat-card" href="#">
+      <div class="cat-icon amber"><i class="fa-solid fa-credit-card"></i></div>
+      <div>
+        <div class="cat-title">Account & Billing</div>
+        <div class="cat-meta">147 topics</div>
+      </div>
+    </a>
+    <a class="cat-card" href="#">
+      <div class="cat-icon teal"><i class="fa-solid fa-bullhorn"></i></div>
+      <div>
+        <div class="cat-title">Announcements</div>
+        <div class="cat-meta">22 topics · official</div>
+      </div>
+    </a>
+  </div>
+
+  <!-- ============================ TWO COL ============================ -->
+  <div class="two-col">
+    <div>
+      <div class="section-head">
+        <h2 class="section-title">Recent Discussions</h2>
+        <span class="section-count">1,247</span>
+      </div>
+
+      <div class="filter-row">
+        <button class="filter-chip active">All <span class="count">1.2k</span></button>
+        <button class="filter-chip">Unsolved <span class="count">82</span></button>
+        <button class="filter-chip">Solved <span class="count">1.1k</span></button>
+        <button class="filter-chip">In Progress <span class="count">14</span></button>
+        <button class="filter-chip">My Topics</button>
+        <select class="sort-select">
+          <option>Latest activity</option>
+          <option>Newest</option>
+          <option>Most replies</option>
+          <option>Most helpful</option>
+        </select>
+      </div>
+
+      <div class="discussion-list">
+
+        <a class="disc-row" href="discussion.html">
+          <span class="status-pill open"><i class="fa-regular fa-circle-dot"></i> Open</span>
+          <div class="disc-main">
+            <h3 class="disc-title">
+              Login button doesn't work on Safari 17 after the latest update
+              <span class="tag-pill priority"><i class="fa-solid fa-fire" style="font-size: 9px;"></i> Urgent</span>
+            </h3>
+            <p class="disc-excerpt">Since yesterday's release, clicking "Sign in" on Safari just spins forever. Console shows a CORS error from the auth endpoint…</p>
+            <div class="disc-meta">
+              <span class="tag-pill">bug</span>
+              <span class="tag-pill">auth</span>
+              <span class="tag-pill">safari</span>
+              <span class="dot-sep"></span>
+              <span>Asked by <strong style="color: var(--text-secondary);">Marcus Chen</strong></span>
+            </div>
+          </div>
+          <div class="disc-stats">
+            <div class="stat-line"><i class="fa-regular fa-comment"></i> <strong>14</strong> replies</div>
+            <div class="last-reply">
+              <span class="mini-avatar av-indigo">SR</span>
+              <span>Sara R. · 12m ago</span>
+            </div>
+          </div>
+        </a>
+
+        <a class="disc-row" href="discussion.html">
+          <span class="status-pill solved"><i class="fa-solid fa-circle-check"></i> Solved</span>
+          <div class="disc-main">
+            <h3 class="disc-title">How do I migrate my workspace from the legacy plan to the new tiered pricing?</h3>
+            <p class="disc-excerpt">Saw the email about pricing changes but the migration wizard keeps timing out. Is there a manual path?</p>
+            <div class="disc-meta">
+              <span class="tag-pill">billing</span>
+              <span class="tag-pill">migration</span>
+              <span class="dot-sep"></span>
+              <span>Asked by <strong style="color: var(--text-secondary);">Priya Patel</strong></span>
+            </div>
+          </div>
+          <div class="disc-stats">
+            <div class="stat-line"><i class="fa-regular fa-comment"></i> <strong>7</strong> replies</div>
+            <div class="last-reply">
+              <span class="mini-avatar av-blue">AK</span>
+              <span>Alex K. · 1h ago</span>
+            </div>
+          </div>
+        </a>
+
+        <a class="disc-row" href="discussion.html">
+          <span class="status-pill progress"><i class="fa-solid fa-spinner"></i> In Progress</span>
+          <div class="disc-main">
+            <h3 class="disc-title">[Feature request] Bulk-edit tags across multiple posts at once</h3>
+            <p class="disc-excerpt">Would save us hours each week. Right now we have to open each post and edit tags individually…</p>
+            <div class="disc-meta">
+              <span class="tag-pill">feature-request</span>
+              <span class="tag-pill">moderation</span>
+              <span class="dot-sep"></span>
+              <span>Asked by <strong style="color: var(--text-secondary);">Tomás García</strong></span>
+            </div>
+          </div>
+          <div class="disc-stats">
+            <div class="stat-line"><i class="fa-regular fa-comment"></i> <strong>23</strong> replies</div>
+            <div class="last-reply">
+              <span class="mini-avatar av-green">LM</span>
+              <span>Lina M. · 3h ago</span>
+            </div>
+          </div>
+        </a>
+
+        <a class="disc-row" href="discussion.html">
+          <span class="status-pill solved"><i class="fa-solid fa-circle-check"></i> Solved</span>
+          <div class="disc-main">
+            <h3 class="disc-title">Webhook payloads dropping the <code style="background: var(--surface-inset); padding: 0 5px; border-radius: 4px; font-family: monospace; font-size: 12.5px;">user_metadata</code> field intermittently</h3>
+            <p class="disc-excerpt">Roughly 1 in 10 webhook calls comes through without user_metadata. Confirmed the data exists in the dashboard…</p>
+            <div class="disc-meta">
+              <span class="tag-pill">api</span>
+              <span class="tag-pill">webhooks</span>
+              <span class="dot-sep"></span>
+              <span>Asked by <strong style="color: var(--text-secondary);">Hannah Volkov</strong></span>
+            </div>
+          </div>
+          <div class="disc-stats">
+            <div class="stat-line"><i class="fa-regular fa-comment"></i> <strong>11</strong> replies</div>
+            <div class="last-reply">
+              <span class="mini-avatar av-teal">DN</span>
+              <span>Devon N. · 5h ago</span>
+            </div>
+          </div>
+        </a>
+
+        <a class="disc-row" href="discussion.html">
+          <span class="status-pill open"><i class="fa-regular fa-circle-dot"></i> Open</span>
+          <div class="disc-main">
+            <h3 class="disc-title">Mobile app crashes immediately on Android 14 cold start</h3>
+            <p class="disc-excerpt">Reproduces on a Pixel 8 with the latest firmware. Stack trace points to the analytics SDK init…</p>
+            <div class="disc-meta">
+              <span class="tag-pill">bug</span>
+              <span class="tag-pill">mobile</span>
+              <span class="tag-pill">android</span>
+              <span class="dot-sep"></span>
+              <span>Asked by <strong style="color: var(--text-secondary);">Yusuf Adebayo</strong></span>
+            </div>
+          </div>
+          <div class="disc-stats">
+            <div class="stat-line"><i class="fa-regular fa-comment"></i> <strong>4</strong> replies</div>
+            <div class="last-reply">
+              <span class="mini-avatar av-amber">YA</span>
+              <span>Yusuf A. · 6h ago</span>
+            </div>
+          </div>
+        </a>
+
+        <a class="disc-row" href="discussion.html">
+          <span class="status-pill solved"><i class="fa-solid fa-circle-check"></i> Solved</span>
+          <div class="disc-main">
+            <h3 class="disc-title">Export to CSV is truncating long string fields at 255 chars</h3>
+            <p class="disc-excerpt">The full text shows fine in the UI but gets cut off in CSV exports. We have a few fields that legitimately go beyond that…</p>
+            <div class="disc-meta">
+              <span class="tag-pill">export</span>
+              <span class="tag-pill">data</span>
+              <span class="dot-sep"></span>
+              <span>Asked by <strong style="color: var(--text-secondary);">Eve Lindgren</strong></span>
+            </div>
+          </div>
+          <div class="disc-stats">
+            <div class="stat-line"><i class="fa-regular fa-comment"></i> <strong>9</strong> replies</div>
+            <div class="last-reply">
+              <span class="mini-avatar av-purple">EL</span>
+              <span>Eve L. · 1d ago</span>
+            </div>
+          </div>
+        </a>
+
+        <a class="disc-row" href="discussion.html">
+          <span class="status-pill closed"><i class="fa-solid fa-circle-xmark"></i> Closed</span>
+          <div class="disc-main">
+            <h3 class="disc-title">Can't change my display name — gets reverted within a few seconds</h3>
+            <p class="disc-excerpt">Closed as duplicate of #4521. Fix shipped in 2.4.1 — please update and let us know if it persists.</p>
+            <div class="disc-meta">
+              <span class="tag-pill">account</span>
+              <span class="tag-pill">duplicate</span>
+              <span class="dot-sep"></span>
+              <span>Closed by <strong style="color: var(--text-secondary);">Mod team</strong></span>
+            </div>
+          </div>
+          <div class="disc-stats">
+            <div class="stat-line"><i class="fa-regular fa-comment"></i> <strong>3</strong> replies</div>
+            <div class="last-reply">
+              <span class="mini-avatar av-slate">MT</span>
+              <span>Mod team · 2d ago</span>
+            </div>
+          </div>
+        </a>
+
+        <a class="disc-row" href="discussion.html">
+          <span class="status-pill open"><i class="fa-regular fa-circle-dot"></i> Open</span>
+          <div class="disc-main">
+            <h3 class="disc-title">SSO with Okta: nameID mapping question for users with multiple email aliases</h3>
+            <p class="disc-excerpt">Setting up SAML with Okta. We have users whose primary work email differs from the alias they use in Okta — what should nameID map to?</p>
+            <div class="disc-meta">
+              <span class="tag-pill">sso</span>
+              <span class="tag-pill">okta</span>
+              <span class="tag-pill">saml</span>
+              <span class="dot-sep"></span>
+              <span>Asked by <strong style="color: var(--text-secondary);">Robert Kowalski</strong></span>
+            </div>
+          </div>
+          <div class="disc-stats">
+            <div class="stat-line"><i class="fa-regular fa-comment"></i> <strong>2</strong> replies</div>
+            <div class="last-reply">
+              <span class="mini-avatar av-rose">RK</span>
+              <span>Robert K. · 1d ago</span>
+            </div>
+          </div>
+        </a>
+
+      </div>
+    </div>
+
+    <!-- ============================ SIDEBAR ============================ -->
+    <aside class="sidebar">
+
+      <div class="side-card">
+        <h3 class="side-title"><i class="fa-solid fa-bolt accent"></i> Quick Actions</h3>
+        <a class="quick-action" href="tickets.html">
+          <span class="ic"><i class="fa-solid fa-headset"></i></span>
+          Open a Support Ticket
+        </a>
+        <a class="quick-action" href="marketplace.html">
+          <span class="ic"><i class="fa-solid fa-store"></i></span>
+          Visit the Marketplace
+        </a>
+        <a class="quick-action" href="#">
+          <span class="ic"><i class="fa-solid fa-book"></i></span>
+          Browse the Knowledge Base
+        </a>
+        <a class="quick-action" href="#">
+          <span class="ic"><i class="fa-solid fa-signal"></i></span>
+          Check Service Status
+        </a>
+      </div>
+
+      <a class="side-card" href="marketplace.html" style="display: block; background: linear-gradient(135deg, #6b21a8, #a855f7); color: #fff; border-color: transparent; text-decoration: none; position: relative; overflow: hidden;">
+        <div style="position: absolute; right: -20px; top: -20px; font-size: 110px; opacity: 0.15;"><i class="fa-solid fa-store"></i></div>
+        <div style="position: relative;">
+          <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; opacity: 0.85; margin-bottom: 6px;">NEW · Marketplace</div>
+          <div style="font-size: 17px; font-weight: 700; letter-spacing: -0.01em; margin-bottom: 6px;">Premium themes &amp; extensions</div>
+          <div style="font-size: 12.5px; opacity: 0.88; line-height: 1.5; margin-bottom: 14px;">Digital products, services, subscriptions, and private extensions from trusted sellers.</div>
+          <div style="display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; background: rgba(255,255,255,0.20); border-radius: 999px; font-size: 12.5px; font-weight: 600;">
+            Browse the store <i class="fa-solid fa-arrow-right" style="font-size: 11px;"></i>
+          </div>
+        </div>
+      </a>
+
+      <div class="side-card">
+        <h3 class="side-title"><i class="fa-solid fa-server accent"></i> System Status</h3>
+        <div class="status-row">
+          <span class="ind"></span>
+          <span class="label">API</span>
+          <span class="val" style="color: var(--status-solved);">Operational</span>
+        </div>
+        <div class="status-row">
+          <span class="ind"></span>
+          <span class="label">Dashboard</span>
+          <span class="val" style="color: var(--status-solved);">Operational</span>
+        </div>
+        <div class="status-row">
+          <span class="ind amber"></span>
+          <span class="label">Webhooks</span>
+          <span class="val" style="color: var(--status-progress);">Degraded</span>
+        </div>
+        <div class="status-row">
+          <span class="ind"></span>
+          <span class="label">SSO</span>
+          <span class="val" style="color: var(--status-solved);">Operational</span>
+        </div>
+      </div>
+
+      <div class="side-card">
+        <h3 class="side-title"><i class="fa-solid fa-trophy accent"></i> Top Contributors</h3>
+        <div class="contrib-row">
+          <div class="contrib-avatar av-green">SR</div>
+          <div>
+            <div class="contrib-name">Sara Reyes <span class="role-badge expert" style="margin-left: 4px;">Expert</span></div>
+            <div class="contrib-meta">312 helpful answers</div>
+          </div>
+          <div class="contrib-points">2.4k</div>
+        </div>
+        <div class="contrib-row">
+          <div class="contrib-avatar av-blue">AK</div>
+          <div>
+            <div class="contrib-name">Alex Karim <span class="role-badge staff" style="margin-left: 4px;">Staff</span></div>
+            <div class="contrib-meta">198 helpful answers</div>
+          </div>
+          <div class="contrib-points">1.8k</div>
+        </div>
+        <div class="contrib-row">
+          <div class="contrib-avatar av-purple">LM</div>
+          <div>
+            <div class="contrib-name">Lina Marchetti <span class="role-badge mod" style="margin-left: 4px;">Mod</span></div>
+            <div class="contrib-meta">156 helpful answers</div>
+          </div>
+          <div class="contrib-points">1.5k</div>
+        </div>
+        <div class="contrib-row">
+          <div class="contrib-avatar av-amber">DN</div>
+          <div>
+            <div class="contrib-name">Devon Ng</div>
+            <div class="contrib-meta">142 helpful answers</div>
+          </div>
+          <div class="contrib-points">1.3k</div>
+        </div>
+        <div class="contrib-row">
+          <div class="contrib-avatar av-rose">EL</div>
+          <div>
+            <div class="contrib-name">Eve Lindgren</div>
+            <div class="contrib-meta">98 helpful answers</div>
+          </div>
+          <div class="contrib-points">980</div>
+        </div>
+      </div>
+
+      <div class="side-card">
+        <h3 class="side-title"><i class="fa-solid fa-fire accent"></i> Trending</h3>
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+          <a href="discussion.html" style="display: flex; gap: 12px; align-items: flex-start;">
+            <div style="font-size: 18px; font-weight: 800; color: var(--primary); width: 22px;">1</div>
+            <div>
+              <div style="font-weight: 600; font-size: 13.5px; line-height: 1.35;">Login broken on Safari 17</div>
+              <div style="font-size: 11.5px; color: var(--text-muted); margin-top: 2px;">14 replies · bug</div>
+            </div>
+          </a>
+          <a href="discussion.html" style="display: flex; gap: 12px; align-items: flex-start;">
+            <div style="font-size: 18px; font-weight: 800; color: var(--primary); width: 22px;">2</div>
+            <div>
+              <div style="font-weight: 600; font-size: 13.5px; line-height: 1.35;">Bulk-edit tags feature request</div>
+              <div style="font-size: 11.5px; color: var(--text-muted); margin-top: 2px;">23 replies · feature</div>
+            </div>
+          </a>
+          <a href="discussion.html" style="display: flex; gap: 12px; align-items: flex-start;">
+            <div style="font-size: 18px; font-weight: 800; color: var(--text-muted); width: 22px;">3</div>
+            <div>
+              <div style="font-weight: 600; font-size: 13.5px; line-height: 1.35;">Webhook payloads missing fields</div>
+              <div style="font-size: 11.5px; color: var(--text-muted); margin-top: 2px;">11 replies · api</div>
+            </div>
+          </a>
+          <a href="discussion.html" style="display: flex; gap: 12px; align-items: flex-start;">
+            <div style="font-size: 18px; font-weight: 800; color: var(--text-muted); width: 22px;">4</div>
+            <div>
+              <div style="font-weight: 600; font-size: 13.5px; line-height: 1.35;">CSV export truncation</div>
+              <div style="font-size: 11.5px; color: var(--text-muted); margin-top: 2px;">9 replies · export</div>
+            </div>
+          </a>
+        </div>
+      </div>
+
+    </aside>
+  </div>
+</main>
+
+</body>
+</html>

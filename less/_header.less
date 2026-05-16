@@ -1,0 +1,100 @@
+/* =====================================================================
+   Header / Nav — applies to .App-header and our custom nav
+   ===================================================================== */
+
+.App-header {
+  background: var(--header-bg);
+  backdrop-filter: saturate(180%) blur(14px);
+  -webkit-backdrop-filter: saturate(180%) blur(14px);
+  border-bottom: 1px solid var(--border);
+  box-shadow: none;
+}
+
+/* Flarum's brand area */
+.App-titleImage,
+.App-title {
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+/* Logo treatment — apply to Flarum's title link */
+.Header-title .item-title a {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Primary nav tabs (replaces stock IndexPage nav style) */
+.Header-navigation .nav-link,
+.Navigation-pinned .item .Button {
+  padding: 8px 13px;
+  border-radius: var(--r-sm);
+  font-size: 13.75px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: transparent;
+  border: none;
+  transition: background 0.15s, color 0.15s;
+
+  &:hover {
+    background: var(--primary-ghost);
+    color: var(--primary);
+  }
+
+  &.active {
+    background: var(--primary-ghost);
+    color: var(--primary);
+    font-weight: 600;
+  }
+}
+
+/* Header action icons (notifications, search, etc.) */
+.Header-controls .item .Button.hasIcon,
+.SessionDropdown,
+.NotificationsDropdown .Dropdown-toggle {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--r-sm);
+  display: grid;
+  place-items: center;
+  color: var(--text-secondary);
+  background: transparent;
+  transition: background 0.15s;
+
+  &:hover {
+    background: var(--surface-inset);
+    color: var(--text);
+  }
+}
+
+/* User avatar in header */
+.SessionDropdown .Avatar {
+  border-radius: var(--r-sm);
+}
+
+/* Primary CTA button (New Ticket, etc.) */
+.Button--primary {
+  height: 36px;
+  padding: 0 14px;
+  border-radius: var(--r-sm);
+  background: var(--primary);
+  color: #fff;
+  font-weight: 600;
+  font-size: 13.5px;
+  border: none;
+  transition: background 0.15s, transform 0.15s;
+
+  &:hover {
+    background: var(--primary-dark);
+  }
+
+  &:active {
+    transform: translateY(1px);
+  }
+}
+
+/* Generic button reset */
+.Button {
+  border-radius: var(--r-sm);
+  font-weight: 500;
+}

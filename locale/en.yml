@@ -1,0 +1,16 @@
+ernestdefoe-edonline:
+  forum:
+    hero:
+      title: How can we help?
+      subtitle: Search the community for answers, or start a new topic to get help from our team and other users.
+      search_placeholder: 'Try "2FA not working" or "export data"…'
+      stat_members: Members
+      stat_discussions: Discussions
+      stat_resolved: Tickets resolved
+      stat_posts: Posts
+      stat_online: Online now
+    marketplace_promo:
+      kicker: NEW · Marketplace
+      title: Premium themes &amp; extensions
+      desc: Digital products, services, subscriptions, and private extensions from trusted sellers.
+      cta: Browse the store

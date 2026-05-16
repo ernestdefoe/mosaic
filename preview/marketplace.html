@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Marketplace — HelpHub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="theme.css">
+</head>
+<body>
+
+<header class="header">
+  <div class="header-inner">
+    <div class="brand">
+      <div class="brand-logo"><i class="fa-solid fa-life-ring"></i></div>
+      <span>HelpHub</span>
+    </div>
+    <nav class="nav">
+      <a class="nav-link" href="index.html">Discussions</a>
+      <a class="nav-link" href="tickets.html">Tickets</a>
+      <a class="nav-link active" href="marketplace.html">Marketplace</a>
+      <a class="nav-link" href="#">Knowledge Base</a>
+      <a class="nav-link" href="#">Status</a>
+    </nav>
+    <div class="header-actions">
+      <button class="icon-btn" title="Search"><i class="fa-solid fa-magnifying-glass"></i></button>
+      <button class="icon-btn cart-btn" title="Cart">
+        <i class="fa-solid fa-cart-shopping"></i>
+        <span class="cart-count">2</span>
+      </button>
+      <button class="icon-btn" title="Notifications">
+        <i class="fa-regular fa-bell"></i>
+        <span class="dot"></span>
+      </button>
+      <a class="btn-primary" href="tickets.html">
+        <i class="fa-solid fa-headset"></i> New Ticket
+      </a>
+      <button class="avatar-btn" title="Account">JD</button>
+    </div>
+  </div>
+</header>
+
+<main class="page">
+  <!-- ============================ MARKET HERO ============================ -->
+  <section class="market-hero">
+    <div class="market-hero-inner">
+      <div>
+        <h1>HelpHub Marketplace</h1>
+        <p>Premium themes, extensions, services, and subscriptions from trusted sellers in the community.</p>
+      </div>
+      <div class="market-stats">
+        <div>
+          <div class="market-stat-val">218</div>
+          <div class="market-stat-lbl">Products</div>
+        </div>
+        <div>
+          <div class="market-stat-val">47</div>
+          <div class="market-stat-lbl">Sellers</div>
+        </div>
+        <div>
+          <div class="market-stat-val">4.8★</div>
+          <div class="market-stat-lbl">Avg rating</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ TYPE FILTER ============================ -->
+  <div class="type-row">
+    <button class="filter-chip active">All <span class="count">218</span></button>
+    <button class="filter-chip"><i class="fa-solid fa-palette" style="font-size: 11px;"></i> Themes <span class="count">42</span></button>
+    <button class="filter-chip"><i class="fa-solid fa-puzzle-piece" style="font-size: 11px;"></i> Extensions <span class="count">86</span></button>
+    <button class="filter-chip"><i class="fa-solid fa-download" style="font-size: 11px;"></i> Digital <span class="count">34</span></button>
+    <button class="filter-chip"><i class="fa-solid fa-briefcase" style="font-size: 11px;"></i> Services <span class="count">28</span></button>
+    <button class="filter-chip"><i class="fa-solid fa-rotate" style="font-size: 11px;"></i> Subscriptions <span class="count">18</span></button>
+    <button class="filter-chip"><i class="fa-brands fa-php" style="font-size: 11px;"></i> Composer Packages <span class="count">10</span></button>
+    <select class="sort-select">
+      <option>Featured</option>
+      <option>Newest</option>
+      <option>Best selling</option>
+      <option>Price: low to high</option>
+      <option>Price: high to low</option>
+      <option>Highest rated</option>
+    </select>
+  </div>
+
+  <div class="two-col">
+    <div>
+
+      <!-- ============================ FEATURED ============================ -->
+      <div class="section-head">
+        <h2 class="section-title"><i class="fa-solid fa-star" style="color: #fbbf24;"></i> Featured this week</h2>
+        <span class="section-spacer"></span>
+        <a href="#" style="font-size: 13px; color: var(--market-accent); font-weight: 600;">View all →</a>
+      </div>
+
+      <div class="product-grid" style="margin-bottom: 30px;">
+
+        <a class="product-card" href="product.html">
+          <div class="product-cover theme">
+            <span class="type-badge"><i class="fa-solid fa-palette"></i> Theme</span>
+            <span class="product-featured"><i class="fa-solid fa-star"></i> Featured</span>
+            <i class="fa-solid fa-leaf"></i>
+          </div>
+          <div class="product-body">
+            <h3 class="product-title">Avocado Theme</h3>
+            <p class="product-desc">Modern, organic Flarum 2 theme with DM Sans typography, custom widgets, and full dark mode.</p>
+            <div class="product-meta">
+              <span class="seller"><span class="mini-avatar av-green" style="width: 18px; height: 18px; font-size: 9px;">RG</span> ramon</span>
+              <span class="rating"><i class="fa-solid fa-star"></i> 4.9 <span style="color: var(--text-muted); font-weight: 400;">(127)</span></span>
+            </div>
+          </div>
+          <div class="product-foot">
+            <div class="product-price"><span class="currency">$</span>49</div>
+            <button class="buy-btn"><i class="fa-solid fa-cart-plus"></i> Add</button>
+          </div>
+        </a>
+
+        <a class="product-card" href="product.html">
+          <div class="product-cover extension">
+            <span class="type-badge"><i class="fa-solid fa-lock"></i> Private Ext</span>
+            <span class="product-featured"><i class="fa-solid fa-star"></i> Featured</span>
+            <i class="fa-solid fa-shield-halved"></i>
+          </div>
+          <div class="product-body">
+            <h3 class="product-title">Advanced Anti-Spam Pro</h3>
+            <p class="product-desc">ML-based spam detection trained on millions of forum posts. Private extension with priority updates.</p>
+            <div class="product-meta">
+              <span class="seller"><span class="mini-avatar av-blue" style="width: 18px; height: 18px; font-size: 9px;">FT</span> fortress</span>
+              <span class="rating"><i class="fa-solid fa-star"></i> 4.8 <span style="color: var(--text-muted); font-weight: 400;">(89)</span></span>
+            </div>
+          </div>
+          <div class="product-foot">
+            <div class="product-price"><span class="currency">$</span>15<span class="per">/mo</span></div>
+            <button class="buy-btn"><i class="fa-solid fa-cart-plus"></i> Add</button>
+          </div>
+        </a>
+
+        <a class="product-card" href="product.html">
+          <div class="product-cover service">
+            <span class="type-badge"><i class="fa-solid fa-briefcase"></i> Service</span>
+            <span class="product-featured"><i class="fa-solid fa-star"></i> Featured</span>
+            <i class="fa-solid fa-rocket"></i>
+          </div>
+          <div class="product-body">
+            <h3 class="product-title">Flarum 2 Migration Service</h3>
+            <p class="product-desc">Hands-on migration from Flarum 1.x to 2.x, including extension audit and 30-day support window.</p>
+            <div class="product-meta">
+              <span class="seller"><span class="mini-avatar av-teal" style="width: 18px; height: 18px; font-size: 9px;">DM</span> devmigration</span>
+              <span class="rating"><i class="fa-solid fa-star"></i> 5.0 <span style="color: var(--text-muted); font-weight: 400;">(34)</span></span>
+            </div>
+          </div>
+          <div class="product-foot">
+            <div class="product-price"><span class="currency">$</span>499</div>
+            <button class="buy-btn"><i class="fa-solid fa-envelope"></i> Inquire</button>
+          </div>
+        </a>
+
+      </div>
+
+      <!-- ============================ ALL PRODUCTS ============================ -->
+      <div class="section-head">
+        <h2 class="section-title">All products</h2>
+        <span class="section-count">218</span>
+      </div>
+
+      <div class="product-grid">
+
+        <a class="product-card" href="product.html">
+          <div class="product-cover digital">
+            <span class="type-badge"><i class="fa-solid fa-download"></i> Digital</span>
+            <i class="fa-solid fa-file-zipper"></i>
+          </div>
+          <div class="product-body">
+            <h3 class="product-title">Forum Moderator Handbook (PDF)</h3>
+            <p class="product-desc">120-page playbook covering escalation, deescalation, and community health metrics.</p>
+            <div class="product-meta">
+              <span class="seller"><span class="mini-avatar av-rose" style="width: 18px; height: 18px; font-size: 9px;">EL</span> evepubs</span>
+              <span class="rating"><i class="fa-solid fa-star"></i> 4.7 <span style="color: var(--text-muted); font-weight: 400;">(56)</span></span>
+            </div>
+          </div>
+          <div class="product-foot">
+            <div class="product-price"><span class="currency">$</span>19</div>
+            <button class="buy-btn"><i class="fa-solid fa-cart-plus"></i> Add</button>
+          </div>
+        </a>
+
+        <a class="product-card" href="product.html">
+          <div class="product-cover subscription">
+            <span class="type-badge"><i class="fa-solid fa-rotate"></i> Subscription</span>
+            <i class="fa-solid fa-cloud"></i>
+          </div>
+          <div class="product-body">
+            <h3 class="product-title">Premium Hosting Add-on</h3>
+            <p class="product-desc">Managed hosting tier with dedicated resources, daily backups, and 99.99% SLA.</p>
+            <div class="product-meta">
+              <span class="seller"><span class="mini-avatar av-blue" style="width: 18px; height: 18px; font-size: 9px;">HC</span> hostcloud</span>
+              <span class="rating"><i class="fa-solid fa-star"></i> 4.6 <span style="color: var(--text-muted); font-weight: 400;">(212)</span></span>
+            </div>
+          </div>
+          <div class="product-foot">
+            <div class="product-price"><span class="currency">$</span>29<span class="per">/mo</span></div>
+            <button class="buy-btn"><i class="fa-solid fa-cart-plus"></i> Add</button>
+          </div>
+        </a>
+
+        <a class="product-card" href="product.html">
+          <div class="product-cover composer">
+            <span class="type-badge"><i class="fa-brands fa-php"></i> Composer Package</span>
+            <i class="fa-solid fa-cube"></i>
+          </div>
+          <div class="product-body">
+            <h3 class="product-title">Colored — Forum Customizer</h3>
+            <p class="product-desc">Pure-LESS customization toolkit. Edit colors, radii, and spacing from the admin panel.</p>
+            <div class="product-meta">
+              <span class="seller"><span class="mini-avatar av-green" style="width: 18px; height: 18px; font-size: 9px;">RG</span> ramon</span>
+              <span class="rating"><i class="fa-solid fa-star"></i> 4.8 <span style="color: var(--text-muted); font-weight: 400;">(73)</span></span>
+            </div>
+          </div>
+          <div class="product-foot">
+            <div class="product-price"><span class="currency">$</span>15</div>
+            <button class="buy-btn"><i class="fa-solid fa-cart-plus"></i> Add</button>
+          </div>
+        </a>
+
+        <a class="product-card" href="product.html">
+          <div class="product-cover theme">
+            <span class="type-badge"><i class="fa-solid fa-palette"></i> Theme</span>
+            <i class="fa-solid fa-mountain"></i>
+          </div>
+          <div class="product-body">
+            <h3 class="product-title">Crimson Ridge Theme</h3>
+            <p class="product-desc">Bold sports-fan theme with deep gradients, live score widgets, and group hero banners.</p>
+            <div class="product-meta">
+              <span class="seller"><span class="mini-avatar av-rose" style="width: 18px; height: 18px; font-size: 9px;">ED</span> ernestdefoe</span>
+              <span class="rating"><i class="fa-solid fa-star"></i> 4.9 <span style="color: var(--text-muted); font-weight: 400;">(41)</span></span>
+            </div>
+          </div>
+          <div class="product-foot">
+            <div class="product-price"><span class="currency">$</span>39</div>
+            <button class="buy-btn"><i class="fa-solid fa-cart-plus"></i> Add</button>
+          </div>
+        </a>
+
+        <a class="product-card" href="product.html">
+          <div class="product-cover extension">
+            <span class="type-badge"><i class="fa-solid fa-puzzle-piece"></i> Extension</span>
+            <i class="fa-solid fa-chart-line"></i>
+          </div>
+          <div class="product-body">
+            <h3 class="product-title">Analytics Pro for Flarum</h3>
+            <p class="product-desc">Per-tag, per-user, per-discussion engagement metrics. CSV + API export.</p>
+            <div class="product-meta">
+              <span class="seller"><span class="mini-avatar av-amber" style="width: 18px; height: 18px; font-size: 9px;">MX</span> metrixhq</span>
+              <span class="rating"><i class="fa-solid fa-star"></i> 4.5 <span style="color: var(--text-muted); font-weight: 400;">(68)</span></span>
+            </div>
+          </div>
+          <div class="product-foot">
+            <div class="product-price"><span class="currency">$</span>9<span class="per">/mo</span></div>
+            <button class="buy-btn"><i class="fa-solid fa-cart-plus"></i> Add</button>
+          </div>
+        </a>
+
+        <a class="product-card" href="product.html">
+          <div class="product-cover service">
+            <span class="type-badge"><i class="fa-solid fa-briefcase"></i> Service</span>
+            <i class="fa-solid fa-paintbrush"></i>
+          </div>
+          <div class="product-body">
+            <h3 class="product-title">Custom Theme Design</h3>
+            <p class="product-desc">1-on-1 design consultation. Bespoke Flarum theme, brand-matched and delivered in 2 weeks.</p>
+            <div class="product-meta">
+              <span class="seller"><span class="mini-avatar av-purple" style="width: 18px; height: 18px; font-size: 9px;">PD</span> pixelduo</span>
+              <span class="rating"><i class="fa-solid fa-star"></i> 5.0 <span style="color: var(--text-muted); font-weight: 400;">(22)</span></span>
+            </div>
+          </div>
+          <div class="product-foot">
+            <div class="product-price"><span class="currency">$</span>1,200</div>
+            <button class="buy-btn"><i class="fa-solid fa-envelope"></i> Inquire</button>
+          </div>
+        </a>
+
+        <a class="product-card" href="product.html">
+          <div class="product-cover digital">
+            <span class="type-badge"><i class="fa-solid fa-download"></i> Digital</span>
+            <i class="fa-solid fa-icons"></i>
+          </div>
+          <div class="product-body">
+            <h3 class="product-title">Forum Icon Pack — 240 SVGs</h3>
+            <p class="product-desc">Hand-crafted icon set for forum nav, badges, and reactions. SVG + IconJar + Figma.</p>
+            <div class="product-meta">
+              <span class="seller"><span class="mini-avatar av-teal" style="width: 18px; height: 18px; font-size: 9px;">IK</span> iconkit</span>
+              <span class="rating"><i class="fa-solid fa-star"></i> 4.8 <span style="color: var(--text-muted); font-weight: 400;">(94)</span></span>
+            </div>
+          </div>
+          <div class="product-foot">
+            <div class="product-price free">FREE</div>
+            <button class="buy-btn outline"><i class="fa-solid fa-download"></i> Get</button>
+          </div>
+        </a>
+
+        <a class="product-card" href="product.html">
+          <div class="product-cover subscription">
+            <span class="type-badge"><i class="fa-solid fa-rotate"></i> Subscription</span>
+            <i class="fa-solid fa-headset"></i>
+          </div>
+          <div class="product-body">
+            <h3 class="product-title">Priority Support Tier</h3>
+            <p class="product-desc">SLA-backed support with 1-hour first response and a dedicated engineer on Slack Connect.</p>
+            <div class="product-meta">
+              <span class="seller"><span class="mini-avatar av-slate" style="width: 18px; height: 18px; font-size: 9px;">HH</span> helphub</span>
+              <span class="rating"><i class="fa-solid fa-star"></i> 4.9 <span style="color: var(--text-muted); font-weight: 400;">(58)</span></span>
+            </div>
+          </div>
+          <div class="product-foot">
+            <div class="product-price"><span class="currency">$</span>199<span class="per">/mo</span></div>
+            <button class="buy-btn"><i class="fa-solid fa-cart-plus"></i> Add</button>
+          </div>
+        </a>
+
+        <a class="product-card" href="product.html">
+          <div class="product-cover extension">
+            <span class="type-badge"><i class="fa-solid fa-lock"></i> Private Ext</span>
+            <i class="fa-solid fa-users-gear"></i>
+          </div>
+          <div class="product-body">
+            <h3 class="product-title">User Reputation Engine</h3>
+            <p class="product-desc">Karma, trust levels, and contribution streaks. Drop-in replacement for Discourse-style reputation.</p>
+            <div class="product-meta">
+              <span class="seller"><span class="mini-avatar av-indigo" style="width: 18px; height: 18px; font-size: 9px;">SR</span> sociosphere</span>
+              <span class="rating"><i class="fa-solid fa-star"></i> 4.7 <span style="color: var(--text-muted); font-weight: 400;">(36)</span></span>
+            </div>
+          </div>
+          <div class="product-foot">
+            <div class="product-price"><span class="currency">$</span>69</div>
+            <button class="buy-btn"><i class="fa-solid fa-cart-plus"></i> Add</button>
+          </div>
+        </a>
+
+      </div>
+    </div>
+
+    <!-- ============================ SIDEBAR ============================ -->
+    <aside class="sidebar">
+
+      <div class="side-card">
+        <h3 class="side-title"><i class="fa-solid fa-tags accent"></i> Categories</h3>
+        <div style="display: flex; flex-direction: column; gap: 2px;">
+          <a class="quick-action" href="#" style="padding: 7px 10px;">
+            <span class="ic" style="background: rgba(37,99,235,0.10); color: #2563eb;"><i class="fa-solid fa-palette"></i></span>
+            <span style="flex: 1;">Themes</span>
+            <span style="font-size: 12px; color: var(--text-muted); font-weight: 600;">42</span>
+          </a>
+          <a class="quick-action" href="#" style="padding: 7px 10px;">
+            <span class="ic" style="background: rgba(190,18,60,0.10); color: #be123c;"><i class="fa-solid fa-puzzle-piece"></i></span>
+            <span style="flex: 1;">Extensions</span>
+            <span style="font-size: 12px; color: var(--text-muted); font-weight: 600;">86</span>
+          </a>
+          <a class="quick-action" href="#" style="padding: 7px 10px;">
+            <span class="ic" style="background: rgba(13,148,136,0.10); color: #0d9488;"><i class="fa-solid fa-download"></i></span>
+            <span style="flex: 1;">Digital Products</span>
+            <span style="font-size: 12px; color: var(--text-muted); font-weight: 600;">34</span>
+          </a>
+          <a class="quick-action" href="#" style="padding: 7px 10px;">
+            <span class="ic" style="background: rgba(8,145,178,0.10); color: #0891b2;"><i class="fa-solid fa-briefcase"></i></span>
+            <span style="flex: 1;">Services</span>
+            <span style="font-size: 12px; color: var(--text-muted); font-weight: 600;">28</span>
+          </a>
+          <a class="quick-action" href="#" style="padding: 7px 10px;">
+            <span class="ic" style="background: rgba(217,119,6,0.10); color: #d97706;"><i class="fa-solid fa-rotate"></i></span>
+            <span style="flex: 1;">Subscriptions</span>
+            <span style="font-size: 12px; color: var(--text-muted); font-weight: 600;">18</span>
+          </a>
+          <a class="quick-action" href="#" style="padding: 7px 10px;">
+            <span class="ic" style="background: rgba(67,56,202,0.10); color: #4338ca;"><i class="fa-brands fa-php"></i></span>
+            <span style="flex: 1;">Composer Packages</span>
+            <span style="font-size: 12px; color: var(--text-muted); font-weight: 600;">10</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="side-card">
+        <h3 class="side-title"><i class="fa-solid fa-fire" style="color: var(--market-accent);"></i> Best Sellers</h3>
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+          <a href="product.html" style="display: flex; gap: 10px; align-items: flex-start;">
+            <div style="width: 44px; height: 44px; border-radius: 9px; background: linear-gradient(135deg, #2563eb, #7c3aed); flex-shrink: 0; display: grid; place-items: center; color: #fff;"><i class="fa-solid fa-leaf"></i></div>
+            <div style="flex: 1; min-width: 0;">
+              <div style="font-weight: 600; font-size: 13.25px; line-height: 1.35;">Avocado Theme</div>
+              <div style="font-size: 11.5px; color: var(--text-muted); margin-top: 2px;">$49 · 1,840 sales</div>
+            </div>
+          </a>
+          <a href="product.html" style="display: flex; gap: 10px; align-items: flex-start;">
+            <div style="width: 44px; height: 44px; border-radius: 9px; background: linear-gradient(135deg, #be123c, #7c2d12); flex-shrink: 0; display: grid; place-items: center; color: #fff;"><i class="fa-solid fa-shield-halved"></i></div>
+            <div style="flex: 1; min-width: 0;">
+              <div style="font-weight: 600; font-size: 13.25px; line-height: 1.35;">Anti-Spam Pro</div>
+              <div style="font-size: 11.5px; color: var(--text-muted); margin-top: 2px;">$15/mo · 920 active</div>
+            </div>
+          </a>
+          <a href="product.html" style="display: flex; gap: 10px; align-items: flex-start;">
+            <div style="width: 44px; height: 44px; border-radius: 9px; background: linear-gradient(135deg, #4338ca, #1e1b4b); flex-shrink: 0; display: grid; place-items: center; color: #fff;"><i class="fa-solid fa-cube"></i></div>
+            <div style="flex: 1; min-width: 0;">
+              <div style="font-weight: 600; font-size: 13.25px; line-height: 1.35;">Colored Customizer</div>
+              <div style="font-size: 11.5px; color: var(--text-muted); margin-top: 2px;">$15 · 1,210 sales</div>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <div class="side-card">
+        <h3 class="side-title"><i class="fa-solid fa-circle-info accent"></i> Become a Seller</h3>
+        <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.5; margin: 0 0 12px;">
+          Sell your themes, extensions, or services to the HelpHub community. We handle payments, refunds, and tax.
+        </p>
+        <button class="buy-btn" style="width: 100%; justify-content: center; height: 36px;">
+          <i class="fa-solid fa-arrow-up-right-from-square"></i> Apply
+        </button>
+      </div>
+
+    </aside>
+  </div>
+</main>
+
+</body>
+</html>

@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Login button broken on Safari 17 — HelpHub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="theme.css">
+</head>
+<body>
+
+<!-- ============================ HEADER ============================ -->
+<header class="header">
+  <div class="header-inner">
+    <div class="brand">
+      <div class="brand-logo"><i class="fa-solid fa-life-ring"></i></div>
+      <span>HelpHub</span>
+    </div>
+    <nav class="nav">
+      <a class="nav-link active" href="index.html">Discussions</a>
+      <a class="nav-link" href="tickets.html">Tickets</a>
+      <a class="nav-link" href="marketplace.html">Marketplace</a>
+      <a class="nav-link" href="#">Knowledge Base</a>
+      <a class="nav-link" href="#">Status</a>
+    </nav>
+    <div class="header-actions">
+      <button class="icon-btn" title="Search"><i class="fa-solid fa-magnifying-glass"></i></button>
+      <button class="icon-btn cart-btn" title="Cart">
+        <i class="fa-solid fa-cart-shopping"></i>
+        <span class="cart-count">2</span>
+      </button>
+      <button class="icon-btn" title="Notifications">
+        <i class="fa-regular fa-bell"></i>
+        <span class="dot"></span>
+      </button>
+      <a class="btn-primary" href="tickets.html">
+        <i class="fa-solid fa-headset"></i> New Ticket
+      </a>
+      <button class="avatar-btn" title="Account">JD</button>
+    </div>
+  </div>
+</header>
+
+<main class="page">
+  <nav class="breadcrumb">
+    <a href="index.html"><i class="fa-solid fa-house" style="font-size: 11px;"></i> Discussions</a>
+    <span class="sep">/</span>
+    <a href="#">Bug Reports</a>
+    <span class="sep">/</span>
+    <span class="current">Login button broken on Safari 17</span>
+  </nav>
+
+  <div class="two-col">
+    <div>
+      <!-- ============================ HEADER CARD ============================ -->
+      <div class="disc-header">
+        <div class="disc-header-top">
+          <h1>Login button doesn't work on Safari 17 after the latest update</h1>
+          <span class="status-pill solved" style="padding: 6px 12px; font-size: 12.5px;"><i class="fa-solid fa-circle-check"></i> Solved</span>
+        </div>
+        <div class="disc-header-meta">
+          <span class="tag-pill">bug</span>
+          <span class="tag-pill">auth</span>
+          <span class="tag-pill">safari</span>
+          <span class="tag-pill priority"><i class="fa-solid fa-fire" style="font-size: 9px;"></i> Urgent</span>
+          <span class="dot-sep"></span>
+          <span><i class="fa-regular fa-eye"></i> 1,284 views</span>
+          <span class="dot-sep"></span>
+          <span><i class="fa-regular fa-clock"></i> Opened 6 hours ago</span>
+        </div>
+      </div>
+
+      <!-- ============================ QUESTION ============================ -->
+      <article class="post-card is-question">
+        <div class="post-inner">
+          <div class="post-head">
+            <div class="post-avatar av-amber">MC</div>
+            <div>
+              <div class="post-author">Marcus Chen</div>
+              <div class="post-meta-line">Member · joined 2 years ago · 14 posts</div>
+            </div>
+            <div class="post-actions-top">
+              <button class="icon-btn" title="Bookmark"><i class="fa-regular fa-bookmark"></i></button>
+              <button class="icon-btn" title="More"><i class="fa-solid fa-ellipsis"></i></button>
+            </div>
+          </div>
+          <div class="post-body">
+            <p>Since yesterday's release (build 2.4.0), clicking the "Sign in" button on Safari just spins forever and never completes. Works perfectly in Chrome and Firefox on the same machine.</p>
+            <p>Console shows this error every time:</p>
+            <pre>Access to fetch at 'https://api.helphub.com/v1/auth/session'
+from origin 'https://app.helphub.com' has been blocked by CORS
+policy: Response to preflight request doesn't pass access control
+check: No 'Access-Control-Allow-Origin' header is present.</pre>
+            <p>Tested on:</p>
+            <ul>
+              <li>Safari 17.2 / macOS Sonoma 14.3 — <strong>broken</strong></li>
+              <li>Safari 17.1 / macOS Sonoma 14.2 — <strong>broken</strong></li>
+              <li>Safari 16.6 / macOS Ventura — works fine</li>
+              <li>Chrome 121, Firefox 123, Edge 121 — all fine</li>
+            </ul>
+            <p>It looks like the preflight <code>OPTIONS</code> request isn't getting the right headers back from the auth endpoint specifically. Other API calls work — only auth is affected.</p>
+            <p>Happy to share a HAR file if useful. Anyone else seeing this?</p>
+          </div>
+          <div class="post-foot">
+            <div class="reactions">
+              <div class="react-stack">
+                <span class="react-emoji">👍</span>
+                <span class="react-emoji">❤️</span>
+                <span class="react-emoji">👀</span>
+              </div>
+              <span class="react-count">28 people have this issue</span>
+            </div>
+            <div class="right">
+              <button class="text-btn"><i class="fa-regular fa-comment"></i> Reply</button>
+              <button class="text-btn"><i class="fa-solid fa-share"></i> Share</button>
+              <button class="text-btn"><i class="fa-solid fa-flag"></i></button>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- ============================ BEST ANSWER ============================ -->
+      <div class="replies-head">Best Answer</div>
+
+      <article class="post-card is-answer">
+        <div class="answer-banner">
+          <i class="fa-solid fa-circle-check"></i> Marked as solution by Marcus Chen · 3 hours ago
+        </div>
+        <div class="post-inner">
+          <div class="post-head">
+            <div class="post-avatar av-blue">AK</div>
+            <div>
+              <div class="post-author">
+                Alex Karim
+                <span class="role-badge staff">Staff</span>
+              </div>
+              <div class="post-meta-line">Backend engineer · joined 4 years ago · 1,820 posts</div>
+            </div>
+            <div class="post-actions-top">
+              <button class="icon-btn" title="Bookmark"><i class="fa-regular fa-bookmark"></i></button>
+              <button class="icon-btn" title="More"><i class="fa-solid fa-ellipsis"></i></button>
+            </div>
+          </div>
+          <div class="post-body">
+            <p>Confirmed on our end — this is a regression introduced in 2.4.0 where Safari 17's stricter preflight handling exposed a missing <code>Access-Control-Allow-Credentials</code> header on the <code>/auth/session</code> endpoint when the request originates from a same-site subdomain.</p>
+            <p><strong>Fix is live as of 2.4.1</strong> (rolled out ~30 minutes ago). No action needed on your side — a hard refresh in Safari (⌘⇧R) should resolve it immediately.</p>
+            <blockquote>If you're on a custom domain or self-hosted plan, make sure your reverse proxy isn't stripping <code>Access-Control-Allow-Credentials: true</code> from upstream responses. We added a section about this to the SSO troubleshooting doc.</blockquote>
+            <p>Postmortem will go up on the status page later today. Thanks Marcus for the clean repro and the HAR file — made the fix a 20-minute job instead of a 4-hour one.</p>
+          </div>
+          <div class="post-foot">
+            <div class="reactions">
+              <div class="react-stack">
+                <span class="react-emoji">🎉</span>
+                <span class="react-emoji">🙏</span>
+                <span class="react-emoji">⭐</span>
+                <span class="react-emoji">❤️</span>
+              </div>
+              <span class="react-count">47 reactions</span>
+            </div>
+            <div class="right">
+              <button class="helpful-btn active"><i class="fa-solid fa-check"></i> Helpful <span class="num">42</span></button>
+              <button class="text-btn"><i class="fa-regular fa-comment"></i> Reply</button>
+              <button class="text-btn"><i class="fa-solid fa-share"></i></button>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- ============================ OTHER REPLIES ============================ -->
+      <div class="replies-head">13 other replies</div>
+
+      <article class="post-card">
+        <div class="post-inner">
+          <div class="post-head">
+            <div class="post-avatar av-rose">PP</div>
+            <div>
+              <div class="post-author">Priya Patel</div>
+              <div class="post-meta-line">Member · 3 hours ago</div>
+            </div>
+            <div class="post-actions-top">
+              <button class="icon-btn"><i class="fa-solid fa-ellipsis"></i></button>
+            </div>
+          </div>
+          <div class="post-body">
+            <p>+1, same thing on my MacBook (Safari 17.2). Switched to Chrome as a workaround and it works. Will try the hard refresh once 2.4.1 lands here.</p>
+          </div>
+          <div class="post-foot">
+            <button class="helpful-btn"><i class="fa-regular fa-thumbs-up"></i> Helpful <span class="num">8</span></button>
+            <div class="right">
+              <button class="text-btn"><i class="fa-regular fa-comment"></i> Reply</button>
+              <button class="text-btn"><i class="fa-solid fa-share"></i></button>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="post-card">
+        <div class="post-inner">
+          <div class="post-head">
+            <div class="post-avatar av-green">SR</div>
+            <div>
+              <div class="post-author">
+                Sara Reyes
+                <span class="role-badge expert">Expert</span>
+              </div>
+              <div class="post-meta-line">Community Expert · 2 hours ago</div>
+            </div>
+            <div class="post-actions-top">
+              <button class="icon-btn"><i class="fa-solid fa-ellipsis"></i></button>
+            </div>
+          </div>
+          <div class="post-body">
+            <p>For anyone hitting this on a self-hosted setup behind nginx, the missing header is on the <em>response</em> from the auth endpoint, not the request. Quick patch you can drop in your nginx config until you upgrade:</p>
+            <pre>location /v1/auth/ {
+  proxy_pass http://upstream;
+  add_header 'Access-Control-Allow-Credentials' 'true' always;
+  add_header 'Access-Control-Allow-Origin' $http_origin always;
+}</pre>
+            <p>Don't forget the <code>always</code> flag — without it the header is only added on 2xx responses, and the preflight returns 204.</p>
+          </div>
+          <div class="post-foot">
+            <button class="helpful-btn"><i class="fa-regular fa-thumbs-up"></i> Helpful <span class="num">19</span></button>
+            <div class="right">
+              <button class="text-btn"><i class="fa-regular fa-comment"></i> Reply</button>
+              <button class="text-btn"><i class="fa-solid fa-share"></i></button>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="post-card">
+        <div class="post-inner">
+          <div class="post-head">
+            <div class="post-avatar av-indigo">MC</div>
+            <div>
+              <div class="post-author">Marcus Chen <span style="font-size: 11px; color: var(--text-muted); font-weight: 500; margin-left: 4px;">(OP)</span></div>
+              <div class="post-meta-line">1 hour ago</div>
+            </div>
+            <div class="post-actions-top">
+              <button class="icon-btn"><i class="fa-solid fa-ellipsis"></i></button>
+            </div>
+          </div>
+          <div class="post-body">
+            <p>Confirmed fixed on 2.4.1 after a hard refresh — thanks Alex and the team for the quick turnaround. Marking this as solved 🎉</p>
+          </div>
+          <div class="post-foot">
+            <button class="helpful-btn"><i class="fa-regular fa-thumbs-up"></i> Helpful <span class="num">12</span></button>
+            <div class="right">
+              <button class="text-btn"><i class="fa-regular fa-comment"></i> Reply</button>
+              <button class="text-btn"><i class="fa-solid fa-share"></i></button>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- ============================ COMPOSER ============================ -->
+      <div class="composer">
+        <div class="composer-head">
+          <div class="post-avatar av-indigo" style="width: 32px; height: 32px; border-radius: 9px; font-size: 12px;">JD</div>
+          <div class="label">Add to the discussion</div>
+        </div>
+        <textarea class="composer-textarea" placeholder="Share your thoughts, ask a follow-up, or add more context… Markdown is supported."></textarea>
+        <div class="composer-toolbar">
+          <button class="toolbar-btn" title="Bold"><i class="fa-solid fa-bold"></i></button>
+          <button class="toolbar-btn" title="Italic"><i class="fa-solid fa-italic"></i></button>
+          <button class="toolbar-btn" title="Link"><i class="fa-solid fa-link"></i></button>
+          <button class="toolbar-btn" title="Code"><i class="fa-solid fa-code"></i></button>
+          <button class="toolbar-btn" title="Quote"><i class="fa-solid fa-quote-right"></i></button>
+          <button class="toolbar-btn" title="List"><i class="fa-solid fa-list-ul"></i></button>
+          <button class="toolbar-btn" title="Image"><i class="fa-regular fa-image"></i></button>
+          <button class="toolbar-btn" title="Attach"><i class="fa-solid fa-paperclip"></i></button>
+          <div class="composer-actions">
+            <button class="text-btn">Preview</button>
+            <button class="post-btn">Post reply</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================ SIDEBAR ============================ -->
+    <aside class="sidebar">
+
+      <div class="side-card">
+        <h3 class="side-title"><i class="fa-solid fa-info-circle accent"></i> Topic Details</h3>
+        <div style="display: flex; flex-direction: column; gap: 10px; font-size: 13px;">
+          <div style="display: flex; justify-content: space-between;">
+            <span style="color: var(--text-muted);">Status</span>
+            <span class="status-pill solved" style="font-size: 10.5px;"><i class="fa-solid fa-circle-check"></i> Solved</span>
+          </div>
+          <div style="display: flex; justify-content: space-between;">
+            <span style="color: var(--text-muted);">Category</span>
+            <span style="font-weight: 600;">Bug Reports</span>
+          </div>
+          <div style="display: flex; justify-content: space-between;">
+            <span style="color: var(--text-muted);">Priority</span>
+            <span style="font-weight: 600; color: #dc2626;">High</span>
+          </div>
+          <div style="display: flex; justify-content: space-between;">
+            <span style="color: var(--text-muted);">Affected version</span>
+            <span style="font-weight: 600;">2.4.0</span>
+          </div>
+          <div style="display: flex; justify-content: space-between;">
+            <span style="color: var(--text-muted);">Fixed in</span>
+            <span style="font-weight: 600; color: var(--status-solved);">2.4.1</span>
+          </div>
+          <div style="display: flex; justify-content: space-between;">
+            <span style="color: var(--text-muted);">Replies</span>
+            <span style="font-weight: 600;">14</span>
+          </div>
+          <div style="display: flex; justify-content: space-between;">
+            <span style="color: var(--text-muted);">Views</span>
+            <span style="font-weight: 600;">1,284</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="side-card">
+        <h3 class="side-title"><i class="fa-solid fa-user-shield accent"></i> Assigned</h3>
+        <div class="contrib-row" style="border: none; padding: 0;">
+          <div class="contrib-avatar av-blue">AK</div>
+          <div>
+            <div class="contrib-name">Alex Karim <span class="role-badge staff" style="margin-left: 4px;">Staff</span></div>
+            <div class="contrib-meta">Backend engineering</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="side-card">
+        <h3 class="side-title"><i class="fa-solid fa-link accent"></i> Related Topics</h3>
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+          <a href="#" style="display: block;">
+            <div style="font-weight: 600; font-size: 13.5px; line-height: 1.35;">CORS preflight fails on custom domains</div>
+            <div style="font-size: 11.5px; color: var(--text-muted); margin-top: 3px;">
+              <span class="status-pill solved" style="font-size: 9.5px; padding: 1px 7px;">Solved</span>
+              · 8 replies
+            </div>
+          </a>
+          <a href="#" style="display: block;">
+            <div style="font-weight: 600; font-size: 13.5px; line-height: 1.35;">Safari session cookies not persisting after redirect</div>
+            <div style="font-size: 11.5px; color: var(--text-muted); margin-top: 3px;">
+              <span class="status-pill solved" style="font-size: 9.5px; padding: 1px 7px;">Solved</span>
+              · 5 replies
+            </div>
+          </a>
+          <a href="#" style="display: block;">
+            <div style="font-weight: 600; font-size: 13.5px; line-height: 1.35;">Auth endpoint returns 401 on cross-origin POST</div>
+            <div style="font-size: 11.5px; color: var(--text-muted); margin-top: 3px;">
+              <span class="status-pill open" style="font-size: 9.5px; padding: 1px 7px;">Open</span>
+              · 3 replies
+            </div>
+          </a>
+          <a href="#" style="display: block;">
+            <div style="font-weight: 600; font-size: 13.5px; line-height: 1.35;">SSO redirect loop on iOS 17 Safari</div>
+            <div style="font-size: 11.5px; color: var(--text-muted); margin-top: 3px;">
+              <span class="status-pill progress" style="font-size: 9.5px; padding: 1px 7px;">In Progress</span>
+              · 11 replies
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <div class="side-card">
+        <h3 class="side-title"><i class="fa-solid fa-bell accent"></i> Notifications</h3>
+        <div style="font-size: 13px; color: var(--text-secondary); margin-bottom: 12px;">You're watching this topic — you'll be notified of new replies.</div>
+        <button class="btn-primary" style="width: 100%; justify-content: center; background: var(--surface-inset); color: var(--text); height: 34px;">
+          <i class="fa-solid fa-bell-slash"></i> Unwatch
+        </button>
+      </div>
+
+    </aside>
+  </div>
+</main>
+
+</body>
+</html>

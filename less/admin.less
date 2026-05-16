@@ -1,0 +1,23 @@
+/* =====================================================================
+   Admin panel — light touch. We keep Flarum admin styling intact and
+   only adjust to use the brand color for primary actions.
+   ===================================================================== */
+
+@import 'tokens';
+
+.App-header {
+  background: var(--header-bg);
+  border-bottom: 1px solid var(--border);
+}
+
+.Button--primary {
+  background: var(--primary);
+  border: none;
+  border-radius: var(--r-sm);
+
+  &:hover { background: var(--primary-dark); }
+}
+
+.ExtensionList-extension.active {
+  border-left-color: var(--primary);
+}

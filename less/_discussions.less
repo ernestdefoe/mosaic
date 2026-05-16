@@ -1,0 +1,124 @@
+/* =====================================================================
+   Discussion list — applies to Flarum's .DiscussionListItem
+   ===================================================================== */
+
+.DiscussionList {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.DiscussionListItem {
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.12s;
+
+  &:last-child { border-bottom: none; }
+  &:hover { background: var(--surface-inset); }
+
+  .DiscussionListItem-main {
+    padding: 0;
+  }
+
+  .DiscussionListItem-title {
+    font-weight: 600;
+    font-size: 15px;
+    letter-spacing: -0.005em;
+    margin: 0 0 4px;
+    color: var(--text);
+
+    &:hover { color: var(--primary); }
+  }
+
+  .DiscussionListItem-info {
+    color: var(--text-muted);
+    font-size: 12.25px;
+  }
+
+  .DiscussionListItem-count {
+    color: var(--text-muted);
+    font-weight: 500;
+
+    &.unread {
+      color: var(--primary);
+      font-weight: 700;
+    }
+  }
+}
+
+/* Filter chip row */
+.EdonlineFilterRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 4px 14px;
+  flex-wrap: wrap;
+}
+
+.EdonlineFilterChip {
+  padding: 6px 12px;
+  border-radius: var(--r-pill);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  transition: all 0.15s;
+  cursor: pointer;
+
+  &:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+  }
+
+  &.active {
+    background: var(--primary);
+    color: #fff;
+    border-color: var(--primary);
+  }
+
+  .count {
+    margin-left: 6px;
+    opacity: 0.75;
+    font-size: 12px;
+  }
+}
+
+/* Tag pills (Flarum tags + custom) */
+.TagLabel,
+.EdonlineTag {
+  background: var(--surface-inset);
+  color: var(--text-secondary);
+  padding: 2px 9px;
+  border-radius: var(--r-pill);
+  font-size: 11.5px;
+  font-weight: 500;
+  border: none;
+
+  &--priority {
+    background: rgba(239, 68, 68, 0.10);
+    color: #dc2626;
+  }
+}
+
+/* Status pills (used by both discussions and tickets) */
+.StatusPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: var(--r-pill);
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+
+  &--open     { background: var(--status-open-bg);     color: var(--status-open); }
+  &--progress { background: var(--status-progress-bg); color: var(--status-progress); }
+  &--awaiting { background: var(--status-awaiting-bg); color: var(--status-awaiting); }
+  &--resolved { background: var(--status-resolved-bg); color: var(--status-resolved); }
+  &--solved   { background: var(--status-solved-bg);   color: var(--status-solved); }
+  &--closed   { background: var(--status-closed-bg);   color: var(--status-closed); }
+}

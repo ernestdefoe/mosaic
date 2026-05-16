@@ -1,0 +1,78 @@
+/* =====================================================================
+   Dark mode — MUST be last in the cascade. Per Flarum 2 theme convention,
+   this block overrides token values and a handful of component rules.
+   ===================================================================== */
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --primary: #5b8def;
+    --primary-dark: #3b6fd9;
+    --primary-light: #7ba3f2;
+    --primary-ghost: rgba(91, 141, 239, 0.12);
+    --primary-ghost-strong: rgba(91, 141, 239, 0.20);
+
+    --status-solved: #34d399;
+    --status-solved-bg: rgba(52, 211, 153, 0.12);
+    --status-resolved: #34d399;
+    --status-resolved-bg: rgba(52, 211, 153, 0.12);
+    --status-open: #60a5fa;
+    --status-open-bg: rgba(96, 165, 250, 0.12);
+    --status-progress: #fbbf24;
+    --status-progress-bg: rgba(251, 191, 36, 0.12);
+    --status-awaiting: #c084fc;
+    --status-awaiting-bg: rgba(192, 132, 252, 0.12);
+    --status-closed: #94a3b8;
+    --status-closed-bg: rgba(148, 163, 184, 0.12);
+
+    --market-accent: #c084fc;
+    --market-accent-dark: #a855f7;
+    --market-accent-ghost: rgba(192, 132, 252, 0.14);
+    --price: #34d399;
+
+    --note: #fbbf24;
+    --note-bg: rgba(251, 191, 36, 0.07);
+    --note-border: rgba(251, 191, 36, 0.32);
+
+    --background: #0a0c11;
+    --surface: #14171e;
+    --surface-raised: #181b23;
+    --surface-inset: #0f1218;
+    --header-bg: rgba(20, 23, 30, 0.82);
+    --border: rgba(255, 255, 255, 0.06);
+    --border-strong: rgba(255, 255, 255, 0.10);
+
+    --text: #e2e5ee;
+    --text-secondary: #98a0b3;
+    --text-muted: #5a6173;
+
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.40), 0 1px 3px rgba(0, 0, 0, 0.30);
+    --shadow-md: 0 6px 20px rgba(0, 0, 0, 0.55), 0 2px 6px rgba(0, 0, 0, 0.30);
+    --shadow-lg: 0 14px 44px rgba(0, 0, 0, 0.65), 0 4px 12px rgba(0, 0, 0, 0.40);
+  }
+
+  .IndexPage-results .EdonlineHero {
+    background: linear-gradient(135deg, #0f1d3a 0%, #1d3a73 60%, #2d5fbe 100%);
+  }
+
+  .MarketplacePage .Hero,
+  .EdonlineMarketHero {
+    background: linear-gradient(135deg, #2a0f4a 0%, #5b21b6 60%, #8b5cf6 100%);
+  }
+
+  .Post-body pre { background: #05080d; }
+
+  .Post--bestAnswer,
+  .Post.is-answer {
+    box-shadow: 0 8px 24px rgba(52, 211, 153, 0.10), var(--shadow-sm) !important;
+  }
+
+  .Post--internalNote,
+  .Post.is-internal {
+    background: rgba(251, 191, 36, 0.04) !important;
+  }
+
+  .StaffControlBar,
+  .TicketStaffControls {
+    background: linear-gradient(135deg, rgba(96, 165, 250, 0.06), rgba(192, 132, 252, 0.06));
+  }
+}
