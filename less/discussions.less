@@ -6,7 +6,11 @@
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--r-md);
-  overflow: hidden;
+  /* NOT overflow:hidden — that was clipping the left-edge border that
+     ram0ng1/colored paints on each .DiscussionListItem when
+     data-colored-border=left. The minor cosmetic loss (square outer
+     corners on first/last row if they had backgrounds) is worth the
+     tradeoff for the colored extension to work. */
   box-shadow: var(--shadow-sm);
 }
 

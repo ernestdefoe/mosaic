@@ -101,21 +101,33 @@
   }
 
   /* Colored hero (tag has a color, --hero-bg flooded): Flarum applies
-     .text-contrast--light or --dark; honor it so title stays readable
-     and the tag pill gets a white-overlay chip that reads on tint. */
+     .text-contrast--light or --dark; honor it so the title stays
+     readable. Tag pill goes solid-opaque (not low-contrast white
+     overlay) so its label reads clearly on the colored tint. */
   &.DiscussionHero--colored {
     border-color: transparent;
     box-shadow: var(--shadow-md);
 
+    /* Solid pill: white background with the tag's own color as text,
+       pulled from the inline --tag-bg style Flarum sets on TagLabel.
+       Falls back to current text color when --tag-bg isn't set. */
+    .TagLabel {
+      background: #fff !important;
+      color: var(--tag-bg, currentColor) !important;
+      font-weight: 700;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+
+      .TagLabel-icon { color: var(--tag-bg, currentColor); }
+      .TagLabel-name { color: var(--tag-bg, currentColor); }
+    }
+
     &.text-contrast--light {
       color: #fff;
       .DiscussionHero-title { color: #fff; }
-      .TagLabel { background: rgba(255, 255, 255, 0.22); color: #fff; }
     }
     &.text-contrast--dark {
       color: #0f172a;
       .DiscussionHero-title { color: #0f172a; }
-      .TagLabel { background: rgba(15, 23, 42, 0.18); color: #0f172a; }
     }
   }
 }

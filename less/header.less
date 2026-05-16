@@ -48,7 +48,7 @@
   }
 }
 
-/* Header layout — DELIBERATELY minimal.
+/* Header layout — DELIBERATELY minimal on internal sizing.
  *
  * Past attempts here aggressively flex'd .Header-secondary and forced
  * .item-search to take flex:1 / min-width:240px so the search input
@@ -60,7 +60,29 @@
  * Instead we trust Flarum 2's stock header layout — search is an
  * icon-collapsed Search component that expands on focus into a
  * popover, which is the design intent. We only style the nav tabs we
- * inject into Header-primary, and let everything else inherit. */
+ * inject into Header-primary, and let everything else inherit.
+ *
+ * One thing we DO override: the header's .container max-width. By
+ * default Flarum's .container clamps to ~1140px regardless of
+ * viewport, but our IndexPage hero/grid live in a 1600px container
+ * (see layout.less). Without matching the header, the logo sits ~190
+ * px from the viewport edge while the hero's left edge is ~32px out —
+ * a noticeable misalignment. Widen the header container to match. */
+
+.App-header > .container,
+.App-header .container {
+  max-width: 1600px !important;
+  padding-left: 32px !important;
+  padding-right: 32px !important;
+}
+
+@media (max-width: 1100px) {
+  .App-header > .container,
+  .App-header .container {
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+  }
+}
 
 .Header-primary {
   display: flex;
