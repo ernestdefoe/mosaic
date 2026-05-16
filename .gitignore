@@ -1,7 +1,5 @@
 node_modules/
 vendor/
-js/dist/
-js/dist-typings/
 .DS_Store
 Thumbs.db
 *.log
@@ -11,3 +9,6 @@ yarn.lock
 .idea/
 .vscode/
 .fleet/
+
+# js/dist/ IS committed — Flarum extensions ship compiled assets so end
+# users installing via composer don't need a node toolchain.
