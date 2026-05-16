@@ -1,12 +1,23 @@
 /* =====================================================================
-   Dark mode — MUST be last in the cascade.
+   Dark mode — Flarum 2 canonical signal.
 
-   Flarum 2 supports several dark-mode signals depending on the admin's
-   color settings: a CSS media query (`prefers-color-scheme`), a body
-   class (`theme-dark`), a html-level data attribute, and an explicit
-   `dark-mode` class. We mix the token overrides into a single LESS
-   mixin and apply it under every selector we might see, so the theme
-   stays correct whatever switch the operator chooses.
+   Flarum 2 emits `<html data-theme="..."` to indicate the active color
+   scheme. The value is "light", "dark", or a named variant like
+   "dark-blue", set server-side from the admin Color Scheme picker (and
+   any scheme extensions). Per Flarum's 2.0 update guide:
+
+     1.x:  body.App--dark-mode  →  2.x:  [data-theme^=dark]
+     1.x:  body.App--coloredHeader  →  2.x:  [data-colored-header=true]
+
+   The earlier class-based selectors (.App--dark-mode, .theme-dark,
+   body.dark-mode) NEVER matched on Flarum 2, which is why our dark
+   tokens stayed dormant while Flarum's own CSS painted the body dark
+   from its [data-theme^=dark] rules — leaving the page half light,
+   half dark.
+
+   This file must remain LAST in forum.less's @import chain so the
+   `[data-theme^=dark]` block wins the cascade over the default
+   :root tokens defined in tokens.less.
    ===================================================================== */
 
 .edonline-dark-tokens() {
@@ -55,75 +66,52 @@
   --shadow-lg: 0 14px 44px rgba(0, 0, 0, 0.65), 0 4px 12px rgba(0, 0, 0, 0.40);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root { .edonline-dark-tokens(); }
-}
-
-/* Flarum manual dark-mode toggles.
- *
- * Flarum 2's actual class name is .App--dark-mode (note the -mode
- * suffix) — confirmed by inspecting a live install. We also cover
- * the other variants documented in older Flarum 1.x guides so the
- * theme tracks correctly regardless of which Color Scheme path the
- * operator chose. */
-.App--dark-mode,
-body.App--dark-mode,
-html.App--dark-mode,
-body.theme-dark,
-html.theme-dark,
-html[data-theme='dark'],
-body.dark-mode,
-.App--dark {
+/* The one canonical selector. `^=` so "dark", "dark-blue", "dark-rose"
+   and any other future named scheme starting with "dark" all flip the
+   tokens. Flarum's own dark CSS uses the same selector. */
+[data-theme^='dark'] {
   .edonline-dark-tokens();
 }
 
-/* Component overrides that depend on dark surfaces — keep the same
-   structural rules and let the cascaded tokens flow through where we
-   can, but a few rules need explicit dark variants. */
+/* Component overrides that can't be done with a token swap alone —
+   gradients use literal color stops, so each variant needs its own
+   rule scoped under [data-theme^=dark]. */
 
-@media (prefers-color-scheme: dark) {
-  .EdonlineHero {
-    background: linear-gradient(135deg, #0f1d3a 0%, #1d3a73 60%, #2d5fbe 100%);
-  }
-
-  .EdonlineMarketHero,
-  .MarketplacePage .MpShop-header,
-  .MarketplaceShopPage .MpShop-header {
-    background: linear-gradient(135deg, #2a0f4a 0%, #5b21b6 60%, #8b5cf6 100%);
-  }
-
-  .Post-body pre { background: #05080d; }
-
-  .Post--bestAnswer,
-  .Post.is-answer {
-    box-shadow: 0 8px 24px rgba(52, 211, 153, 0.10), var(--shadow-sm) !important;
-  }
-
-  .Post--internalNote,
-  .Post.is-internal {
-    background: rgba(251, 191, 36, 0.04) !important;
-  }
-
-  .StaffControlBar,
-  .TicketStaffControls {
-    background: linear-gradient(135deg, rgba(96, 165, 250, 0.06), rgba(192, 132, 252, 0.06));
-  }
-}
-
-body.App--dark-mode .EdonlineHero,
-body.theme-dark .EdonlineHero,
-html.theme-dark .EdonlineHero,
-html[data-theme='dark'] .EdonlineHero {
+[data-theme^='dark'] .EdonlineHero {
   background: linear-gradient(135deg, #0f1d3a 0%, #1d3a73 60%, #2d5fbe 100%);
 }
 
-body.App--dark-mode .EdonlineMarketHero,
-body.App--dark-mode .MpShop-header,
-body.theme-dark .EdonlineMarketHero,
-html.theme-dark .EdonlineMarketHero,
-html[data-theme='dark'] .EdonlineMarketHero,
-body.theme-dark .MpShop-header,
-html.theme-dark .MpShop-header,
-html[data-theme='dark'] .MpShop-header {
+[data-theme^='dark'] .EdonlineMarketHero,
+[data-theme^='dark'] .MarketplacePage .MpShop-header,
+[data-theme^='dark'] .MarketplaceShopPage .MpShop-header {
   background: linear-gradient(135deg, #2a0f4a 0%, #5b21b6 60%, #8b5cf6 100%);
+}
+
+[data-theme^='dark'] .Post-body pre { background: #05080d; }
+
+[data-theme^='dark'] .Post--bestAnswer,
+[data-theme^='dark'] .Post.is-answer {
+  box-shadow: 0 8px 24px rgba(52, 211, 153, 0.10), var(--shadow-sm) !important;
+}
+
+[data-theme^='dark'] .Post--internalNote,
+[data-theme^='dark'] .Post.is-internal {
+  background: rgba(251, 191, 36, 0.04) !important;
+}
+
+[data-theme^='dark'] .StaffControlBar,
+[data-theme^='dark'] .TicketStaffControls {
+  background: linear-gradient(135deg, rgba(96, 165, 250, 0.06), rgba(192, 132, 252, 0.06));
+}
+
+/* Fallback for visitors whose root has no data-theme yet (e.g.
+   another extension that lets users pick "Auto" and leaves the
+   attribute unset until JS resolves it). Only fires when no explicit
+   data-theme is set — Flarum's own admin-driven `data-theme="light"`
+   or `"dark"` takes precedence and this media block is ignored. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]),
+  :root[data-theme=''] {
+    .edonline-dark-tokens();
+  }
 }
