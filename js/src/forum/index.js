@@ -1,5 +1,5 @@
 import app from 'flarum/forum/app';
-import { extend, override } from 'flarum/common/extend';
+import { override } from 'flarum/common/extend';
 import IndexPage from 'flarum/forum/components/IndexPage';
 
 import HeroPanel from './components/HeroPanel';
@@ -8,34 +8,21 @@ import MarketplacePromoCard from './components/MarketplacePromoCard';
 
 app.initializers.add('ernestdefoe-edonline', () => {
   /*
-   * Replace the IndexPage hero with our branded panel
-   * (title + search + forum-wide stats strip).
+   * Replace the IndexPage hero with our branded panel.
+   *
+   * We also tack the category tiles and marketplace promo onto the same
+   * return value (as an array) — Mithril treats arrays of vnodes as
+   * sibling children, so all three slot into wherever Flarum renders
+   * the hero. This is more reliable than trying to inject into the
+   * IndexPage view tree separately, which broke when Flarum 2 renamed
+   * IndexPage-results to Page-hero/Page-main.
    */
   override(IndexPage.prototype, 'hero', function () {
-    return HeroPanel.component({
-      stats: getForumStats(),
-    });
-  });
-
-  /*
-   * Inject the category tiles between the hero and the discussion list.
-   */
-  extend(IndexPage.prototype, 'view', function (vdom) {
-    const results = vdom.children?.find?.((c) => c?.attrs?.className?.includes?.('IndexPage-results'));
-    if (results && results.children) {
-      results.children.unshift(CategoryTiles.component());
-    }
-  });
-
-  /*
-   * Add the marketplace promo card to the sidebar.
-   */
-  extend(IndexPage.prototype, 'sidebarItems', function (items) {
-    items.add(
-      'edonline-marketplace-promo',
+    return [
+      HeroPanel.component({ stats: getForumStats() }),
+      CategoryTiles.component(),
       MarketplacePromoCard.component(),
-      -50 /* low priority, ends up near the bottom of the sidebar */
-    );
+    ];
   });
 });
 
@@ -44,12 +31,15 @@ export { default as extend } from './extend';
 /**
  * Reads forum-wide stats from `app.forum.attributes`.
  *
- * Stats not exposed by Flarum core can be wired in two ways:
- *  1. Backend extender: `Extend\ApiSerializer(ForumSerializer)->attributes(...)`
- *  2. Install flarum-ext-statistics / similar for richer metrics
+ * Flarum core exposes `discussionCount` out of the box. The other counts
+ * (`userCount`, `postCount`, `onlineUserCount`, `resolvedTicketCount`)
+ * come from either:
+ *   1. A small backend extension that adds them via
+ *      Extend\ApiSerializer(ForumSerializer)->attributes(...), or
+ *   2. An existing stats extension (e.g. flarum-ext-statistics).
  *
- * For now we read what core exposes and fall back to sensible defaults.
- * Replace the fallbacks with real attributes from your stack.
+ * Missing values fall through to 0 — the stat tile still renders so the
+ * layout never breaks.
  */
 function getForumStats() {
   const f = app.forum;
