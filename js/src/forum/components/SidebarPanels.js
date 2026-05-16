@@ -6,7 +6,7 @@ const fa = (name, style) => <i className={`icon ${name}`} style={style} aria-hid
 
 /**
  * SidebarPanels — the stack of right-sidebar cards that match the render:
- *   Quick Actions · System Status · Top Contributors · Trending · Marketplace
+ *   Quick Actions · Top Contributors · Trending · Marketplace
  *
  * Rendered after Flarum's stock IndexPage sidebar nav via an override
  * on IndexPage.prototype.sidebar(). Each panel is intentionally
@@ -16,7 +16,6 @@ const fa = (name, style) => <i className={`icon ${name}`} style={style} aria-hid
  *
  * Hide a panel by setting the corresponding forum attribute to true:
  *   edonlineHideQuickActions
- *   edonlineHideSystemStatus
  *   edonlineHideTopContributors
  *   edonlineHideTrending
  *   edonlineHideMarketplacePromo
@@ -26,7 +25,6 @@ export default class SidebarPanels extends Component {
     return (
       <div className="EdonlineSidebarPanels">
         {!app.forum.attribute('edonlineHideQuickActions') && this.quickActions()}
-        {!app.forum.attribute('edonlineHideSystemStatus') && this.systemStatus()}
         {!app.forum.attribute('edonlineHideTopContributors') && this.topContributors()}
         {!app.forum.attribute('edonlineHideTrending') && this.trending()}
         {!app.forum.attribute('edonlineHideMarketplacePromo') && this.marketplacePromo()}
@@ -51,32 +49,6 @@ export default class SidebarPanels extends Component {
             <span className="EdonlineQuickAction-ic">{fa(l.icon)}</span>
             <span>{l.label}</span>
           </a>
-        ))}
-      </div>
-    );
-  }
-
-  systemStatus() {
-    /* Hardcoded placeholder set — operators can replace with a real
-     * status integration (statuspage.io, instatus, etc.) by overriding
-     * this component or piping data through a forum attribute. */
-    const services = app.forum.attribute('edonlineServiceStatus') || [
-      { label: 'API', state: 'ok', value: 'Operational' },
-      { label: 'Dashboard', state: 'ok', value: 'Operational' },
-      { label: 'Webhooks', state: 'warn', value: 'Degraded' },
-      { label: 'SSO', state: 'ok', value: 'Operational' },
-    ];
-    return (
-      <div className="EdonlineSideCard">
-        <h3 className="EdonlineSideCard-title">
-          {fa('fas fa-server', { color: 'var(--primary)' })}<span>System Status</span>
-        </h3>
-        {services.map((s) => (
-          <div className="EdonlineStatusRow">
-            <span className={`ind ind--${s.state}`} />
-            <span className="label">{s.label}</span>
-            <span className={`val val--${s.state}`}>{s.value}</span>
-          </div>
         ))}
       </div>
     );
