@@ -84,15 +84,137 @@
     width: 9px;
     height: 9px;
     border-radius: 50%;
-    background: var(--online);
+    background: #22c55e;
     box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.18);
 
+    &--warn { background: #f59e0b; box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.18); }
+    &--down { background: #ef4444; box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.18); }
+    &--ok   { background: #22c55e; box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.18); }
     &--amber { background: #f59e0b; box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.18); }
     &--red   { background: #ef4444; box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.18); }
   }
 
   .label { flex: 1; color: var(--text-secondary); }
   .val { font-weight: 600; }
+  .val--ok { color: var(--status-resolved); }
+  .val--warn { color: var(--status-progress); }
+  .val--down { color: #ef4444; }
+}
+
+/* Top Contributor row */
+.EdonlineContribRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+
+  &:last-child { border-bottom: none; padding-bottom: 0; }
+  &:first-child { padding-top: 0; }
+
+  &-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    color: #fff;
+    display: grid;
+    place-items: center;
+    font-weight: 600;
+    font-size: 12px;
+    flex-shrink: 0;
+
+    &.av-blue   { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
+    &.av-green  { background: linear-gradient(135deg, #10b981, #047857); }
+    &.av-amber  { background: linear-gradient(135deg, #f59e0b, #b45309); }
+    &.av-rose   { background: linear-gradient(135deg, #f43f5e, #be123c); }
+    &.av-purple { background: linear-gradient(135deg, #a855f7, #7e22ce); }
+    &.av-teal   { background: linear-gradient(135deg, #14b8a6, #0f766e); }
+    &.av-indigo { background: linear-gradient(135deg, #6366f1, #4338ca); }
+    &.av-slate  { background: linear-gradient(135deg, #64748b, #334155); }
+  }
+
+  &-meta { flex: 1; min-width: 0; }
+  &-name {
+    font-weight: 600;
+    font-size: 13.5px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  &-sub {
+    font-size: 11.5px;
+    color: var(--text-muted);
+    margin-top: 1px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  &-points {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--status-resolved);
+    flex-shrink: 0;
+  }
+}
+
+/* Role badges shown next to contributor names */
+.EdonlineRoleBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 7px;
+  border-radius: var(--r-pill);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+
+  &--staff  { background: rgba(37, 99, 235, 0.12); color: var(--primary); }
+  &--mod    { background: rgba(139, 92, 246, 0.12); color: #8b5cf6; }
+  &--expert { background: rgba(5, 150, 105, 0.12); color: var(--status-resolved); }
+}
+
+/* Trending row */
+.EdonlineTrendRow {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 8px 0;
+  text-decoration: none;
+  color: inherit;
+
+  &:hover { text-decoration: none; }
+  &:hover .EdonlineTrendRow-title { color: var(--primary); }
+
+  &-num {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--text-muted);
+    width: 22px;
+    line-height: 1.1;
+
+    &.is-top { color: var(--primary); }
+  }
+
+  &-title {
+    font-weight: 600;
+    font-size: 13.25px;
+    line-height: 1.35;
+    color: var(--text);
+    transition: color 0.12s;
+  }
+
+  &-meta {
+    font-size: 11.5px;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+}
+
+/* The container for all our sidebar widget cards */
+.EdonlineSidebarPanels {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
 /* Marketplace promo card (rendered by MarketplacePromoCard.js) */

@@ -4,25 +4,32 @@ import IndexPage from 'flarum/forum/components/IndexPage';
 
 import HeroPanel from './components/HeroPanel';
 import CategoryTiles from './components/CategoryTiles';
-import MarketplacePromoCard from './components/MarketplacePromoCard';
+import SidebarPanels from './components/SidebarPanels';
 
 app.initializers.add('ernestdefoe-edonline', () => {
   /*
-   * Replace the IndexPage hero with our branded panel.
-   *
-   * We also tack the category tiles and marketplace promo onto the same
-   * return value (as an array) — Mithril treats arrays of vnodes as
-   * sibling children, so all three slot into wherever Flarum renders
-   * the hero. This is more reliable than trying to inject into the
-   * IndexPage view tree separately, which broke when Flarum 2 renamed
-   * IndexPage-results to Page-hero/Page-main.
+   * Replace the IndexPage hero with our branded panel + category tiles.
+   * The two render as siblings in the hero slot above the page grid.
    */
   override(IndexPage.prototype, 'hero', function () {
     return [
       HeroPanel.component({ stats: getForumStats() }),
       CategoryTiles.component(),
-      MarketplacePromoCard.component(),
     ];
+  });
+
+  /*
+   * Append our widget stack (Quick Actions / System Status / Top
+   * Contributors / Trending / Marketplace promo) to the existing
+   * IndexPage sidebar so Flarum's tag nav stays at the top and our
+   * panels follow.
+   *
+   * Returning an array makes Mithril render the original sidebar plus
+   * our panels as siblings — same DOM container (.Page-sidebar), no
+   * vdom archaeology, no extra wrapper.
+   */
+  override(IndexPage.prototype, 'sidebar', function (original) {
+    return [original(), SidebarPanels.component()];
   });
 });
 

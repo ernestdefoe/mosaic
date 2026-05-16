@@ -1,0 +1,128 @@
+/* =====================================================================
+   IndexPage layout — flip Flarum 2's left-sidebar grid to right-sidebar.
+
+   Real DOM from a live install:
+     .Page.IndexPage
+       .Page-pane
+       .Page-main
+         .Page-hero               (our hero + tiles)
+         .Page-container
+           .Page-sidebar          (Flarum's nav, sits on the left by default)
+           .Page-content          (toolbar + discussion list)
+
+   We use grid-template-columns + grid-template-areas to put the content
+   on the left and the sidebar on the right at a fixed 320px width.
+   ===================================================================== */
+
+.IndexPage .Page-container {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  grid-template-areas: 'content sidebar';
+  gap: 24px;
+  align-items: start;
+
+  @media (max-width: 920px) {
+    grid-template-columns: 1fr;
+    grid-template-areas: 'content' 'sidebar';
+  }
+}
+
+.IndexPage .Page-content {
+  grid-area: content;
+  min-width: 0;
+}
+
+.IndexPage .Page-sidebar {
+  grid-area: sidebar;
+  width: 320px;
+  max-width: 100%;
+
+  @media (max-width: 920px) {
+    width: auto;
+  }
+}
+
+/* Keep the sidebar sticky on tall pages — but only at desktop widths so
+   it doesn't trap scrolling on mobile. */
+@media (min-width: 921px) {
+  .IndexPage .Page-sidebar .sideNav,
+  .IndexPage .Page-sidebar .EdonlineSidebarPanels {
+    position: relative;
+  }
+
+  .IndexPage .Page-sidebar {
+    position: sticky;
+    top: 86px;
+    align-self: start;
+    max-height: calc(100vh - 100px);
+    overflow-y: auto;
+    padding-right: 4px;
+
+    /* Quiet the scrollbar inside the sticky column. */
+    &::-webkit-scrollbar { width: 6px; }
+    &::-webkit-scrollbar-thumb { background: var(--border-strong); }
+  }
+}
+
+/* Restyle Flarum's stock IndexPage nav (tag list, "Start a Discussion")
+   so it fits the sidebar-card aesthetic instead of looking like a plain
+   left rail. */
+.IndexPage .Page-sidebar .IndexPage-nav {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 12px 14px;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow-sm);
+
+  > ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .item-newDiscussion .Button--primary {
+    width: 100%;
+    height: 38px;
+    border-radius: var(--r-sm);
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+
+  .item-nav .Button,
+  .item-tags-link .Button,
+  .item-tag .Button {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 8px 10px;
+    border-radius: var(--r-sm);
+    background: transparent;
+    font-size: 13.5px;
+    font-weight: 500;
+    color: var(--text);
+    transition: background 0.12s, color 0.12s;
+
+    &:hover {
+      background: var(--primary-ghost);
+      color: var(--primary);
+    }
+
+    &.active {
+      background: var(--primary-ghost);
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    .Button-icon {
+      width: 18px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+  }
+}
+
+/* The .Page-pane on the left (used for mobile drawer) — collapse on
+   desktop so it doesn't add empty space. */
+.IndexPage .Page-pane:empty { display: none; }
