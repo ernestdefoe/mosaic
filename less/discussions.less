@@ -86,8 +86,13 @@
   }
 }
 
-/* Tag pills (Flarum tags + custom) */
-.TagLabel,
+/* Tag pills.
+ *
+ * Our own .EdonlineTag class uses a neutral surface. For Flarum's
+ * .TagLabel we deliberately do NOT override background-color — the
+ * extension applies the per-tag color inline (from admin tag settings)
+ * and our override was stomping it, leaving every tag as a nearly-
+ * invisible white-on-white pill in light mode. We adjust shape only. */
 .EdonlineTag {
   background: var(--surface-inset);
   color: var(--text-secondary);
@@ -96,10 +101,46 @@
   font-size: 11.5px;
   font-weight: 500;
   border: none;
+}
 
-  &--priority {
-    background: rgba(239, 68, 68, 0.10);
-    color: #dc2626;
+.EdonlineTag--priority {
+  background: rgba(239, 68, 68, 0.10);
+  color: #dc2626;
+}
+
+.TagLabel {
+  border-radius: var(--r-pill);
+  padding: 2px 9px;
+  font-size: 11.5px;
+  font-weight: 500;
+  border: none;
+  line-height: 1.5;
+}
+
+/* Section header above the discussion toolbar — "Recent Discussions"
+ * plus an optional count badge. Matches the render's section title. */
+.EdonlineSectionHead {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 4px 14px;
+  padding-top: 4px;
+
+  &-title {
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    margin: 0;
+    color: var(--text);
+  }
+
+  &-count {
+    background: var(--surface-inset);
+    color: var(--text-secondary);
+    font-size: 11.5px;
+    font-weight: 600;
+    padding: 2px 9px;
+    border-radius: var(--r-pill);
   }
 }
 
