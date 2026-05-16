@@ -1,6 +1,8 @@
 import Component from 'flarum/common/Component';
 import app from 'flarum/forum/app';
-import icon from 'flarum/common/helpers/icon';
+
+/* Inline icon helper — Flarum 2 removed flarum/common/helpers/icon. */
+const fa = (name, style) => <i className={`icon ${name}`} style={style} aria-hidden="true" />;
 
 /**
  * MarketplacePromoCard — purple-gradient CTA in the IndexPage sidebar
@@ -18,7 +20,7 @@ export default class MarketplacePromoCard extends Component {
 
     return (
       <a className="EdonlineSideCard EdonlineMarketplacePromo" href={url}>
-        <div className="EdonlineMarketplacePromo-bg">{icon('fas fa-store')}</div>
+        <div className="EdonlineMarketplacePromo-bg">{fa('fas fa-store')}</div>
         <div className="EdonlineMarketplacePromo-inner">
           <div className="EdonlineMarketplacePromo-kicker">NEW · Marketplace</div>
           <div className="EdonlineMarketplacePromo-title">Premium themes &amp; extensions</div>
@@ -26,7 +28,7 @@ export default class MarketplacePromoCard extends Component {
             Digital products, services, subscriptions, and private extensions from trusted sellers.
           </div>
           <div className="EdonlineMarketplacePromo-cta">
-            Browse the store {icon('fas fa-arrow-right', { style: { fontSize: '11px' } })}
+            Browse the store {fa('fas fa-arrow-right', { fontSize: '11px' })}
           </div>
         </div>
       </a>

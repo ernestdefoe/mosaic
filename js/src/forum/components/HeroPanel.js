@@ -1,6 +1,8 @@
 import Component from 'flarum/common/Component';
 import app from 'flarum/forum/app';
-import icon from 'flarum/common/helpers/icon';
+
+/* Inline icon helper — Flarum 2 removed flarum/common/helpers/icon. */
+const fa = (name, style) => <i className={`icon ${name}`} style={style} aria-hidden="true" />;
 
 /**
  * HeroPanel — replaces Flarum's stock IndexPage hero.
@@ -32,7 +34,7 @@ export default class HeroPanel extends Component {
             if (q) m.route.set(app.route('index', { q }));
           }}
         >
-          {icon('fas fa-magnifying-glass', { style: { color: 'var(--text-muted)' } })}
+          {fa('fas fa-magnifying-glass', { color: 'var(--text-muted)' })}
           <input
             type="text"
             placeholder={app.translator.trans('ernestdefoe-edonline.forum.hero.search_placeholder') ||
@@ -50,10 +52,7 @@ export default class HeroPanel extends Component {
           {this.renderStat('far fa-pen-to-square', formatNumber(stats.posts), 'Posts')}
           {this.renderStat(
             'fas fa-circle',
-            <>
-              {formatNumber(stats.online)}{' '}
-              <span className="EdonlineHero-stat-live">live</span>
-            </>,
+            [formatNumber(stats.online), ' ', <span className="EdonlineHero-stat-live">live</span>],
             'Online now',
             { iconStyle: { fontSize: '8px', color: '#4ade80' } }
           )}
@@ -65,7 +64,7 @@ export default class HeroPanel extends Component {
   renderStat(iconName, value, label, { iconStyle = {} } = {}) {
     return (
       <div className="EdonlineHero-stat">
-        <div className="EdonlineHero-stat-ic">{icon(iconName, { style: iconStyle })}</div>
+        <div className="EdonlineHero-stat-ic">{fa(iconName, iconStyle)}</div>
         <div>
           <div className="EdonlineHero-stat-val">{value}</div>
           <div className="EdonlineHero-stat-lbl">{label}</div>

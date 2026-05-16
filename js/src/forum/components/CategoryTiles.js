@@ -1,6 +1,8 @@
 import Component from 'flarum/common/Component';
 import app from 'flarum/forum/app';
-import icon from 'flarum/common/helpers/icon';
+
+/* Inline icon helper — Flarum 2 removed flarum/common/helpers/icon. */
+const fa = (name) => <i className={`icon ${name}`} aria-hidden="true" />;
 
 /**
  * CategoryTiles — grid of help-topic tiles below the hero.
@@ -20,7 +22,7 @@ export default class CategoryTiles extends Component {
         {tiles.map((t) => (
           <a className="EdonlineCategoryTile" href={t.href}>
             <div className={`EdonlineCategoryTile-icon EdonlineCategoryTile-icon--${t.tone}`}>
-              {icon(t.icon)}
+              {fa(t.icon)}
             </div>
             <div>
               <div className="EdonlineCategoryTile-title">{t.title}</div>
