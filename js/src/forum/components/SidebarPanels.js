@@ -6,7 +6,7 @@ const fa = (name, style) => <i className={`icon ${name}`} style={style} aria-hid
 
 /**
  * SidebarPanels — the stack of right-sidebar cards that match the render:
- *   Quick Actions · Top Contributors · Trending · Marketplace
+ *   Marketplace · Quick Actions · Top Contributors · Trending
  *
  * Rendered after Flarum's stock IndexPage sidebar nav via an override
  * on IndexPage.prototype.sidebar(). Each panel is intentionally
@@ -15,19 +15,19 @@ const fa = (name, style) => <i className={`icon ${name}`} style={style} aria-hid
  * sensible defaults otherwise so the layout never shows empty cards.
  *
  * Hide a panel by setting the corresponding forum attribute to true:
+ *   edonlineHideMarketplacePromo
  *   edonlineHideQuickActions
  *   edonlineHideTopContributors
  *   edonlineHideTrending
- *   edonlineHideMarketplacePromo
  */
 export default class SidebarPanels extends Component {
   view() {
     return (
       <div className="EdonlineSidebarPanels">
+        {!app.forum.attribute('edonlineHideMarketplacePromo') && this.marketplacePromo()}
         {!app.forum.attribute('edonlineHideQuickActions') && this.quickActions()}
         {!app.forum.attribute('edonlineHideTopContributors') && this.topContributors()}
         {!app.forum.attribute('edonlineHideTrending') && this.trending()}
-        {!app.forum.attribute('edonlineHideMarketplacePromo') && this.marketplacePromo()}
       </div>
     );
   }
