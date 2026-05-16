@@ -12,9 +12,10 @@
 
 /* Higher specificity (.IndexPage prefix) so we win over Flarum's
    stock per-item padding which otherwise pins the avatar flush
-   against the card's left edge. */
+   against the card's left edge AND the controls dropdown flush
+   against the right edge. */
 .IndexPage .DiscussionList .DiscussionListItem {
-  padding: 18px 22px 18px 26px;
+  padding: 18px 32px 18px 26px;
   border-bottom: 1px solid var(--border);
   transition: background 0.12s;
 
