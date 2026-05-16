@@ -1,6 +1,8 @@
 import app from 'flarum/forum/app';
 import LinkButton from 'flarum/common/components/LinkButton';
 import Button from 'flarum/common/components/Button';
+import DiscussionComposer from 'flarum/forum/components/DiscussionComposer';
+import LogInModal from 'flarum/forum/components/LogInModal';
 
 /**
  * Builds the items injected into HeaderPrimary + HeaderSecondary.
@@ -75,19 +77,38 @@ export function navItems() {
 }
 
 /**
- * The "Start a Discussion" header button. Triggers Flarum's discussion
- * composer for logged-in users, or the login modal for guests.
+ * The primary CTA in the header.
+ *
+ * Context-aware: when the visitor is on a /support* route, the button
+ * reads "Start a Ticket" and navigates to /support/new (the ticket
+ * composition page exposed by linkrobins/support). Otherwise it reads
+ * "Start a Discussion" and opens Flarum's stock DiscussionComposer
+ * — or the login modal for guests.
  */
 export function startDiscussionButton() {
+  const inTickets = isTicketsRoute();
   return (
     <Button
       className="Button Button--primary EdonlineHeaderNav-start"
-      icon="fas fa-edit"
-      onclick={startDiscussion}
+      icon={inTickets ? 'fas fa-headset' : 'fas fa-edit'}
+      onclick={inTickets ? startTicket : startDiscussion}
     >
-      {translate('nav.start_discussion', 'Start a Discussion')}
+      {inTickets
+        ? translate('nav.start_ticket', 'Start a Ticket')
+        : translate('nav.start_discussion', 'Start a Discussion')}
     </Button>
   );
+}
+
+/** True when the current URL is the support extension's section. */
+function isTicketsRoute() {
+  try {
+    const path = (window.location?.pathname || '').replace(/\/+$/, '');
+    if (!path) return false;
+    return path === '/support' || path.startsWith('/support/');
+  } catch (e) {
+    return false;
+  }
 }
 
 /**
@@ -113,23 +134,30 @@ function translate(suffix, fallback) {
 }
 
 function startDiscussion() {
-  if (app.session.user) {
-    /* Defer the heavy composer module until the user actually clicks. */
-    import(
-      /* webpackChunkName: "discussion-composer" */
-      'flarum/forum/components/DiscussionComposer'
-    ).then(({ default: DiscussionComposer }) => {
-      app.composer.load(DiscussionComposer, { user: app.session.user });
-      app.composer.show();
-    });
-  } else {
-    import(
-      /* webpackChunkName: "login-modal" */
-      'flarum/forum/components/LogInModal'
-    ).then(({ default: LogInModal }) => {
-      app.modal.show(LogInModal);
-    });
+  if (!app.session.user) {
+    app.modal.show(LogInModal);
+    return;
   }
+  app.composer.load(DiscussionComposer, { user: app.session.user });
+  app.composer.show();
+}
+
+/**
+ * Navigate to the support extension's new-ticket page.
+ *
+ * We intentionally don't try to instantiate a TicketComposer modal —
+ * linkrobins/support exposes /support/new as the composition surface
+ * (per its README), and that's the supported public API. Going
+ * through the URL keeps us decoupled from the extension's internal
+ * component names so a rename in their code won't break us.
+ */
+function startTicket() {
+  if (!app.session.user) {
+    app.modal.show(LogInModal);
+    return;
+  }
+  const base = String(app.forum.attribute('supportUrl') || '/support').replace(/\/+$/, '');
+  m.route.set(`${base}/new`);
 }
 
 function hasExt(id) {
