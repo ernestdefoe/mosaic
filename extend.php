@@ -11,6 +11,7 @@
 
 namespace Ernestdefoe\Edonline;
 
+use Flarum\Api\Serializer\ForumSerializer;
 use Flarum\Extend;
 
 return [
@@ -23,4 +24,13 @@ return [
         ->js(__DIR__ . '/js/dist/admin.js'),
 
     new Extend\Locales(__DIR__ . '/locale'),
+
+    /*
+     * Adds edonlineUserCount, edonlineOnlineCount and edonlineResolvedCount
+     * to the forum serializer payload. The hero stats strip reads these
+     * via app.forum.attribute(...) — Flarum 2 core exposes none of them
+     * by default, and we don't want the hero to lie with zeros.
+     */
+    (new Extend\ApiSerializer(ForumSerializer::class))
+        ->attributes(Api\AddForumStatistics::class),
 ];
