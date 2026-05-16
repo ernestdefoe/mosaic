@@ -59,7 +59,16 @@
   :root { .edonline-dark-tokens(); }
 }
 
-/* Flarum manual dark-mode toggles. Cover the common variants. */
+/* Flarum manual dark-mode toggles.
+ *
+ * Flarum 2's actual class name is .App--dark-mode (note the -mode
+ * suffix) — confirmed by inspecting a live install. We also cover
+ * the other variants documented in older Flarum 1.x guides so the
+ * theme tracks correctly regardless of which Color Scheme path the
+ * operator chose. */
+.App--dark-mode,
+body.App--dark-mode,
+html.App--dark-mode,
 body.theme-dark,
 html.theme-dark,
 html[data-theme='dark'],
@@ -101,12 +110,15 @@ body.dark-mode,
   }
 }
 
+body.App--dark-mode .EdonlineHero,
 body.theme-dark .EdonlineHero,
 html.theme-dark .EdonlineHero,
 html[data-theme='dark'] .EdonlineHero {
   background: linear-gradient(135deg, #0f1d3a 0%, #1d3a73 60%, #2d5fbe 100%);
 }
 
+body.App--dark-mode .EdonlineMarketHero,
+body.App--dark-mode .MpShop-header,
 body.theme-dark .EdonlineMarketHero,
 html.theme-dark .EdonlineMarketHero,
 html[data-theme='dark'] .EdonlineMarketHero,
