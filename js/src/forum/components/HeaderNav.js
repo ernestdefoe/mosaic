@@ -20,7 +20,7 @@ export function navItems() {
 
   items.push(
     <LinkButton href={app.route('index')} icon="fas fa-comments" className="EdonlineHeaderNav-item">
-      {app.translator.trans('ernestdefoe-edonline.forum.nav.discussions') || 'Discussions'}
+      {translate('nav.discussions', 'Discussions')}
     </LinkButton>
   );
 
@@ -31,19 +31,20 @@ export function navItems() {
         icon="fas fa-headset"
         className="EdonlineHeaderNav-item"
       >
-        {app.translator.trans('ernestdefoe-edonline.forum.nav.tickets') || 'Tickets'}
+        {translate('nav.tickets', 'Tickets')}
       </LinkButton>
     );
   }
 
   if (hasExt('ramon-marketplace')) {
+    /* Honor the marketplace extension's configured shop path so
+     * a non-default /shop URL still works. */
+    const marketHref =
+      app.forum.attribute('marketplaceUrl') ||
+      '/' + String(app.forum.attribute('marketplace_shop_path') || 'shop').replace(/^\//, '');
     items.push(
-      <LinkButton
-        href={app.forum.attribute('marketplaceUrl') || '/marketplace'}
-        icon="fas fa-store"
-        className="EdonlineHeaderNav-item"
-      >
-        {app.translator.trans('ernestdefoe-edonline.forum.nav.marketplace') || 'Marketplace'}
+      <LinkButton href={marketHref} icon="fas fa-store" className="EdonlineHeaderNav-item">
+        {translate('nav.marketplace', 'Marketplace')}
       </LinkButton>
     );
   }
@@ -51,7 +52,7 @@ export function navItems() {
   if (hasExt('flarum-tags')) {
     items.push(
       <LinkButton href="/t" icon="fas fa-folder" className="EdonlineHeaderNav-item">
-        {app.translator.trans('ernestdefoe-edonline.forum.nav.categories') || 'Categories'}
+        {translate('nav.categories', 'Categories')}
       </LinkButton>
     );
   }
@@ -84,9 +85,31 @@ export function startDiscussionButton() {
       icon="fas fa-edit"
       onclick={startDiscussion}
     >
-      {app.translator.trans('ernestdefoe-edonline.forum.nav.start_discussion') || 'Start a Discussion'}
+      {translate('nav.start_discussion', 'Start a Discussion')}
     </Button>
   );
+}
+
+/**
+ * Safe wrapper around app.translator.trans() that returns the fallback
+ * string when the key isn't registered.
+ *
+ * Flarum's translator returns the lookup key unchanged when no
+ * translation exists, so `trans('foo') || 'bar'` evaluates to 'foo'
+ * (truthy) and the fallback never fires. We compare against the key
+ * and substitute on miss.
+ */
+function translate(suffix, fallback) {
+  const key = `ernestdefoe-edonline.forum.${suffix}`;
+  try {
+    const out = app.translator.trans(key);
+    if (out == null) return fallback;
+    /* If trans() returned the raw key (no translation), fall back. */
+    if (typeof out === 'string' && out === key) return fallback;
+    return out;
+  } catch (e) {
+    return fallback;
+  }
 }
 
 function startDiscussion() {

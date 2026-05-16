@@ -122,6 +122,12 @@
     font-weight: 600;
     font-size: 12px;
     flex-shrink: 0;
+    object-fit: cover;
+
+    &--img {
+      /* When the user has an uploaded avatar we render an <img>. */
+      background: var(--surface-inset);
+    }
 
     &.av-blue   { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
     &.av-green  { background: linear-gradient(135deg, #10b981, #047857); }

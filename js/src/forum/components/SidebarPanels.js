@@ -33,12 +33,29 @@ export default class SidebarPanels extends Component {
   }
 
   quickActions() {
-    const links = [
-      { icon: 'fas fa-headset', label: 'Open a Support Ticket', href: app.forum.attribute('supportUrl') || '/support' },
-      { icon: 'fas fa-store', label: 'Visit the Marketplace', href: app.forum.attribute('marketplaceUrl') || '/marketplace' },
-      { icon: 'fas fa-book', label: 'Knowledge Base', href: app.forum.attribute('knowledgeBaseUrl') || '/kb' },
-      { icon: 'fas fa-signal', label: 'Check Service Status', href: app.forum.attribute('statusUrl') || '/status' },
-    ];
+    /* Built-in defaults pick up the marketplace shop path and the
+     * support extension's path from forum attributes when present.
+     * Operators can override either via supportUrl / marketplaceUrl
+     * attributes, or replace the whole list via edonlineQuickActions
+     * (array of {label, href, icon}). */
+    const fromAttr = app.forum.attribute('edonlineQuickActions');
+    const links =
+      Array.isArray(fromAttr) && fromAttr.length
+        ? fromAttr
+        : [
+            {
+              icon: 'fas fa-headset',
+              label: 'Open a Support Ticket',
+              href: app.forum.attribute('supportUrl') || '/support',
+            },
+            {
+              icon: 'fas fa-store',
+              label: 'Visit the Marketplace',
+              href:
+                app.forum.attribute('marketplaceUrl') ||
+                '/' + (app.forum.attribute('marketplace_shop_path') || 'shop').replace(/^\//, ''),
+            },
+          ];
     return (
       <div className="EdonlineSideCard">
         <h3 className="EdonlineSideCard-title">
@@ -55,34 +72,71 @@ export default class SidebarPanels extends Component {
   }
 
   topContributors() {
+    /* Operator-provided list wins. Each item shape:
+     *   { name, role?, meta?, points, tone?, avatarUrl?, href? } */
     const fromAttr = app.forum.attribute('edonlineTopContributors');
-    const contributors =
-      Array.isArray(fromAttr) && fromAttr.length
-        ? fromAttr
-        : [
-            { name: 'Sara Reyes', role: 'Expert', meta: '312 helpful answers', points: '2.4k', tone: 'green' },
-            { name: 'Alex Karim', role: 'Staff', meta: '198 helpful answers', points: '1.8k', tone: 'blue' },
-            { name: 'Lina Marchetti', role: 'Mod', meta: '156 helpful answers', points: '1.5k', tone: 'purple' },
-            { name: 'Devon Ng', meta: '142 helpful answers', points: '1.3k', tone: 'amber' },
-            { name: 'Eve Lindgren', meta: '98 helpful answers', points: '980', tone: 'rose' },
-          ];
+    if (Array.isArray(fromAttr) && fromAttr.length) {
+      return this.renderContribCard(fromAttr.map((c) => ({ ...c })));
+    }
+
+    /* Otherwise pull real users from the store (those who've posted
+     * comments) and rank by commentCount. The store only contains users
+     * who've been referenced by loaded data — usually enough on the
+     * index page since each discussion row pulls in its author and last
+     * poster. */
+    const users = app.store.all('users') || [];
+    const ranked = users
+      .filter((u) => u && typeof u.commentCount === 'function' && (u.commentCount() || 0) > 0)
+      .sort((a, b) => (b.commentCount() || 0) - (a.commentCount() || 0))
+      .slice(0, 5);
+
+    /* If nothing meaningful, hide the panel entirely rather than show
+     * fake names. Operators wanting placeholder content can populate
+     * edonlineTopContributors above. */
+    if (ranked.length < 1) return null;
+
+    const tones = ['blue', 'green', 'amber', 'rose', 'purple', 'teal', 'indigo', 'slate'];
+    const data = ranked.map((u, i) => {
+      const c = (typeof u.commentCount === 'function' && u.commentCount()) || 0;
+      const d = (typeof u.discussionCount === 'function' && u.discussionCount()) || 0;
+      const group = u.groups?.()?.[0];
+      const role = group ? group.nameSingular?.() : null;
+      return {
+        name: u.displayName?.() || u.username?.() || '—',
+        role: role && /(staff|mod|admin|expert)/i.test(role) ? role : null,
+        meta: c === 1 ? '1 post' : `${formatCount(c)} posts`,
+        points: formatCount(c + d),
+        tone: tones[i % tones.length],
+        avatarUrl: u.avatarUrl?.() || null,
+        href: app.route.user?.(u) || '#',
+      };
+    });
+
+    return this.renderContribCard(data);
+  }
+
+  renderContribCard(contributors) {
     return (
       <div className="EdonlineSideCard">
         <h3 className="EdonlineSideCard-title">
           {fa('fas fa-trophy', { color: 'var(--primary)' })}<span>Top Contributors</span>
         </h3>
         {contributors.map((c) => (
-          <div className="EdonlineContribRow">
-            <div className={`EdonlineContribRow-avatar av-${c.tone || 'slate'}`}>{initials(c.name)}</div>
+          <a className="EdonlineContribRow" href={c.href || '#'}>
+            {c.avatarUrl ? (
+              <img className="EdonlineContribRow-avatar EdonlineContribRow-avatar--img" src={c.avatarUrl} alt="" />
+            ) : (
+              <div className={`EdonlineContribRow-avatar av-${c.tone || 'slate'}`}>{initials(c.name)}</div>
+            )}
             <div className="EdonlineContribRow-meta">
               <div className="EdonlineContribRow-name">
                 {c.name}
-                {c.role && <span className={`EdonlineRoleBadge EdonlineRoleBadge--${c.role.toLowerCase()}`}>{c.role}</span>}
+                {c.role && <span className={`EdonlineRoleBadge EdonlineRoleBadge--${String(c.role).toLowerCase()}`}>{c.role}</span>}
               </div>
               <div className="EdonlineContribRow-sub">{c.meta}</div>
             </div>
             <div className="EdonlineContribRow-points">{c.points}</div>
-          </div>
+          </a>
         ))}
       </div>
     );
@@ -155,4 +209,11 @@ export default class SidebarPanels extends Component {
 function initials(name) {
   const parts = String(name).trim().split(/\s+/);
   return (parts[0]?.[0] || '') + (parts[parts.length - 1]?.[0] || '');
+}
+
+function formatCount(n) {
+  const v = Number(n) || 0;
+  if (v >= 1_000_000) return (v / 1_000_000).toFixed(1).replace(/\.0$/, '') + 'M';
+  if (v >= 1000) return (v / 1000).toFixed(1).replace(/\.0$/, '') + 'k';
+  return String(v);
 }

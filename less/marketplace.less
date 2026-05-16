@@ -6,8 +6,18 @@
    the actual extension DOM when verified.
    ===================================================================== */
 
-/* Marketplace hero — purple gradient to distinguish from support hero */
-.EdonlineMarketHero {
+/* Marketplace hero — purple gradient.
+ *
+ * Selector targets BOTH:
+ *   .EdonlineMarketHero   (our custom storefronts / preview)
+ *   .MpShop-header        (ramon/marketplace's real shop page header,
+ *                          observed live on a /shop install — it wraps
+ *                          the page title + filter chips so we get a
+ *                          banner treatment with the existing markup)
+ */
+.EdonlineMarketHero,
+.MarketplacePage .MpShop-header,
+.MarketplaceShopPage .MpShop-header {
   background: linear-gradient(135deg, #6b21a8 0%, #a855f7 60%, #c084fc 100%);
   color: #fff;
   border-radius: var(--r-lg);
@@ -27,12 +37,23 @@
     pointer-events: none;
   }
 
-  h1 {
+  /* All immediate descendants float above the radial-gradient overlay. */
+  > * { position: relative; }
+
+  h1, h2 {
     margin: 0 0 6px;
     font-size: 28px;
     font-weight: 700;
     letter-spacing: -0.02em;
     color: #fff;
+  }
+
+  /* MpShop-header may contain filter chips / sort controls — make sure
+   * any text reads on dark gradient. */
+  a, button { color: #fff; }
+  .MpShop-header-actions,
+  .MpShop-filters {
+    margin-top: 14px;
   }
 }
 

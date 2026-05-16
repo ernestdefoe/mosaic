@@ -37,8 +37,7 @@ export default class HeroPanel extends Component {
           {fa('fas fa-magnifying-glass', { color: 'var(--text-muted)' })}
           <input
             type="text"
-            placeholder={app.translator.trans('ernestdefoe-edonline.forum.hero.search_placeholder') ||
-              'Try "2FA not working" or "export data"…'}
+            placeholder={'Try "2FA not working" or "export data"…'}
           />
           <button type="submit" className="EdonlineHero-searchBtn">
             Search
