@@ -186,15 +186,31 @@
     outline: none;
   }
 
+  /* DO NOT `display: none` the .Button-label / .Button-labelText
+   * wrappers — fof/reactions nests the emoji <img> INSIDE those
+   * spans, so hiding the wrapper collapses the image to 0x0
+   * (CSS width:28 ignored because parent is display:none).
+   *
+   * Use font-size:0 instead, which collapses any text content
+   * (like the accessible "thumbsup" label) without affecting child
+   * elements with explicit sizing. The img.emoji still renders at
+   * 28x28 because its own width/height aren't inherited from font. */
   .Button-label,
-  .Button-labelText { display: none; }
+  .Button-labelText {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0;
+    line-height: 0;
+  }
 
   .emoji,
   img.emoji {
     width: 28px;
     height: 28px;
+    display: inline-block;
   }
-  .reaction-icon { width: 24px; height: 24px; }
+  .reaction-icon { width: 24px; height: 24px; display: inline-block; }
   .button-emoji { font-size: 24px; line-height: 1; }
 }
 
