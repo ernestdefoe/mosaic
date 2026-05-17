@@ -390,7 +390,19 @@
   }
 }
 
-/* -------- Reply placeholder (bottom inline "Write a Reply...") -------- */
+/* -------- Reply placeholder (bottom inline "Write a Reply...") --------
+ *
+ * Flarum's stock .Post.ReplyPlaceholder rule applies
+ * `margin-left: -20px` (probe of the live install showed margin
+ * "14px 0px 14px -20px"). That's a holdover from Flarum 1.x's
+ * layout where it intentionally pulled the placeholder under the
+ * avatar rail. In our Post-container layout the negative margin
+ * just shoves the reply box 20px LEFT of every other post, making
+ * it look misaligned.
+ *
+ * Explicit margin: 14px 0 — kills the negative left in any
+ * direction so the placeholder lines up edge-to-edge with the
+ * post cards above it. */
 .Post.ReplyPlaceholder,
 button.ReplyPlaceholder {
   display: block;
@@ -400,7 +412,7 @@ button.ReplyPlaceholder {
   background: var(--surface);
   border: 1px dashed var(--border-strong);
   border-radius: var(--r-md);
-  margin-top: 14px;
+  margin: 14px 0;
   padding: 0;
   overflow: hidden;
   transition: border-color 0.15s, background 0.15s;
