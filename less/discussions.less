@@ -2,44 +2,30 @@
    Discussion list — applies to Flarum's .DiscussionListItem
    ===================================================================== */
 
+/* DiscussionList renders as a stack of rounded item-cards now,
+   matching the post-stream pattern where each .Post is its own
+   bordered/rounded card. The list itself becomes a transparent
+   wrapper — its border, background, and shadow are pushed onto each
+   item below so the colored stripe (border-left from ramon/colored)
+   wraps the corners of every row the same way the colored stripe on
+   .Post does. */
 .DiscussionList {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  /* No left border. The colored left stripe ramon/colored paints
-     onto each .DiscussionListItem now becomes the outermost visual
-     element on the list's left edge — hugging where the list border
-     would have been instead of sitting 1px inside it. The first +
-     last item's per-item border-radius (below) gives the stripe its
-     rounded top-left and bottom-left corners so the visual is one
-     integrated rounded shape, not a floating chip. */
-  border-left: none;
-  border-radius: var(--r-md);
-  box-shadow: var(--shadow-sm);
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
 }
 
-/* Round the first and last list items so their hover background and
- * the colored left stripe both follow the parent's rounded shape.
- * Middle items stay square — they don't need to wrap any corners. */
-.DiscussionList .DiscussionListItem:first-child {
-  border-top-left-radius: var(--r-md);
-  border-top-right-radius: var(--r-md);
-}
+/* Each row is now its own rounded card with surface bg + border +
+   shadow + full border-radius. ramon/colored's border-left wraps
+   all 4 corners the same way .Post does. Rows stack with an 8px gap
+   between them.
 
-.DiscussionList .DiscussionListItem:last-child {
-  border-bottom-left-radius: var(--r-md);
-  border-bottom-right-radius: var(--r-md);
-}
-
-/* Higher specificity (.IndexPage prefix) so we win over Flarum's
-   stock per-item padding which otherwise pins the avatar flush
-   against the card's left edge AND the controls dropdown flush
-   against the right edge.
-
-   The right padding is intentionally larger than the left — when a
-   moderator/admin views the list, Flarum renders a per-item controls
-   dropdown trigger (⋯) at the end of the row that's hidden from
-   guests, and that trigger needs room past the comment-count badge
-   to read as separate from the card edge.
+   The right padding stays larger than the left — when a moderator/
+   admin views the list, Flarum renders a per-item controls dropdown
+   trigger (⋯) at the end of the row that's hidden from guests, and
+   that trigger needs room past the comment-count badge to read as
+   separate from the card edge.
 
    NOTE: do NOT reset `right` or `margin-right` on .Dropdown or
    .DiscussionListItem-controls here. Flarum positions the dropdown's
@@ -47,14 +33,17 @@
    off-screen or hides it entirely. Trust the padding to keep the
    trigger inside the card. */
 .IndexPage .DiscussionList .DiscussionListItem {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  box-shadow: var(--shadow-sm);
   padding: 18px 48px 18px 26px;
+  margin-bottom: 8px;
+  /* No bottom border — the gap between rows is the separator now. */
+  border-bottom: 1px solid var(--border);
+  transition: background 0.12s, border-color 0.15s;
 
-  /* Stronger separator between rows — the default --border at 7%
-     opacity reads as nearly invisible on the white card surface
-     because the surface IS white. --border-strong (12%) gives a
-     clear divider without going harsh. */
-  border-bottom: 1px solid var(--border-strong);
-  transition: background 0.12s;
+  &:last-child { margin-bottom: 0; }
 
   &:last-child { border-bottom: none; }
   &:hover { background: var(--surface-inset); }

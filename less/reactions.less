@@ -94,6 +94,11 @@
   border-radius: var(--r-pill);
   padding: 6px 8px;
   box-shadow: var(--shadow-lg);
+  /* Let the popup size to its single-row emoji content instead of
+     getting clamped by some inherited max-width that was forcing
+     emojis to wrap into a grid. */
+  width: max-content;
+  max-width: none;
   transition: opacity 0.18s cubic-bezier(0.4, 0, 0.2, 1),
               transform 0.18s cubic-bezier(0.4, 0, 0.2, 1),
               visibility 0s linear 0.18s;
@@ -152,14 +157,20 @@
   display: inline-flex;
 }
 
-/* The list of emoji choices inside the popup */
+/* The list of emoji choices inside the popup. Force a single row so
+   all reactions sit side-by-side regardless of how many the
+   extension registers — by default fof/reactions had been wrapping
+   into a 3-per-row 2D grid because the popup's auto width capped
+   the flex container. */
 .Reactions .CommentPost--Reactions .Reactions--Ul {
   display: flex;
+  flex-wrap: nowrap;
   align-items: center;
   gap: 2px;
   list-style: none;
   margin: 0;
   padding: 0;
+  white-space: nowrap;
 }
 
 .Reactions .Reactions--Ul > li > button.Button {
