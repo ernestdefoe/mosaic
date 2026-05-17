@@ -1,5 +1,6 @@
 import Component from 'flarum/common/Component';
 import app from 'flarum/forum/app';
+import marketplaceUrlHelper from '../utils/marketplaceUrl';
 
 /* Inline icon helper — Flarum 2 removed flarum/common/helpers/icon. */
 const fa = (name, style) => <i className={`icon ${name}`} style={style} aria-hidden="true" />;
@@ -206,7 +207,11 @@ export default class SidebarPanels extends Component {
   }
 
   marketplacePromo() {
-    const url = app.forum.attribute('marketplaceUrl') || '/marketplace';
+    /* Delegated to utils/marketplaceUrl so this duplicate of the
+     * MarketplacePromoCard markup can't drift on the default URL.
+     * Was '/marketplace' which 404'd on ramon/marketplace installs
+     * (the real mount is /shop). */
+    const url = marketplaceUrlHelper();
     return (
       <a className="MosaicSideCard MosaicMarketplacePromo" href={url}>
         <div className="MosaicMarketplacePromo-bg">{fa('fa-solid fa-store')}</div>

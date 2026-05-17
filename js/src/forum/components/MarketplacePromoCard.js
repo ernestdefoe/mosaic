@@ -1,5 +1,6 @@
 import Component from 'flarum/common/Component';
 import app from 'flarum/forum/app';
+import marketplaceUrl from '../utils/marketplaceUrl';
 
 /* Inline icon helper — Flarum 2 removed flarum/common/helpers/icon. */
 const fa = (name, style) => <i className={`icon ${name}`} style={style} aria-hidden="true" />;
@@ -8,12 +9,15 @@ const fa = (name, style) => <i className={`icon ${name}`} style={style} aria-hid
  * MarketplacePromoCard — purple-gradient CTA in the IndexPage sidebar
  * pointing visitors at the marketplace storefront.
  *
- * Auto-hides if the marketplace extension isn't installed (detected via
- * `app.forum.attribute('marketplaceUrl')` — set by ramon/marketplace).
+ * URL resolution is delegated to utils/marketplaceUrl so this card
+ * and the duplicate inside SidebarPanels.marketplacePromo() can't
+ * drift on the default-when-unset value (was '/marketplace', which
+ * 404'd on every ramon/marketplace install since that extension
+ * mounts at /shop, not /marketplace).
  */
 export default class MarketplacePromoCard extends Component {
   view() {
-    const url = app.forum.attribute('marketplaceUrl') || '/marketplace';
+    const url = marketplaceUrl();
 
     /* If the operator opts out, hide. */
     if (app.forum.attribute('mosaicHideMarketplacePromo')) return null;
