@@ -13,13 +13,16 @@
   padding: 44px 40px 40px;
   margin-bottom: 24px;
   position: relative;
-  overflow: hidden;
+  /* overflow:visible (default) so the Online-Now dropdown can escape
+   * the hero box. The radial overlay below inherits border-radius so
+   * the rounded corners stay clean without parent-level clipping. */
   box-shadow: var(--shadow-md);
 
   &::before {
     content: '';
     position: absolute;
     inset: 0;
+    border-radius: inherit;
     background:
       radial-gradient(circle at 85% 15%, rgba(255, 255, 255, 0.12), transparent 45%),
       radial-gradient(circle at 15% 110%, rgba(255, 255, 255, 0.08), transparent 50%);
@@ -140,4 +143,147 @@
     letter-spacing: 0.05em;
     margin-left: 2px;
   }
+}
+
+/* Online Now → click-to-open popover listing recently-active users.
+ *
+ * The wrap is the absolute-positioning anchor; the trigger looks
+ * indistinguishable from the other stat tiles until hovered; the
+ * popover floats below it and slides into view. Click-outside +
+ * Escape close it (HeroPanel.js). */
+.MosaicHero-onlineWrap {
+  position: relative;
+
+  .MosaicHero-stat-trigger {
+    background: transparent;
+    border: none;
+    padding: 0;
+    margin: 0;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-radius: 12px;
+    transition: background 0.15s;
+    width: 100%;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    &:focus-visible {
+      outline: 2px solid rgba(255, 255, 255, 0.7);
+      outline-offset: 4px;
+    }
+  }
+
+  &.is-open .MosaicHero-stat-trigger {
+    background: rgba(255, 255, 255, 0.10);
+  }
+}
+
+.MosaicHero-onlinePopover {
+  position: absolute;
+  top: calc(100% + 12px);
+  right: 0;
+  min-width: 260px;
+  max-width: 320px;
+  max-height: 360px;
+  overflow-y: auto;
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.18), 0 4px 12px rgba(15, 23, 42, 0.08);
+  padding: 8px;
+  z-index: 100;
+  animation: mosaicHeroOnlineFadeIn 0.12s ease-out;
+
+  /* On narrow screens the tile might be near the right edge — let the
+   * popover span both sides instead of clipping. */
+  @media (max-width: 520px) {
+    left: 0;
+    right: 0;
+    min-width: 0;
+    max-width: none;
+  }
+}
+
+@keyframes mosaicHeroOnlineFadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.MosaicHero-onlinePopover-empty {
+  padding: 18px 14px;
+  font-size: 13px;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.MosaicHero-onlineList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.MosaicHero-onlineRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 9px;
+  border-radius: var(--r-sm);
+  color: var(--text);
+  text-decoration: none;
+  transition: background 0.12s;
+
+  &:hover {
+    background: var(--surface-inset);
+    text-decoration: none;
+  }
+}
+
+.MosaicHero-onlineAvatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  background: var(--surface-inset);
+
+  &--fallback {
+    display: grid;
+    place-items: center;
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #fff;
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark, var(--primary)));
+    letter-spacing: 0.02em;
+  }
+}
+
+.MosaicHero-onlineName {
+  flex: 1;
+  min-width: 0;
+  font-size: 13.5px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--text);
+}
+
+.MosaicHero-onlineDot {
+  flex-shrink: 0;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #4ade80;
+  box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.18);
 }

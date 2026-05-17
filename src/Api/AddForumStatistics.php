@@ -60,6 +60,71 @@ class AddForumStatistics
     }
 
     /**
+     * Returns the most-recently-active online users for the hero
+     * dropdown. Each entry: {id, username, displayName, avatarUrl}.
+     *
+     * Privacy:
+     *   - Filters out users with `preferences.discloseOnline = false`
+     *     (Flarum's per-user opt-out for online visibility).
+     *
+     * Bounds:
+     *   - Fetches a small over-quota (limit + 20) so the post-filter
+     *     for opt-outs doesn't shrink the visible list below `$limit`
+     *     on installs where many users opt out.
+     *   - Capped at 100 either way — large communities should expose a
+     *     dedicated "online users" page rather than ballooning the
+     *     forum payload, which serializeToForum hands to every guest.
+     *
+     * Returns [] on any failure so the JS dropdown shows an
+     * empty-state hint instead of breaking the hero render.
+     */
+    public static function onlineUsers(int $limit = 50): array
+    {
+        $limit = max(1, min($limit, 100));
+
+        try {
+            return User::query()
+                ->where('last_seen_at', '>=', Carbon::now()->subMinutes(5))
+                ->orderByDesc('last_seen_at')
+                ->limit($limit + 20)
+                ->get()
+                ->filter(fn (User $u) => $u->getPreference('discloseOnline', true))
+                ->take($limit)
+                ->map(fn (User $u) => self::serializeOnlineUser($u))
+                ->values()
+                ->toArray();
+        } catch (Throwable $e) {
+            error_log('[mosaic] onlineUsers failed: ' . $e->getMessage() . ' at ' . $e->getFile() . ':' . $e->getLine());
+            return [];
+        }
+    }
+
+    /**
+     * Project a User into the shape the hero dropdown expects.
+     *
+     * Each accessor is wrapped because the Schema-field closure can
+     * run in contexts where the DisplayName driver or UrlGenerator
+     * isn't bound yet (avatarUrl()/display_name throw). A per-user
+     * catch lets one bad accessor produce a partial row instead of
+     * collapsing the entire list to [].
+     */
+    private static function serializeOnlineUser(User $u): array
+    {
+        $displayName = $u->username;
+        try { $displayName = $u->display_name ?: $u->username; } catch (Throwable $e) { /* keep username */ }
+
+        $avatarUrl = null;
+        try { $avatarUrl = $u->avatarUrl(); } catch (Throwable $e) { /* leave null, frontend uses initials fallback */ }
+
+        return [
+            'id' => (int) $u->id,
+            'username' => $u->username,
+            'displayName' => $displayName,
+            'avatarUrl' => $avatarUrl,
+        ];
+    }
+
+    /**
      * Count of tickets in the resolved state from linkrobins/support.
      *
      * Returns null when the table can't be queried (extension not

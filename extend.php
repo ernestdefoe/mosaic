@@ -57,6 +57,13 @@ return [
                 ->nullable()
                 ->get(fn () => AddForumStatistics::onlineCount()),
 
+            /* List of recently-active users for the hero's "Online now"
+             * dropdown. Capped + privacy-filtered server-side. Empty
+             * array when no one's online or all online users opted out
+             * of discloseOnline. */
+            Schema\Arr::make('mosaicOnlineUsers')
+                ->get(fn () => AddForumStatistics::onlineUsers()),
+
             Schema\Integer::make('mosaicResolvedCount')
                 ->nullable()
                 ->get(fn () => AddForumStatistics::resolvedTicketCount()),
