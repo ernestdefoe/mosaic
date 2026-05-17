@@ -480,30 +480,50 @@ nav.DiscussionPage-nav {
   }
 }
 
-/* -------- Best Answer highlight (used by fof/best-answer) -------- */
-
-/* The post that IS the best answer — softer border so the green
-   isn't shouting, plus the "Marked as solution" banner via :before. */
+/* -------- Best Answer highlight (used by fof/best-answer) --------
+ *
+ * The post that IS the marked best answer gets a 1px green border + a
+ * full-width banner at the top reading "✓ Marked as solution".
+ *
+ * Earlier versions tried `content: '\f058  Marked as solution'` with
+ * font-family: 'Font Awesome 6 Free' — that broke because Flarum 2
+ * ships FA7 (not FA6), and mixing the FA codepoint with text in a
+ * single content string forced the label characters to render in the
+ * icon font as missing-glyph boxes.
+ *
+ * Switched to Unicode U+2713 (✓) for the check — it renders in any
+ * system font, so the banner shows correctly regardless of which FA
+ * version (or none) is loaded. The banner sits at the top via
+ * position:absolute on ::before, with .Post-container padding-top
+ * reserving space so the post body doesn't overlap it.
+ */
 .Post--bestAnswer,
 .Post.is-answer {
   border: 1px solid var(--status-resolved) !important;
   box-shadow: 0 4px 16px rgba(5, 150, 105, 0.08), var(--shadow-sm) !important;
   position: relative;
 
+  > .Post-container {
+    padding-top: 36px;
+  }
+
   &::before {
-    content: '\f058  Marked as solution';
-    font-family: 'Font Awesome 6 Free';
-    font-weight: 900;
-    display: block;
+    content: '✓ Marked as solution';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 32px;
+    line-height: 32px;
+    padding: 0 22px;
     background: var(--status-resolved-bg);
     color: var(--status-resolved);
-    margin: 0;
-    padding: 8px 22px;
     font-size: 11.5px;
     font-weight: 700;
     letter-spacing: 0.06em;
     text-transform: uppercase;
     border-bottom: 1px solid rgba(5, 150, 105, 0.18);
+    z-index: 1;
   }
 }
 
