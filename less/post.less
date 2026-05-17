@@ -582,20 +582,9 @@ li.Post--BestAnswer {
   }
 }
 
-/* Reactions row — fof/reactions / clarkwinkelmann/reactions style */
-.CommentPost--Reactions,
-.Post-actions .item-reactions {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 3px 8px;
-  border-radius: var(--r-pill);
-  background: var(--surface-inset);
-  transition: background 0.15s;
-  cursor: pointer;
-
-  &:hover { background: var(--primary-ghost); }
-}
+/* fof/reactions styling moved to its own partial (less/reactions.less)
+   — borrowed from ram0ng1/avocado's approach with the popup + cascade
+   emoji entrance + active chip tint. Loaded via forum.less @import. */
 
 /* Quote button container (fof/quotebutton popup anchor) — make sure
    it doesn't render any stray background frame inside posts. */
