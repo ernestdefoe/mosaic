@@ -619,39 +619,21 @@ nav.DiscussionPage-nav {
  * Hide it on all non-best-answer posts. The user sees: a clear
  * banner on the actual solution post (handled by the banner rule
  * above), and NO chip clutter on every other post in the thread. */
+/* fof/best-answer renders three things we don't want:
+ *   1. .item-isBestAnswer chip on every non-best-answer post header.
+ *   2. .item-bestAnswerPost — an inline mini-preview of the chosen
+ *      best-answer rendered INSIDE the OP card. It overflows the OP
+ *      bottom edge and reads like an accidental second post.
+ *   3. The same chip duplicated inside that preview.
+ *
+ * The actual best-answer post still gets the full-width banner we
+ * paint above (.Post--bestAnswer .item-isBestAnswer rule), which is
+ * the only surface the user needs. Hide everything else. */
 .Post:not(.Post--bestAnswer) .item-isBestAnswer,
 .Post:not(.Post--bestAnswer) .Post--BestAnswer,
-.item-bestAnswerPost .item-isBestAnswer,
-.item-bestAnswerPost .Post--BestAnswer {
-  display: none !important;
-}
-
-/* fof/best-answer's inline preview of the best answer inside the OP
-   card (.item-bestAnswerPost is the wrapper). It was rendering as a
-   591x80 block stuck under the OP body with no visual hierarchy —
-   reads like an accidental second post inside the OP. Style it as a
-   clean inset call-out with a left primary accent. */
+.item-bestAnswerPost,
 .Post .item-bestAnswerPost {
-  display: block;
-  margin: 14px 0 0;
-  padding: 12px 14px 12px 16px;
-  background: var(--surface-inset);
-  border-left: 3px solid var(--status-resolved);
-  border-radius: 0 var(--r-sm) var(--r-sm) 0;
-  font-size: 13.5px;
-  line-height: 1.55;
-  color: var(--text-secondary);
-
-  /* The inline preview reuses Post-style markup — neutralize its
-     duplicated header so it doesn't look like a real post. */
-  .Post-header,
-  .PostUser {
-    margin-bottom: 6px;
-    font-size: 12.5px;
-  }
-
-  .PostUser-name { font-size: 12.5px; }
-  .Post-body { font-size: 13.5px; color: var(--text-secondary); }
+  display: none !important;
 }
 
 /* The small checkmark badge inside DiscussionHero that fof/best-answer
