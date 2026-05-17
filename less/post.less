@@ -610,36 +610,20 @@ nav.DiscussionPage-nav {
 }
 
 /* fof/best-answer's "Best Answer / set by USER N minutes ago" pill
-   that appears in EVERY post header (not just the best-answer post).
-   The default treatment is a big green-and-white pill that dominated
-   the post header at ~330x26. Slim it down to a compact chip that
-   still reads but doesn't fight the username/timestamp for space. */
-.Post .item-isBestAnswer,
-.Post .Post--BestAnswer,
-li.Post--BestAnswer {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  background: var(--status-resolved-bg);
-  color: var(--status-resolved);
-  padding: 2px 8px 2px 6px;
-  border-radius: var(--r-pill);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.03em;
-  text-transform: uppercase;
-  line-height: 1.5;
-  white-space: nowrap;
-  border: 1px solid rgba(5, 150, 105, 0.20);
-}
-
-.BestAnswer--User {
-  font-weight: 500;
-  text-transform: none;
-  letter-spacing: 0;
-  margin-left: 4px;
-  opacity: 0.75;
-  font-size: 10.5px;
+ * was being rendered in EVERY post header in the discussion, not
+ * just the best-answer post — a 330x26 chip pointing to the
+ * solution. Even slimmed to a compact pill it crowded the post
+ * header, fought the timestamp for space, and was redundant with
+ * the full-width banner we now paint on the actual .Post--bestAnswer.
+ *
+ * Hide it on all non-best-answer posts. The user sees: a clear
+ * banner on the actual solution post (handled by the banner rule
+ * above), and NO chip clutter on every other post in the thread. */
+.Post:not(.Post--bestAnswer) .item-isBestAnswer,
+.Post:not(.Post--bestAnswer) .Post--BestAnswer,
+.item-bestAnswerPost .item-isBestAnswer,
+.item-bestAnswerPost .Post--BestAnswer {
+  display: none !important;
 }
 
 /* fof/best-answer's inline preview of the best answer inside the OP
