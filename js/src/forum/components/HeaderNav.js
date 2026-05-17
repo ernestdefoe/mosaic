@@ -51,8 +51,8 @@ export function navItems() {
 
   if (hasExt('flarum-tags')) {
     items.push(
-      <LinkButton href="/t" icon="fa-solid fa-folder" className="MosaicHeaderNav-item">
-        {translate('nav.categories', 'Categories')}
+      <LinkButton href={app.route('tags')} icon="fa-solid fa-tag" className="MosaicHeaderNav-item">
+        {translate('nav.tags', 'Tags')}
       </LinkButton>
     );
   }
