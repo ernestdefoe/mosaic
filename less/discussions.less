@@ -6,16 +6,25 @@
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--r-md);
-  /* `overflow: hidden` clips the hover-background and the colored
-     left border ramon/colored paints onto rows, so they follow the
-     list's rounded corners cleanly instead of overflowing as square
-     pixels past the curve.
-     The colored 3px left border survives the clip because clipping
-     happens only at the very corners where the curve carves into the
-     row — the full vertical stripe along the rest of the height
-     stays untouched. */
-  overflow: hidden;
   box-shadow: var(--shadow-sm);
+  /* No overflow:hidden here — that clipped the colored left border
+     ramon/colored paints onto rows. Instead we round the first +
+     last items themselves below so each item's own border-radius
+     contains its hover background AND curves around its colored
+     left border naturally. */
+}
+
+/* Round the first and last list items so their hover background and
+ * the colored left stripe both follow the parent's rounded shape.
+ * Middle items stay square — they don't need to wrap any corners. */
+.DiscussionList .DiscussionListItem:first-child {
+  border-top-left-radius: var(--r-md);
+  border-top-right-radius: var(--r-md);
+}
+
+.DiscussionList .DiscussionListItem:last-child {
+  border-bottom-left-radius: var(--r-md);
+  border-bottom-right-radius: var(--r-md);
 }
 
 /* Higher specificity (.IndexPage prefix) so we win over Flarum's
