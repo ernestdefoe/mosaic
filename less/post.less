@@ -141,7 +141,12 @@
   border-radius: var(--r-md);
   margin-bottom: 14px;
   box-shadow: var(--shadow-sm);
-  overflow: hidden;
+  /* `overflow` MUST stay visible — dropdowns (Post controls kebab,
+     Edit menu) and the reactions popup are absolutely positioned and
+     need to escape the card's bounds. Earlier overflow:hidden was
+     set to mask the best-answer banner's top corners; that's now
+     handled by giving the banner its own top border-radius below. */
+  overflow: visible;
   transition: border-color 0.15s, box-shadow 0.15s;
 
   &:hover {
@@ -543,6 +548,11 @@ nav.DiscussionPage-nav {
     text-transform: uppercase;
     border-bottom: 1px solid rgba(5, 150, 105, 0.18);
     z-index: 1;
+    /* Match the Post's outer radius on the top corners so the banner
+       tucks into the rounded corners cleanly now that .Post has
+       overflow:visible (needed for dropdowns + reactions popup). */
+    border-top-left-radius: var(--r-md);
+    border-top-right-radius: var(--r-md);
   }
 }
 
