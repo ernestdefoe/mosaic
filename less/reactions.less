@@ -69,10 +69,18 @@
 
 /* Popup that holds the emoji choices — sits ABOVE the trigger with a
    smooth scale-up entrance. Hidden by default; shown on hover/focus
-   of .Reactions--react. */
+   of .Reactions--react.
+
+   The popup uses bottom: 100% (touches the trigger) with a 10px
+   margin-bottom for visible offset. Using margin keeps the popup's
+   hover bounding box CONTIGUOUS with the trigger — without this, a
+   `bottom: calc(100% + 10px)` gap created a 10px dead zone where the
+   cursor would lose hover and the popup would snap shut before the
+   user could reach any emoji. */
 .Reactions .CommentPost--Reactions {
   position: absolute;
-  bottom: calc(100% + 10px);
+  bottom: 100%;
+  margin-bottom: 10px;
   left: 50%;
   transform: translateX(-50%) translateY(8px) scale(0.92);
   transform-origin: bottom center;
@@ -89,6 +97,18 @@
   transition: opacity 0.18s cubic-bezier(0.4, 0, 0.2, 1),
               transform 0.18s cubic-bezier(0.4, 0, 0.2, 1),
               visibility 0s linear 0.18s;
+
+  /* Invisible bridge that fills the 10px margin between the popup and
+     the trigger button below — so the cursor can travel from button
+     to popup without crossing a hover-dead zone. */
+  &::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -10px;
+    height: 10px;
+  }
 
   /* Little arrow pointing down at the trigger */
   &::before {

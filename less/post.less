@@ -148,10 +148,17 @@
     border-color: var(--border-strong);
   }
 
-  /* The starting post gets a primary-color side accent for hierarchy */
-  &.Post--by-start-user .Post-container,
-  &.Post--firstPost .Post-container {
-    border-left: 3px solid var(--primary);
+  /* Original-poster posts get a primary-color accent on the LEFT edge
+   * of the outer card. Putting the colored border on .Post (which has
+   * border-radius) rather than on .Post-container (which doesn't) lets
+   * the colored accent curve into the top-left and bottom-left rounded
+   * corners — the "wraps around slightly" look from the render mockup.
+   *
+   * Width: 3px replaces the default 1px border on the left side, so
+   * the full card border is 3px-left, 1px on the other three sides. */
+  &.Post--by-start-user,
+  &.Post--firstPost {
+    border-left: 3px solid var(--colored-bg, var(--primary));
   }
 }
 
