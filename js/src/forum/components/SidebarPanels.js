@@ -166,8 +166,11 @@ export default class SidebarPanels extends Component {
   }
 
   trending() {
-    /* Pull whatever's in the discussions store sorted by participantCount,
-     * fall back to a placeholder list when the store is empty. */
+    /* Pull whatever's in the discussions store, rank by participantCount,
+     * and only render the panel when we have at least one real discussion
+     * to show. Mirrors topContributors()' "no fake placeholders" stance:
+     * better an absent widget than four fabricated rows that confuse the
+     * operator about whether their forum is actually trending anything. */
     let items = [];
     try {
       const discussions = app.store.all('discussions') || [];
@@ -180,16 +183,9 @@ export default class SidebarPanels extends Component {
           meta: `${d.commentCount?.() ?? 0} replies`,
           href: app.route.discussion(d),
         }));
-    } catch (e) { /* ignore — fall through to fallback */ }
+    } catch (e) { /* ignore — empty items array hides the panel below */ }
 
-    if (!items.length) {
-      items = [
-        { title: 'Login broken on Safari 17', meta: '14 replies · bug', href: '#' },
-        { title: 'Bulk-edit tags feature request', meta: '23 replies · feature', href: '#' },
-        { title: 'Webhook payloads missing fields', meta: '11 replies · api', href: '#' },
-        { title: 'CSV export truncation', meta: '9 replies · export', href: '#' },
-      ];
-    }
+    if (!items.length) return null;
 
     return (
       <div className="MosaicSideCard">
