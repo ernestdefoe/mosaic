@@ -44,12 +44,12 @@ export default class SidebarPanels extends Component {
         ? fromAttr
         : [
             {
-              icon: 'fas fa-headset',
+              icon: 'fa-solid fa-headset',
               label: 'Open a Support Ticket',
               href: app.forum.attribute('supportUrl') || '/support',
             },
             {
-              icon: 'fas fa-store',
+              icon: 'fa-solid fa-store',
               label: 'Visit the Marketplace',
               href:
                 app.forum.attribute('marketplaceUrl') ||
@@ -59,7 +59,7 @@ export default class SidebarPanels extends Component {
     return (
       <div className="EdonlineSideCard">
         <h3 className="EdonlineSideCard-title">
-          {fa('fas fa-bolt', { color: 'var(--primary)' })}<span>Quick Actions</span>
+          {fa('fa-solid fa-bolt', { color: 'var(--primary)' })}<span>Quick Actions</span>
         </h3>
         {links.map((l) => (
           <a className="EdonlineQuickAction" href={l.href}>
@@ -119,7 +119,7 @@ export default class SidebarPanels extends Component {
     return (
       <div className="EdonlineSideCard">
         <h3 className="EdonlineSideCard-title">
-          {fa('fas fa-trophy', { color: 'var(--primary)' })}<span>Top Contributors</span>
+          {fa('fa-solid fa-trophy', { color: 'var(--primary)' })}<span>Top Contributors</span>
         </h3>
         {contributors.map((c) => (
           <a className="EdonlineContribRow" href={c.href || '#'}>
@@ -171,7 +171,7 @@ export default class SidebarPanels extends Component {
     return (
       <div className="EdonlineSideCard">
         <h3 className="EdonlineSideCard-title">
-          {fa('fas fa-fire', { color: 'var(--primary)' })}<span>Trending</span>
+          {fa('fa-solid fa-fire', { color: 'var(--primary)' })}<span>Trending</span>
         </h3>
         {items.map((t, i) => (
           <a href={t.href} className="EdonlineTrendRow">
@@ -190,7 +190,7 @@ export default class SidebarPanels extends Component {
     const url = app.forum.attribute('marketplaceUrl') || '/marketplace';
     return (
       <a className="EdonlineSideCard EdonlineMarketplacePromo" href={url}>
-        <div className="EdonlineMarketplacePromo-bg">{fa('fas fa-store')}</div>
+        <div className="EdonlineMarketplacePromo-bg">{fa('fa-solid fa-store')}</div>
         <div className="EdonlineMarketplacePromo-inner">
           <div className="EdonlineMarketplacePromo-kicker">NEW · Marketplace</div>
           <div className="EdonlineMarketplacePromo-title">Premium themes &amp; extensions</div>
@@ -198,7 +198,7 @@ export default class SidebarPanels extends Component {
             Digital products, services, subscriptions, and private extensions from trusted sellers.
           </div>
           <div className="EdonlineMarketplacePromo-cta">
-            Browse the store {fa('fas fa-arrow-right', { fontSize: '11px' })}
+            Browse the store {fa('fa-solid fa-arrow-right', { fontSize: '11px' })}
           </div>
         </div>
       </a>

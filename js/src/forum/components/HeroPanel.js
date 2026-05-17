@@ -34,7 +34,7 @@ export default class HeroPanel extends Component {
             if (q) m.route.set(app.route('index', { q }));
           }}
         >
-          {fa('fas fa-magnifying-glass', { color: 'var(--text-muted)' })}
+          {fa('fa-solid fa-magnifying-glass', { color: 'var(--text-muted)' })}
           <input
             type="text"
             placeholder={'Try "2FA not working" or "export data"…'}
@@ -45,12 +45,12 @@ export default class HeroPanel extends Component {
         </form>
 
         <div className="EdonlineHero-stats">
-          {this.renderStat('fas fa-users', formatNumber(stats.members), 'Members')}
-          {this.renderStat('far fa-comments', formatNumber(stats.discussions), 'Discussions')}
-          {this.renderStat('fas fa-circle-check', formatNumber(stats.resolved), 'Tickets resolved')}
-          {this.renderStat('far fa-pen-to-square', formatNumber(stats.posts), 'Posts')}
+          {this.renderStat('fa-solid fa-users', formatNumber(stats.members), 'Members')}
+          {this.renderStat('fa-regular fa-comments', formatNumber(stats.discussions), 'Discussions')}
+          {this.renderStat('fa-solid fa-circle-check', formatNumber(stats.resolved), 'Tickets resolved')}
+          {this.renderStat('fa-regular fa-pen-to-square', formatNumber(stats.posts), 'Posts')}
           {this.renderStat(
-            'fas fa-circle',
+            'fa-solid fa-circle',
             [formatNumber(stats.online), ' ', <span className="EdonlineHero-stat-live">live</span>],
             'Online now',
             { iconStyle: { fontSize: '8px', color: '#4ade80' } }

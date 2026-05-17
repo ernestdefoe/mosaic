@@ -19,7 +19,7 @@ export function navItems() {
   const items = [];
 
   items.push(
-    <LinkButton href={app.route('index')} icon="fas fa-comments" className="EdonlineHeaderNav-item">
+    <LinkButton href={app.route('index')} icon="fa-solid fa-comments" className="EdonlineHeaderNav-item">
       {translate('nav.discussions', 'Discussions')}
     </LinkButton>
   );
@@ -28,7 +28,7 @@ export function navItems() {
     items.push(
       <LinkButton
         href={app.forum.attribute('supportUrl') || '/support'}
-        icon="fas fa-headset"
+        icon="fa-solid fa-headset"
         className="EdonlineHeaderNav-item"
       >
         {translate('nav.tickets', 'Tickets')}
@@ -43,7 +43,7 @@ export function navItems() {
       app.forum.attribute('marketplaceUrl') ||
       '/' + String(app.forum.attribute('marketplace_shop_path') || 'shop').replace(/^\//, '');
     items.push(
-      <LinkButton href={marketHref} icon="fas fa-store" className="EdonlineHeaderNav-item">
+      <LinkButton href={marketHref} icon="fa-solid fa-store" className="EdonlineHeaderNav-item">
         {translate('nav.marketplace', 'Marketplace')}
       </LinkButton>
     );
@@ -51,7 +51,7 @@ export function navItems() {
 
   if (hasExt('flarum-tags')) {
     items.push(
-      <LinkButton href="/t" icon="fas fa-folder" className="EdonlineHeaderNav-item">
+      <LinkButton href="/t" icon="fa-solid fa-folder" className="EdonlineHeaderNav-item">
         {translate('nav.categories', 'Categories')}
       </LinkButton>
     );
@@ -64,7 +64,7 @@ export function navItems() {
   if (Array.isArray(extras)) {
     extras.forEach((x) =>
       items.push(
-        <LinkButton href={x.href} icon={x.icon || 'fas fa-link'} className="EdonlineHeaderNav-item">
+        <LinkButton href={x.href} icon={x.icon || 'fa-solid fa-link'} className="EdonlineHeaderNav-item">
           {x.label}
         </LinkButton>
       )
@@ -88,7 +88,7 @@ export function startDiscussionButton() {
   return (
     <Button
       className="Button Button--primary EdonlineHeaderNav-start"
-      icon={inTickets ? 'fas fa-headset' : 'fas fa-edit'}
+      icon={inTickets ? 'fa-solid fa-headset' : 'fa-solid fa-edit'}
       onclick={inTickets ? startTicket : startDiscussion}
     >
       {inTickets

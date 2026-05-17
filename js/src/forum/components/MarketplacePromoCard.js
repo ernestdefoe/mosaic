@@ -20,7 +20,7 @@ export default class MarketplacePromoCard extends Component {
 
     return (
       <a className="EdonlineSideCard EdonlineMarketplacePromo" href={url}>
-        <div className="EdonlineMarketplacePromo-bg">{fa('fas fa-store')}</div>
+        <div className="EdonlineMarketplacePromo-bg">{fa('fa-solid fa-store')}</div>
         <div className="EdonlineMarketplacePromo-inner">
           <div className="EdonlineMarketplacePromo-kicker">NEW · Marketplace</div>
           <div className="EdonlineMarketplacePromo-title">Premium themes &amp; extensions</div>
@@ -28,7 +28,7 @@ export default class MarketplacePromoCard extends Component {
             Digital products, services, subscriptions, and private extensions from trusted sellers.
           </div>
           <div className="EdonlineMarketplacePromo-cta">
-            Browse the store {fa('fas fa-arrow-right', { fontSize: '11px' })}
+            Browse the store {fa('fa-solid fa-arrow-right', { fontSize: '11px' })}
           </div>
         </div>
       </a>
