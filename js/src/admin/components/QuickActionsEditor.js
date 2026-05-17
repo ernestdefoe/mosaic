@@ -9,9 +9,15 @@ import Button from 'flarum/common/components/Button';
  *
  * Values are stored as a JSON-encoded array of {icon, label, href}
  * objects under the `mosaicQuickActions` setting key. The component is
- * mounted via the admin extender's callback-style `.setting()` entry
- * (see js/src/admin/extend.js) which passes a Stream-backed bidi
- * accessor: call `bidi()` to read, `bidi(jsonString)` to write.
+ * mounted via the admin extender's callback-style `.customSetting()`
+ * entry (see js/src/admin/extend.js) which passes a Stream-backed
+ * accessor as `valueStream`: call `valueStream()` to read,
+ * `valueStream(jsonString)` to write.
+ *
+ * NB: the prop is named `valueStream` (not `bidi`) because Mithril 2
+ * intercepts the literal attr name `bidi` and transforms it into a
+ * non-callable two-way-binding object before it reaches the component
+ * via vnode.attrs. Any other name passes through unchanged.
  *
  * Empty/incomplete rows are preserved during editing (so the user can
  * type without inputs losing focus) and filtered out at render time on
@@ -21,7 +27,8 @@ export default class QuickActionsEditor extends Component {
   oninit(vnode) {
     super.oninit(vnode);
 
-    const raw = this.attrs.bidi() || '';
+    const stream = this.attrs.valueStream;
+    const raw = (typeof stream === 'function' ? stream() : '') || '';
     let parsed = [];
     try {
       parsed = raw ? JSON.parse(raw) : [];
@@ -138,6 +145,6 @@ export default class QuickActionsEditor extends Component {
    * Filtering happens at the read site (SidebarPanels.js) so that typing
    * mid-edit doesn't drop the row from under the input. */
   commit() {
-    this.attrs.bidi(JSON.stringify(this.actions));
+    this.attrs.valueStream(JSON.stringify(this.actions));
   }
 }

@@ -73,7 +73,7 @@ export default [
      * `this` bound to the ExtensionPage instance. `this.setting(key)`
      * returns a Mithril Stream we pass to the editor as a bidi
      * accessor — read with `bidi()`, write with `bidi(jsonString)`. */
-    .setting(() => function () {
-      return <QuickActionsEditor bidi={this.setting('mosaicQuickActions', '[]')} />;
+    .customSetting(function () {
+      return <QuickActionsEditor valueStream={this.setting('mosaicQuickActions', '[]')} />;
     }),
 ];
