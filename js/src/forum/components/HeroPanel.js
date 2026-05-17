@@ -17,17 +17,17 @@ export default class HeroPanel extends Component {
   view() {
     const stats = this.attrs.stats ?? {};
     return (
-      <section className="EdonlineHero">
-        <h1 className="EdonlineHero-title">
+      <section className="MosaicHero">
+        <h1 className="MosaicHero-title">
           {app.forum.attribute('welcomeTitle') || 'How can we help?'}
         </h1>
-        <p className="EdonlineHero-sub">
+        <p className="MosaicHero-sub">
           {app.forum.attribute('welcomeMessage') ||
             'Search the community for answers, or start a new topic to get help from our team and other users.'}
         </p>
 
         <form
-          className="EdonlineHero-search"
+          className="MosaicHero-search"
           onsubmit={(e) => {
             e.preventDefault();
             const q = e.target.querySelector('input').value.trim();
@@ -39,19 +39,19 @@ export default class HeroPanel extends Component {
             type="text"
             placeholder={'Try "2FA not working" or "export data"…'}
           />
-          <button type="submit" className="EdonlineHero-searchBtn">
+          <button type="submit" className="MosaicHero-searchBtn">
             Search
           </button>
         </form>
 
-        <div className="EdonlineHero-stats">
+        <div className="MosaicHero-stats">
           {this.renderStat('fa-solid fa-users', formatNumber(stats.members), 'Members')}
           {this.renderStat('fa-regular fa-comments', formatNumber(stats.discussions), 'Discussions')}
           {this.renderStat('fa-solid fa-circle-check', formatNumber(stats.resolved), 'Tickets resolved')}
           {this.renderStat('fa-regular fa-pen-to-square', formatNumber(stats.posts), 'Posts')}
           {this.renderStat(
             'fa-solid fa-circle',
-            [formatNumber(stats.online), ' ', <span className="EdonlineHero-stat-live">live</span>],
+            [formatNumber(stats.online), ' ', <span className="MosaicHero-stat-live">live</span>],
             'Online now',
             { iconStyle: { fontSize: '8px', color: '#4ade80' } }
           )}
@@ -62,11 +62,11 @@ export default class HeroPanel extends Component {
 
   renderStat(iconName, value, label, { iconStyle = {} } = {}) {
     return (
-      <div className="EdonlineHero-stat">
-        <div className="EdonlineHero-stat-ic">{fa(iconName, iconStyle)}</div>
+      <div className="MosaicHero-stat">
+        <div className="MosaicHero-stat-ic">{fa(iconName, iconStyle)}</div>
         <div>
-          <div className="EdonlineHero-stat-val">{value}</div>
-          <div className="EdonlineHero-stat-lbl">{label}</div>
+          <div className="MosaicHero-stat-val">{value}</div>
+          <div className="MosaicHero-stat-lbl">{label}</div>
         </div>
       </div>
     );

@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of ernestdefoe/edonline.
+ * This file is part of ernestdefoe/mosaic.
  *
  * Copyright (c) Ernest Defoe.
  *
@@ -9,7 +9,7 @@
  * that was distributed with this source code.
  */
 
-namespace Ernestdefoe\Edonline\Api;
+namespace Ernestdefoe\Mosaic\Api;
 
 use Flarum\Settings\SettingsRepositoryInterface;
 use Throwable;
@@ -57,6 +57,26 @@ class AddForumSettings
             return $val === '' ? null : $val;
         } catch (Throwable $e) {
             return null;
+        }
+    }
+
+    /**
+     * Returns a JSON-decoded array value (e.g. the Quick Actions list).
+     * Falls back to the supplied default on missing/invalid/non-array
+     * input — the frontend handles an empty array by using its own
+     * built-in defaults, so returning [] is safe.
+     */
+    public static function json(string $key, array $default = []): array
+    {
+        try {
+            $raw = self::settings()->get($key);
+            if (! is_string($raw) || $raw === '') {
+                return $default;
+            }
+            $decoded = json_decode($raw, true);
+            return is_array($decoded) ? $decoded : $default;
+        } catch (Throwable $e) {
+            return $default;
         }
     }
 

@@ -99,7 +99,7 @@
 }
 
 /* Filter chip row */
-.EdonlineFilterRow {
+.MosaicFilterRow {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -107,7 +107,7 @@
   flex-wrap: wrap;
 }
 
-.EdonlineFilterChip {
+.MosaicFilterChip {
   padding: 6px 12px;
   border-radius: var(--r-pill);
   font-size: 13px;
@@ -138,12 +138,12 @@
 
 /* Tag pills.
  *
- * Our own .EdonlineTag class uses a neutral surface. For Flarum's
+ * Our own .MosaicTag class uses a neutral surface. For Flarum's
  * .TagLabel we deliberately do NOT override background-color — the
  * extension applies the per-tag color inline (from admin tag settings)
  * and our override was stomping it, leaving every tag as a nearly-
  * invisible white-on-white pill in light mode. We adjust shape only. */
-.EdonlineTag {
+.MosaicTag {
   background: var(--surface-inset);
   color: var(--text-secondary);
   padding: 2px 9px;
@@ -153,7 +153,7 @@
   border: none;
 }
 
-.EdonlineTag--priority {
+.MosaicTag--priority {
   background: rgba(239, 68, 68, 0.10);
   color: #dc2626;
 }
@@ -169,7 +169,7 @@
 
 /* Section header above the discussion toolbar — "Recent Discussions"
  * plus an optional count badge. Matches the render's section title. */
-.EdonlineSectionHead {
+.MosaicSectionHead {
   display: flex;
   align-items: center;
   gap: 12px;

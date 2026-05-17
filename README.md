@@ -1,73 +1,40 @@
-# edonline
+# Mosaic
 
-A polished Flarum 2 theme for support forums with a marketplace storefront. Designed to pair with [`linkrobins/support`](https://github.com/linkrobins/support) and the [Flarum Marketplace](https://discuss.flarum.org/d/39158-flarum-marketplace) extension by ramon, but works as a standalone visual theme too.
+A polished, configurable Flarum 2 theme. Works as a standalone visual upgrade on any forum, with opt-in integrations for `fof/best-answer`, `fof/reactions`, `ram0ng1/colored`, and (when installed) `linkrobins/support` and `ramon/marketplace`.
 
-> **Status:** v0.1.0 — initial scaffold. LESS theme is complete, JS components are in place, design preview ships in [`preview/`](preview/).
-
----
-
-## Renders
-
-All six surfaces, both light and dark mode. Click any thumbnail for the full-resolution capture.
-
-### Forum landing — discussion list with hero, stats strip, and category tiles
-
-| Light | Dark |
-| :---: | :---: |
-| [<img src="docs/screenshots/index-light.png" width="420">](docs/screenshots/index-light.png) | [<img src="docs/screenshots/index-dark.png" width="420">](docs/screenshots/index-dark.png) |
-
-### Discussion view — best-answer highlight, replies, composer
-
-| Light | Dark |
-| :---: | :---: |
-| [<img src="docs/screenshots/discussion-light.png" width="420">](docs/screenshots/discussion-light.png) | [<img src="docs/screenshots/discussion-dark.png" width="420">](docs/screenshots/discussion-dark.png) |
-
-### Support tickets — 5-state workflow (`linkrobins/support`)
-
-| Light | Dark |
-| :---: | :---: |
-| [<img src="docs/screenshots/tickets-light.png" width="420">](docs/screenshots/tickets-light.png) | [<img src="docs/screenshots/tickets-dark.png" width="420">](docs/screenshots/tickets-dark.png) |
-
-### Single ticket — staff control bar, internal note, attachments
-
-| Light | Dark |
-| :---: | :---: |
-| [<img src="docs/screenshots/ticket-light.png" width="420">](docs/screenshots/ticket-light.png) | [<img src="docs/screenshots/ticket-dark.png" width="420">](docs/screenshots/ticket-dark.png) |
-
-### Marketplace storefront — `ramon/marketplace`
-
-| Light | Dark |
-| :---: | :---: |
-| [<img src="docs/screenshots/marketplace-light.png" width="420">](docs/screenshots/marketplace-light.png) | [<img src="docs/screenshots/marketplace-dark.png" width="420">](docs/screenshots/marketplace-dark.png) |
-
-### Product detail — gallery, buy card, reviews
-
-| Light | Dark |
-| :---: | :---: |
-| [<img src="docs/screenshots/product-light.png" width="420">](docs/screenshots/product-light.png) | [<img src="docs/screenshots/product-dark.png" width="420">](docs/screenshots/product-dark.png) |
+> **Status:** active development. LESS theme is complete, JS components are in place, design preview ships in [`preview/`](preview/).
 
 ---
 
 ## What you get
 
-- **Polished hero panel** with title, search, and a 5-column forum-wide stats strip (Members / Discussions / Tickets Resolved / Posts / Online Now)
-- **Category tiles** below the hero — auto-populated from `flarum/tags` when installed, hardcoded fallback otherwise
-- **5-state ticket workflow** styling for `linkrobins/support`: Open → In Progress → Awaiting You → Resolved → Closed
-- **Staff control bar** for tickets — status dropdown, claim/unassign, recategorize, close
-- **Internal note** styling — amber-dashed staff-only replies with a "Hidden from customer" footer
-- **Marketplace storefront** styling for `ramon/marketplace`: product cards with type badges, sticky buy card with reviews, cart icon with badge
-- **Marketplace promo sidebar card** auto-injected on the IndexPage
-- **Full dark mode** via `prefers-color-scheme` — the cascade block is placed last so dark tokens win cleanly
-- **DM Sans** typography, organic 14px radii, calm blue + green/amber/purple status palette
+- **Tiled hero panel** with title, search, and a configurable stats strip (Members / Discussions / Posts / Online Now — and Tickets Resolved when `linkrobins/support` is detected)
+- **Category tiles** below the hero — auto-populated from `flarum/tags` when installed
+- **Configurable sidebar** — Marketplace promo, **Quick Actions** (admin-editable rows: icon, label, URL), Top Contributors, Trending. Each panel can be hidden from the admin UI
+- **Optional support-ticket styling** — when `linkrobins/support` is enabled, the 5-state workflow (Open → In Progress → Awaiting You → Resolved → Closed), staff control bar, internal notes, and SLA pills all light up
+- **Optional marketplace styling** — when `ramon/marketplace` is enabled, the storefront, product cards, and cart get themed (verified against the real `.MpShop-*` DOM)
+- **Best-answer highlight** for `fof/best-answer` — full-width banner on the chosen reply
+- **Reactions popup** styled after `ram0ng1/avocado`'s cascade pattern
+- **Tag-coloured borders** for `ram0ng1/colored` on the discussion list and posts
+- **Full dark mode** via Flarum 2's native `[data-theme^=dark]` selector
+- **DM Sans typography**, organic 14px radii, calm primary palette
 
 ## Install
 
 ```bash
-composer require ernestdefoe/edonline
+composer require ernestdefoe/mosaic
 php flarum cache:clear
 ```
 
-Then enable in **Admin → Extensions → edonline**.
+Then enable in **Admin → Extensions → Mosaic**.
+
+### Configure
+
+All theme settings live in **Admin → Extensions → Mosaic**:
+
+- **Hide sidebar widgets** — toggle Marketplace promo / Quick Actions / Top Contributors / Trending individually
+- **Quick Actions editor** — dynamic row editor for the sidebar's Quick Actions card. Each row is an icon class, a label, and a URL. Defaults to `Start a Discussion / Browse Tags / Recent Activity` for any Flarum install, and surfaces `Open a Support Ticket` / `Visit the Marketplace` extras when those extensions are detected
+- **Section URL overrides** — point the auto-detected support / marketplace links elsewhere if you've mounted them on non-default paths
 
 ## Develop
 
@@ -78,98 +45,61 @@ npm run dev      # watch mode
 npm run build    # production
 ```
 
-The frontend uses `flarum-webpack-config` v3 — `js/forum.js` and `js/admin.js` are auto-discovered, with webpack running from `js/` (cwd) and emitting to `js/dist/`. See `js/src/forum/index.js` for the extension's entry point. Compiled bundles in `js/dist/` are committed because Flarum extensions installed via Composer ship prebuilt assets.
-
-### Re-capturing the screenshots
-
-The renders above are generated by a small Puppeteer script in `_scratch/shotter/`. To regenerate them:
-
-```bash
-# Serve preview/ on port 5175
-npx serve preview -l 5175
-
-# In another terminal
-cd ../_scratch/shotter
-npm install      # one-time
-node shoot.js    # writes into ../../edonline/docs/screenshots/
-```
+The frontend uses `flarum-webpack-config` v3 — `js/forum.js` and `js/admin.js` are auto-discovered, with webpack running from `js/` and emitting to `js/dist/`. Compiled bundles in `js/dist/` are committed because Flarum extensions installed via Composer ship prebuilt assets.
 
 ## Structure
 
 ```
-edonline/
+mosaic/
 ├── composer.json       # Flarum 2 extension manifest
-├── extend.php          # PHP extender — registers forum/admin frontends
+├── extend.php          # PHP extender — registers forum/admin frontends + settings bridge
+├── src/Api/
+│   ├── AddForumSettings.php       # SettingsRepositoryInterface helpers
+│   └── AddForumStatistics.php     # Member/online/resolved counts
 ├── js/
-│   ├── package.json        # JS deps (webpack, flarum-webpack-config v3)
-│   ├── webpack.config.js   # one-liner using flarum-webpack-config
-│   ├── forum.js            # entry (exports src/forum) — discovered by webpack at cwd
-│   ├── admin.js            # entry (exports src/admin)
-│   ├── dist/               # compiled bundles, committed to the repo
+│   ├── package.json
+│   ├── webpack.config.js
+│   ├── forum.js / admin.js        # entries (discovered by webpack)
+│   ├── dist/                      # compiled bundles, committed
 │   └── src/
 │       ├── forum/
-│       │   ├── index.js               # initializer + IndexPage hooks
-│       │   ├── extend.js              # programmatic extenders (currently empty)
+│       │   ├── index.js                       # initializer + IndexPage hooks
 │       │   └── components/
-│       │       ├── HeroPanel.js              # branded hero + stats strip
-│       │       ├── CategoryTiles.js          # 6-tile category grid
-│       │       └── MarketplacePromoCard.js   # sidebar CTA
+│       │       ├── HeroPanel.js               # branded hero + stats strip
+│       │       ├── CategoryTiles.js           # category grid
+│       │       ├── SidebarPanels.js           # Marketplace promo / QA / contributors / trending
+│       │       ├── MarketplacePromoCard.js    # sidebar CTA
+│       │       ├── HeaderNav.js               # primary nav items
+│       │       └── SectionHeader.js
 │       └── admin/
 │           ├── index.js
-│           └── extend.js
+│           └── extend.js                      # Admin settings (visibility, URLs, QA editor)
 ├── less/
-│   ├── forum.less                # entry — imports the rest
-│   ├── _tokens.less              # CSS custom properties + Flarum LESS vars
-│   ├── _base.less                # body, typography, scrollbar
-│   ├── _header.less              # nav, brand, buttons
-│   ├── _hero.less                # hero panel + stats strip
-│   ├── _categories.less          # category tile grid
-│   ├── _discussions.less         # discussion list + filter chips + status pills
-│   ├── _post.less                # post stream, best-answer, code blocks
-│   ├── _sidebar.less             # side cards, quick actions, marketplace promo
-│   ├── _composer.less            # reply composer styling
-│   ├── _support.less             # linkrobins/support overrides
-│   ├── _marketplace.less         # ramon/marketplace overrides
-│   ├── _dark.less                # @media (prefers-color-scheme: dark) — MUST be last
-│   └── admin.less
-├── locale/
-│   └── en.yml
-├── docs/
-│   └── screenshots/              # rendered captures used in this README
-└── preview/                      # static HTML mockup (design source of truth)
-    ├── index.html
-    ├── discussion.html
-    ├── tickets.html
-    ├── ticket.html
-    ├── marketplace.html
-    ├── product.html
-    └── theme.css
+│   ├── forum.less / admin.less    # entries
+│   ├── tokens.less                # CSS custom properties
+│   ├── base.less, header.less, hero.less, categories.less, discussions.less,
+│   │   post.less, sidebar.less, composer.less, support.less, marketplace.less,
+│   │   reactions.less, colored.less, layout.less, dark.less
+├── locale/en.yml
+└── preview/                       # static HTML mockup (design source of truth)
 ```
 
-## Hooking real data into the stats strip
-
-`HeroPanel` reads from `app.forum.attribute(...)`. Flarum core exposes `discussionCount` out of the box; the rest (`userCount`, `postCount`, `onlineUserCount`, `resolvedTicketCount`) you wire up either through:
-
-1. A small backend extension that adds them via `Extend\ApiSerializer(Flarum\Api\Serializer\ForumSerializer)->attributes(...)`, **or**
-2. An existing stats extension such as `flarum-ext-statistics`.
-
-Missing attributes fall back to `—` so the layout never breaks.
-
-## Pairing with the extensions
+## Pairing with optional extensions
 
 | Surface | Source | Where styled |
 |---|---|---|
-| Discussion list / detail | Flarum core | `_discussions.less`, `_post.less` |
-| Tickets (5-state workflow, internal notes) | `linkrobins/support` | `_support.less` |
-| Marketplace storefront / product detail / cart | `ramon/marketplace` (paid) | `_marketplace.less` |
-| Best-answer highlight | `fof/best-answer` *(optional)* | `_post.less` `.Post--bestAnswer` |
-| File attachments on tickets | `fof/upload` *(optional)* | inherited via Flarum styling |
+| Discussion list / detail | Flarum core | `discussions.less`, `post.less` |
+| Tags (coloured borders) | `ram0ng1/colored` | `colored.less` |
+| Reactions popup | `fof/reactions` | `reactions.less` |
+| Best-answer highlight | `fof/best-answer` | `post.less` `.Post--bestAnswer` |
+| Tickets (5-state workflow, internal notes) | `linkrobins/support` *(optional)* | `support.less` |
+| Marketplace storefront / cards / cart | `ramon/marketplace` *(optional, paid)* | `marketplace.less` |
 
-The CSS class names in `_support.less` and `_marketplace.less` are written against expected conventions. If either extension uses different class names, swap the selectors — the token-driven base styles still flow through Flarum's stock classes.
+Each integration's LESS is a no-op when the source extension isn't installed — Mosaic stays clean on a vanilla Flarum.
 
 ## Design preview
 
-The [`preview/`](preview/) directory ships a static HTML mockup of every surface — open `preview/index.html` in a browser or run `npx serve preview/` to see the design without a Flarum install. Treat that mockup as the visual source of truth when the LESS and JS need to evolve.
+The [`preview/`](preview/) directory ships a static HTML mockup of every surface — open `preview/index.html` directly or run `npx serve preview/` to inspect the design without a Flarum install. Treat that mockup as the visual source of truth.
 
 ## Credits
 

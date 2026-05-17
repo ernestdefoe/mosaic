@@ -19,7 +19,7 @@ export function navItems() {
   const items = [];
 
   items.push(
-    <LinkButton href={app.route('index')} icon="fa-solid fa-comments" className="EdonlineHeaderNav-item">
+    <LinkButton href={app.route('index')} icon="fa-solid fa-comments" className="MosaicHeaderNav-item">
       {translate('nav.discussions', 'Discussions')}
     </LinkButton>
   );
@@ -29,7 +29,7 @@ export function navItems() {
       <LinkButton
         href={app.forum.attribute('supportUrl') || '/support'}
         icon="fa-solid fa-headset"
-        className="EdonlineHeaderNav-item"
+        className="MosaicHeaderNav-item"
       >
         {translate('nav.tickets', 'Tickets')}
       </LinkButton>
@@ -43,7 +43,7 @@ export function navItems() {
       app.forum.attribute('marketplaceUrl') ||
       '/' + String(app.forum.attribute('marketplace_shop_path') || 'shop').replace(/^\//, '');
     items.push(
-      <LinkButton href={marketHref} icon="fa-solid fa-store" className="EdonlineHeaderNav-item">
+      <LinkButton href={marketHref} icon="fa-solid fa-store" className="MosaicHeaderNav-item">
         {translate('nav.marketplace', 'Marketplace')}
       </LinkButton>
     );
@@ -51,20 +51,20 @@ export function navItems() {
 
   if (hasExt('flarum-tags')) {
     items.push(
-      <LinkButton href="/t" icon="fa-solid fa-folder" className="EdonlineHeaderNav-item">
+      <LinkButton href="/t" icon="fa-solid fa-folder" className="MosaicHeaderNav-item">
         {translate('nav.categories', 'Categories')}
       </LinkButton>
     );
   }
 
-  /* Operator-configured extras: set `edonlineHeaderNavExtras` on the
+  /* Operator-configured extras: set `mosaicHeaderNavExtras` on the
    * forum serializer to an array of {label, href, icon} for e.g.
    * Knowledge Base / Status links to external systems. */
-  const extras = app.forum.attribute('edonlineHeaderNavExtras');
+  const extras = app.forum.attribute('mosaicHeaderNavExtras');
   if (Array.isArray(extras)) {
     extras.forEach((x) =>
       items.push(
-        <LinkButton href={x.href} icon={x.icon || 'fa-solid fa-link'} className="EdonlineHeaderNav-item">
+        <LinkButton href={x.href} icon={x.icon || 'fa-solid fa-link'} className="MosaicHeaderNav-item">
           {x.label}
         </LinkButton>
       )
@@ -87,7 +87,7 @@ export function startDiscussionButton() {
   const inTickets = isTicketsRoute();
   return (
     <Button
-      className="Button Button--primary EdonlineHeaderNav-start"
+      className="Button Button--primary MosaicHeaderNav-start"
       icon={inTickets ? 'fa-solid fa-headset' : 'fa-solid fa-edit'}
       onclick={inTickets ? startTicket : startDiscussion}
     >
@@ -119,7 +119,7 @@ function isTicketsRoute() {
  * and substitute on miss.
  */
 function translate(suffix, fallback) {
-  const key = `ernestdefoe-edonline.forum.${suffix}`;
+  const key = `ernestdefoe-mosaic.forum.${suffix}`;
   try {
     const out = app.translator.trans(key);
     if (out == null) return fallback;

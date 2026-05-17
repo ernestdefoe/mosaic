@@ -6,7 +6,7 @@
 /* Hide stock Flarum hero — we render our own via HeroPanel.js */
 .Hero.WelcomeHero { display: none; }
 
-.EdonlineHero {
+.MosaicHero {
   background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 60%, #3b82f6 100%);
   color: #fff;
   border-radius: var(--r-lg);
@@ -26,7 +26,7 @@
     pointer-events: none;
   }
 
-  .EdonlineHero-title {
+  .MosaicHero-title {
     position: relative;
     font-size: 28px;
     font-weight: 700;
@@ -34,14 +34,14 @@
     letter-spacing: -0.02em;
   }
 
-  .EdonlineHero-sub {
+  .MosaicHero-sub {
     position: relative;
     margin: 0 0 22px;
     opacity: 0.85;
     font-size: 15px;
   }
 
-  .EdonlineHero-search {
+  .MosaicHero-search {
     position: relative;
     background: rgba(255, 255, 255, 0.98);
     border-radius: var(--r-pill);
@@ -65,7 +65,7 @@
       &::placeholder { color: var(--text-muted); }
     }
 
-    .EdonlineHero-searchBtn {
+    .MosaicHero-searchBtn {
       height: 42px;
       padding: 0 22px;
       border-radius: var(--r-pill);
@@ -85,7 +85,7 @@
 }
 
 /* Forum stats strip — sits below the search inside the hero */
-.EdonlineHero-stats {
+.MosaicHero-stats {
   position: relative;
   margin-top: 28px;
   padding-top: 22px;
@@ -98,7 +98,7 @@
   @media (max-width: 520px) { grid-template-columns: repeat(2, 1fr); }
 }
 
-.EdonlineHero-stat {
+.MosaicHero-stat {
   display: flex;
   align-items: center;
   gap: 12px;

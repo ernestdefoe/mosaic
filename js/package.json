@@ -1,8 +1,8 @@
 {
   "private": true,
-  "name": "@ernestdefoe/edonline",
+  "name": "@ernestdefoe/mosaic",
   "version": "0.1.0",
-  "description": "edonline — Flarum 2 support forum + marketplace theme",
+  "description": "Mosaic — a polished, configurable Flarum 2 theme",
   "scripts": {
     "dev": "webpack --mode development --watch",
     "build": "webpack --mode production",

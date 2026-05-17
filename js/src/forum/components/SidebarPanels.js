@@ -15,55 +15,78 @@ const fa = (name, style) => <i className={`icon ${name}`} style={style} aria-hid
  * sensible defaults otherwise so the layout never shows empty cards.
  *
  * Hide a panel by setting the corresponding forum attribute to true:
- *   edonlineHideMarketplacePromo
- *   edonlineHideQuickActions
- *   edonlineHideTopContributors
- *   edonlineHideTrending
+ *   mosaicHideMarketplacePromo
+ *   mosaicHideQuickActions
+ *   mosaicHideTopContributors
+ *   mosaicHideTrending
  */
 export default class SidebarPanels extends Component {
   view() {
     return (
-      <div className="EdonlineSidebarPanels">
-        {!app.forum.attribute('edonlineHideMarketplacePromo') && this.marketplacePromo()}
-        {!app.forum.attribute('edonlineHideQuickActions') && this.quickActions()}
-        {!app.forum.attribute('edonlineHideTopContributors') && this.topContributors()}
-        {!app.forum.attribute('edonlineHideTrending') && this.trending()}
+      <div className="MosaicSidebarPanels">
+        {!app.forum.attribute('mosaicHideMarketplacePromo') && this.marketplacePromo()}
+        {!app.forum.attribute('mosaicHideQuickActions') && this.quickActions()}
+        {!app.forum.attribute('mosaicHideTopContributors') && this.topContributors()}
+        {!app.forum.attribute('mosaicHideTrending') && this.trending()}
       </div>
     );
   }
 
   quickActions() {
-    /* Built-in defaults pick up the marketplace shop path and the
-     * support extension's path from forum attributes when present.
-     * Operators can override either via supportUrl / marketplaceUrl
-     * attributes, or replace the whole list via edonlineQuickActions
-     * (array of {label, href, icon}). */
-    const fromAttr = app.forum.attribute('edonlineQuickActions');
-    const links =
-      Array.isArray(fromAttr) && fromAttr.length
-        ? fromAttr
-        : [
-            {
-              icon: 'fa-solid fa-headset',
-              label: 'Open a Support Ticket',
-              href: app.forum.attribute('supportUrl') || '/support',
-            },
-            {
-              icon: 'fa-solid fa-store',
-              label: 'Visit the Marketplace',
-              href:
-                app.forum.attribute('marketplaceUrl') ||
-                '/' + (app.forum.attribute('marketplace_shop_path') || 'shop').replace(/^\//, ''),
-            },
-          ];
+    /* Three layers of fallback so the panel is useful on a vanilla
+     * Flarum install AND fully customizable by the admin:
+     *
+     *   1. Admin-configured rows (mosaicQuickActions attribute, written
+     *      by the dynamic row editor in admin/extend.js). Wins outright
+     *      when at least one row has a label + href.
+     *   2. Built-in generic forum defaults — Start a Discussion / Browse
+     *      Tags / Recent Activity. Work on any Flarum install.
+     *   3. Auto-detected integrations APPENDED to the defaults — Support
+     *      and Marketplace links surface only when those extensions
+     *      expose their URL attributes.
+     *
+     * The Hide-Quick-Actions toggle in admin short-circuits this entire
+     * panel before we get here (see view()). */
+    const fromAttr = app.forum.attribute('mosaicQuickActions');
+    const configured =
+      Array.isArray(fromAttr)
+        ? fromAttr.filter((a) => a && (a.label || '').trim() && (a.href || '').trim())
+        : [];
+
+    let links;
+    if (configured.length) {
+      links = configured;
+    } else {
+      links = [
+        { icon: 'fa-solid fa-plus', label: 'Start a Discussion', href: app.route('index') + '?composer' },
+        { icon: 'fa-solid fa-tags', label: 'Browse Tags', href: app.route('tags') || '/tags' },
+        { icon: 'fa-solid fa-clock', label: 'Recent Activity', href: '/all' },
+      ];
+
+      /* Conditionally append support/marketplace ONLY when those
+       * extensions are detected via their forum attributes. */
+      const supportUrl = app.forum.attribute('supportUrl');
+      if (supportUrl) {
+        links.unshift({ icon: 'fa-solid fa-headset', label: 'Open a Support Ticket', href: supportUrl });
+      }
+      const marketplaceUrl =
+        app.forum.attribute('marketplaceUrl') ||
+        (app.forum.attribute('marketplace_shop_path')
+          ? '/' + String(app.forum.attribute('marketplace_shop_path')).replace(/^\//, '')
+          : null);
+      if (marketplaceUrl) {
+        links.push({ icon: 'fa-solid fa-store', label: 'Visit the Marketplace', href: marketplaceUrl });
+      }
+    }
+
     return (
-      <div className="EdonlineSideCard">
-        <h3 className="EdonlineSideCard-title">
+      <div className="MosaicSideCard">
+        <h3 className="MosaicSideCard-title">
           {fa('fa-solid fa-bolt', { color: 'var(--primary)' })}<span>Quick Actions</span>
         </h3>
         {links.map((l) => (
-          <a className="EdonlineQuickAction" href={l.href}>
-            <span className="EdonlineQuickAction-ic">{fa(l.icon)}</span>
+          <a className="MosaicQuickAction" href={l.href}>
+            <span className="MosaicQuickAction-ic">{fa(l.icon)}</span>
             <span>{l.label}</span>
           </a>
         ))}
@@ -74,7 +97,7 @@ export default class SidebarPanels extends Component {
   topContributors() {
     /* Operator-provided list wins. Each item shape:
      *   { name, role?, meta?, points, tone?, avatarUrl?, href? } */
-    const fromAttr = app.forum.attribute('edonlineTopContributors');
+    const fromAttr = app.forum.attribute('mosaicTopContributors');
     if (Array.isArray(fromAttr) && fromAttr.length) {
       return this.renderContribCard(fromAttr.map((c) => ({ ...c })));
     }
@@ -92,7 +115,7 @@ export default class SidebarPanels extends Component {
 
     /* If nothing meaningful, hide the panel entirely rather than show
      * fake names. Operators wanting placeholder content can populate
-     * edonlineTopContributors above. */
+     * mosaicTopContributors above. */
     if (ranked.length < 1) return null;
 
     const tones = ['blue', 'green', 'amber', 'rose', 'purple', 'teal', 'indigo', 'slate'];
@@ -117,25 +140,25 @@ export default class SidebarPanels extends Component {
 
   renderContribCard(contributors) {
     return (
-      <div className="EdonlineSideCard">
-        <h3 className="EdonlineSideCard-title">
+      <div className="MosaicSideCard">
+        <h3 className="MosaicSideCard-title">
           {fa('fa-solid fa-trophy', { color: 'var(--primary)' })}<span>Top Contributors</span>
         </h3>
         {contributors.map((c) => (
-          <a className="EdonlineContribRow" href={c.href || '#'}>
+          <a className="MosaicContribRow" href={c.href || '#'}>
             {c.avatarUrl ? (
-              <img className="EdonlineContribRow-avatar EdonlineContribRow-avatar--img" src={c.avatarUrl} alt="" />
+              <img className="MosaicContribRow-avatar MosaicContribRow-avatar--img" src={c.avatarUrl} alt="" />
             ) : (
-              <div className={`EdonlineContribRow-avatar av-${c.tone || 'slate'}`}>{initials(c.name)}</div>
+              <div className={`MosaicContribRow-avatar av-${c.tone || 'slate'}`}>{initials(c.name)}</div>
             )}
-            <div className="EdonlineContribRow-meta">
-              <div className="EdonlineContribRow-name">
+            <div className="MosaicContribRow-meta">
+              <div className="MosaicContribRow-name">
                 {c.name}
-                {c.role && <span className={`EdonlineRoleBadge EdonlineRoleBadge--${String(c.role).toLowerCase()}`}>{c.role}</span>}
+                {c.role && <span className={`MosaicRoleBadge MosaicRoleBadge--${String(c.role).toLowerCase()}`}>{c.role}</span>}
               </div>
-              <div className="EdonlineContribRow-sub">{c.meta}</div>
+              <div className="MosaicContribRow-sub">{c.meta}</div>
             </div>
-            <div className="EdonlineContribRow-points">{c.points}</div>
+            <div className="MosaicContribRow-points">{c.points}</div>
           </a>
         ))}
       </div>
@@ -169,16 +192,16 @@ export default class SidebarPanels extends Component {
     }
 
     return (
-      <div className="EdonlineSideCard">
-        <h3 className="EdonlineSideCard-title">
+      <div className="MosaicSideCard">
+        <h3 className="MosaicSideCard-title">
           {fa('fa-solid fa-fire', { color: 'var(--primary)' })}<span>Trending</span>
         </h3>
         {items.map((t, i) => (
-          <a href={t.href} className="EdonlineTrendRow">
-            <span className={`EdonlineTrendRow-num ${i < 2 ? 'is-top' : ''}`}>{i + 1}</span>
+          <a href={t.href} className="MosaicTrendRow">
+            <span className={`MosaicTrendRow-num ${i < 2 ? 'is-top' : ''}`}>{i + 1}</span>
             <div>
-              <div className="EdonlineTrendRow-title">{t.title}</div>
-              <div className="EdonlineTrendRow-meta">{t.meta}</div>
+              <div className="MosaicTrendRow-title">{t.title}</div>
+              <div className="MosaicTrendRow-meta">{t.meta}</div>
             </div>
           </a>
         ))}
@@ -189,15 +212,15 @@ export default class SidebarPanels extends Component {
   marketplacePromo() {
     const url = app.forum.attribute('marketplaceUrl') || '/marketplace';
     return (
-      <a className="EdonlineSideCard EdonlineMarketplacePromo" href={url}>
-        <div className="EdonlineMarketplacePromo-bg">{fa('fa-solid fa-store')}</div>
-        <div className="EdonlineMarketplacePromo-inner">
-          <div className="EdonlineMarketplacePromo-kicker">NEW · Marketplace</div>
-          <div className="EdonlineMarketplacePromo-title">Premium themes &amp; extensions</div>
-          <div className="EdonlineMarketplacePromo-desc">
+      <a className="MosaicSideCard MosaicMarketplacePromo" href={url}>
+        <div className="MosaicMarketplacePromo-bg">{fa('fa-solid fa-store')}</div>
+        <div className="MosaicMarketplacePromo-inner">
+          <div className="MosaicMarketplacePromo-kicker">NEW · Marketplace</div>
+          <div className="MosaicMarketplacePromo-title">Premium themes &amp; extensions</div>
+          <div className="MosaicMarketplacePromo-desc">
             Digital products, services, subscriptions, and private extensions from trusted sellers.
           </div>
-          <div className="EdonlineMarketplacePromo-cta">
+          <div className="MosaicMarketplacePromo-cta">
             Browse the store {fa('fa-solid fa-arrow-right', { fontSize: '11px' })}
           </div>
         </div>

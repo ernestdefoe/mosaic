@@ -10,7 +10,7 @@ import SidebarPanels from './components/SidebarPanels';
 import SectionHeader from './components/SectionHeader';
 import { navItems, startDiscussionButton } from './components/HeaderNav';
 
-app.initializers.add('ernestdefoe-edonline', () => {
+app.initializers.add('ernestdefoe-mosaic', () => {
   /*
    * Replace the IndexPage hero with our branded panel + category tiles.
    * The two render as siblings in the hero slot above the page grid.
@@ -40,7 +40,7 @@ app.initializers.add('ernestdefoe-edonline', () => {
    * header before everything else.
    */
   extend(IndexPage.prototype, 'contentItems', function (items) {
-    items.add('edonline-section-header', SectionHeader.component(), 200);
+    items.add('mosaic-section-header', SectionHeader.component(), 200);
   });
 
   /*
@@ -51,7 +51,7 @@ app.initializers.add('ernestdefoe-edonline', () => {
    */
   extend(HeaderPrimary.prototype, 'items', function (items) {
     navItems().forEach((vnode, i) =>
-      items.add(`edonline-nav-${i}`, vnode, 100 - i)
+      items.add(`mosaic-nav-${i}`, vnode, 100 - i)
     );
   });
 
@@ -60,7 +60,7 @@ app.initializers.add('ernestdefoe-edonline', () => {
    * sign-up / log-in / avatar items.
    */
   extend(HeaderSecondary.prototype, 'items', function (items) {
-    items.add('edonline-start-discussion', startDiscussionButton(), 50);
+    items.add('mosaic-start-discussion', startDiscussionButton(), 50);
   });
 });
 
@@ -74,7 +74,7 @@ export { default as extend } from './extend';
  * default — only permission booleans and per-extension settings. So
  * each stat tries, in order:
  *   1. An attribute Flarum or an installed extension may have set
- *      (multiple common names tried — flarum/statistics, edonline-
+ *      (multiple common names tried — flarum/statistics, mosaic-
  *      prefixed overrides, etc.)
  *   2. A best-effort computation from app.store (only sees data
  *      already loaded on this page — fine for non-empty forums where
@@ -93,29 +93,29 @@ function getForumStats() {
       f.attribute('userCount'),
       f.attribute('totalUsers'),
       f.attribute('membersCount'),
-      f.attribute('edonlineUserCount')
+      f.attribute('mosaicUserCount')
     ),
     discussions: firstNum(
       f.attribute('discussionCount'),
       f.attribute('discussionsCount'),
-      f.attribute('edonlineDiscussionCount'),
+      f.attribute('mosaicDiscussionCount'),
       storeCount('discussions')
     ),
     resolved: firstNum(
       f.attribute('resolvedTicketCount'),
       f.attribute('supportResolvedCount'),
-      f.attribute('edonlineResolvedCount')
+      f.attribute('mosaicResolvedCount')
     ),
     posts: firstNum(
       f.attribute('postCount'),
       f.attribute('postsCount'),
-      f.attribute('edonlinePostCount'),
+      f.attribute('mosaicPostCount'),
       sumOf('discussions', 'commentCount')
     ),
     online: firstNum(
       f.attribute('onlineUserCount'),
       f.attribute('onlineUsersCount'),
-      f.attribute('edonlineOnlineCount')
+      f.attribute('mosaicOnlineCount')
     ),
   };
 }

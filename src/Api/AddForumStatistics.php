@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of ernestdefoe/edonline.
+ * This file is part of ernestdefoe/mosaic.
  *
  * Copyright (c) Ernest Defoe.
  *
@@ -9,7 +9,7 @@
  * that was distributed with this source code.
  */
 
-namespace Ernestdefoe\Edonline\Api;
+namespace Ernestdefoe\Mosaic\Api;
 
 use Carbon\Carbon;
 use Flarum\User\User;
@@ -17,7 +17,7 @@ use Illuminate\Database\ConnectionInterface;
 use Throwable;
 
 /**
- * Computes the three count attributes the edonline hero strip can't
+ * Computes the three count attributes the mosaic hero strip can't
  * otherwise resolve on a vanilla Flarum 2 install: member count,
  * current-online count, and resolved-ticket count from
  * linkrobins/support.

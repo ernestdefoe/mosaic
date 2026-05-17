@@ -1,12 +1,11 @@
 {
-    "name": "ernestdefoe/edonline",
-    "description": "edonline — a polished Flarum 2 support-forum theme with a marketplace storefront. Designed to pair with linkrobins/support and ramon/marketplace.",
+    "name": "ernestdefoe/mosaic",
+    "description": "Mosaic — a polished, configurable Flarum 2 theme with a tiled hero, category grid, sidebar widgets, and optional integrations for support tickets (linkrobins/support) and a marketplace storefront (ramon/marketplace).",
     "keywords": [
         "flarum",
+        "flarum-extension",
         "theme",
-        "support",
-        "marketplace",
-        "edonline"
+        "mosaic"
     ],
     "type": "flarum-extension",
     "license": "MIT",
@@ -18,23 +17,23 @@
         }
     ],
     "support": {
-        "issues": "https://github.com/ernestdefoe/edonline/issues",
-        "source": "https://github.com/ernestdefoe/edonline"
+        "issues": "https://github.com/ernestdefoe/mosaic/issues",
+        "source": "https://github.com/ernestdefoe/mosaic"
     },
     "require": {
         "flarum/core": "^2.0"
     },
     "autoload": {
         "psr-4": {
-            "Ernestdefoe\\Edonline\\": "src/"
+            "Ernestdefoe\\Mosaic\\": "src/"
         }
     },
     "extra": {
         "flarum-extension": {
-            "title": "edonline",
+            "title": "Mosaic",
             "category": "theme",
             "icon": {
-                "name": "fas fa-life-ring",
+                "name": "fas fa-shapes",
                 "backgroundColor": "#2563eb",
                 "color": "#ffffff"
             }

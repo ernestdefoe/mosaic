@@ -20,7 +20,7 @@
    :root tokens defined in tokens.less.
    ===================================================================== */
 
-.edonline-dark-tokens() {
+.mosaic-dark-tokens() {
   --primary: #5b8def;
   --primary-dark: #3b6fd9;
   --primary-light: #7ba3f2;
@@ -70,18 +70,18 @@
    and any other future named scheme starting with "dark" all flip the
    tokens. Flarum's own dark CSS uses the same selector. */
 [data-theme^='dark'] {
-  .edonline-dark-tokens();
+  .mosaic-dark-tokens();
 }
 
 /* Component overrides that can't be done with a token swap alone —
    gradients use literal color stops, so each variant needs its own
    rule scoped under [data-theme^=dark]. */
 
-[data-theme^='dark'] .EdonlineHero {
+[data-theme^='dark'] .MosaicHero {
   background: linear-gradient(135deg, #0f1d3a 0%, #1d3a73 60%, #2d5fbe 100%);
 }
 
-[data-theme^='dark'] .EdonlineMarketHero,
+[data-theme^='dark'] .MosaicMarketHero,
 [data-theme^='dark'] .MarketplacePage .MpShop-header,
 [data-theme^='dark'] .MarketplaceShopPage .MpShop-header {
   background: linear-gradient(135deg, #2a0f4a 0%, #5b21b6 60%, #8b5cf6 100%);
@@ -112,6 +112,6 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme]),
   :root[data-theme=''] {
-    .edonline-dark-tokens();
+    .mosaic-dark-tokens();
   }
 }

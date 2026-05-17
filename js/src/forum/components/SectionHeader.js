@@ -12,11 +12,11 @@ export default class SectionHeader extends Component {
   view() {
     const count = this.attrs.count ?? resolveCount();
     return (
-      <div className="EdonlineSectionHead">
-        <h2 className="EdonlineSectionHead-title">
+      <div className="MosaicSectionHead">
+        <h2 className="MosaicSectionHead-title">
           {this.attrs.title || 'Recent Discussions'}
         </h2>
-        {count != null && <span className="EdonlineSectionHead-count">{format(count)}</span>}
+        {count != null && <span className="MosaicSectionHead-count">{format(count)}</span>}
       </div>
     );
   }

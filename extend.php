@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of ernestdefoe/edonline.
+ * This file is part of ernestdefoe/mosaic.
  *
  * Copyright (c) Ernest Defoe.
  *
@@ -9,10 +9,10 @@
  * that was distributed with this source code.
  */
 
-namespace Ernestdefoe\Edonline;
+namespace Ernestdefoe\Mosaic;
 
-use Ernestdefoe\Edonline\Api\AddForumSettings;
-use Ernestdefoe\Edonline\Api\AddForumStatistics;
+use Ernestdefoe\Mosaic\Api\AddForumSettings;
+use Ernestdefoe\Mosaic\Api\AddForumStatistics;
 use Flarum\Api\Resource\ForumResource;
 use Flarum\Api\Schema;
 use Flarum\Extend;
@@ -49,31 +49,31 @@ return [
         ->fields(fn () => [
             /* -- Statistics (hero stats strip) -- */
 
-            Schema\Integer::make('edonlineUserCount')
+            Schema\Integer::make('mosaicUserCount')
                 ->nullable()
                 ->get(fn () => AddForumStatistics::memberCount()),
 
-            Schema\Integer::make('edonlineOnlineCount')
+            Schema\Integer::make('mosaicOnlineCount')
                 ->nullable()
                 ->get(fn () => AddForumStatistics::onlineCount()),
 
-            Schema\Integer::make('edonlineResolvedCount')
+            Schema\Integer::make('mosaicResolvedCount')
                 ->nullable()
                 ->get(fn () => AddForumStatistics::resolvedTicketCount()),
 
             /* -- Sidebar widget visibility (admin-saved booleans) -- */
 
-            Schema\Boolean::make('edonlineHideMarketplacePromo')
-                ->get(fn () => AddForumSettings::bool('edonlineHideMarketplacePromo')),
+            Schema\Boolean::make('mosaicHideMarketplacePromo')
+                ->get(fn () => AddForumSettings::bool('mosaicHideMarketplacePromo')),
 
-            Schema\Boolean::make('edonlineHideQuickActions')
-                ->get(fn () => AddForumSettings::bool('edonlineHideQuickActions')),
+            Schema\Boolean::make('mosaicHideQuickActions')
+                ->get(fn () => AddForumSettings::bool('mosaicHideQuickActions')),
 
-            Schema\Boolean::make('edonlineHideTopContributors')
-                ->get(fn () => AddForumSettings::bool('edonlineHideTopContributors')),
+            Schema\Boolean::make('mosaicHideTopContributors')
+                ->get(fn () => AddForumSettings::bool('mosaicHideTopContributors')),
 
-            Schema\Boolean::make('edonlineHideTrending')
-                ->get(fn () => AddForumSettings::bool('edonlineHideTrending')),
+            Schema\Boolean::make('mosaicHideTrending')
+                ->get(fn () => AddForumSettings::bool('mosaicHideTrending')),
 
             /* -- Section URL overrides (admin-saved strings) -- */
 
@@ -84,5 +84,15 @@ return [
             Schema\Str::make('marketplaceUrl')
                 ->nullable()
                 ->get(fn () => AddForumSettings::str('marketplaceUrl')),
+
+            /* -- Quick Actions list (JSON array of {icon,label,href}) --
+             *
+             * Stored as a JSON string under the literal `mosaicQuickActions`
+             * setting key (the dynamic row editor in admin extend.js writes
+             * it). Exposed here as a JSON-decoded array so the frontend can
+             * iterate without re-parsing. Empty array signals "use built-in
+             * defaults" (handled in SidebarPanels.js). */
+            Schema\Arr::make('mosaicQuickActions')
+                ->get(fn () => AddForumSettings::json('mosaicQuickActions', [])),
         ]),
 ];

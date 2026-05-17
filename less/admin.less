@@ -305,6 +305,55 @@ table {
   &.Alert--error { border-color: rgba(239, 68, 68, 0.30); background: rgba(239, 68, 68, 0.06); }
 }
 
+/* Quick Actions dynamic row editor (admin/components/QuickActionsEditor.js).
+ *
+ * Three inputs per row (icon class, label, URL) plus a trio of move-up /
+ * move-down / remove buttons. Grid columns size the three inputs in
+ * proportion: icon class is narrowest (~180px), label takes a comfortable
+ * middle, URL fills the rest. The button group hugs the right edge. */
+.MosaicQuickActionsEditor {
+  &-rows {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 12px 0;
+  }
+
+  &-empty {
+    padding: 14px 16px;
+    background: var(--surface-inset);
+    border: 1px dashed var(--border-strong);
+    border-radius: var(--r-sm);
+    color: var(--text-muted);
+    font-size: 13px;
+    text-align: center;
+  }
+
+  &-row {
+    display: grid;
+    grid-template-columns: 180px 1fr 1.4fr auto;
+    gap: 8px;
+    align-items: center;
+
+    @media (max-width: 720px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  &-rowBtns {
+    display: inline-flex;
+    gap: 4px;
+
+    .Button {
+      padding: 6px 10px;
+    }
+  }
+
+  &-add {
+    margin-top: 4px;
+  }
+}
+
 /* Scrollbar */
 ::-webkit-scrollbar { width: 10px; height: 10px; }
 ::-webkit-scrollbar-track { background: transparent; }

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>#TKT-4521 Login broken on Safari 17 — edonline</title>
+<title>#TKT-4521 Login broken on Safari 17 — mosaic</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap">
@@ -16,7 +16,7 @@
   <div class="header-inner">
     <div class="brand">
       <div class="brand-logo"><i class="fa-solid fa-life-ring"></i></div>
-      <span>edonline</span>
+      <span>Mosaic</span>
     </div>
     <nav class="nav">
       <a class="nav-link" href="index.html">Discussions</a>
@@ -116,8 +116,8 @@
           <div class="post-body">
             <p>Since yesterday's release (build 2.4.0), clicking the "Sign in" button on Safari just spins forever and never completes. Works perfectly in Chrome and Firefox on the same machine.</p>
             <p>Console shows this error every time:</p>
-            <pre>Access to fetch at 'https://api.edonline.com/v1/auth/session'
-from origin 'https://app.edonline.com' has been blocked by CORS
+            <pre>Access to fetch at 'https://api.mosaic.com/v1/auth/session'
+from origin 'https://app.mosaic.com' has been blocked by CORS
 policy: Response to preflight request doesn't pass access control
 check: No 'Access-Control-Allow-Origin' header is present.</pre>
             <p>Tested on Safari 17.2 (broken) and Safari 16.6 (works). Chrome 121 and Firefox 123 are both fine. Attached the HAR file and a screenshot of the network panel.</p>
