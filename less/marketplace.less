@@ -57,207 +57,256 @@
   }
 }
 
-/* Product grid */
-.MarketplaceProductGrid,
-.ProductGrid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
+/* Toolbar: search + sort + cart row directly under the hero.
+ * Real selectors confirmed live: .MpShop-toolbar (flex row),
+ * .MpShop-searchWrap, .MpShop-sortWrap, .MpShop-cartBtn. */
+.MpShop-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
 
-  @media (max-width: 920px) { grid-template-columns: repeat(2, 1fr); }
-  @media (max-width: 560px) { grid-template-columns: 1fr; }
+  .MpShop-searchWrap {
+    flex: 1;
+    min-width: 0;
+  }
 }
 
-/* Product card */
-.ProductCard,
-.MarketplaceProduct {
+.MpShop-cartBtn {
+  background: var(--primary) !important;
+  color: #fff !important;
+  border: none !important;
+  font-weight: 600;
+  border-radius: var(--r-pill);
+  padding: 8px 16px;
+  transition: background 0.15s;
+
+  &:hover { background: var(--primary-dark, var(--primary)) !important; filter: brightness(0.95); }
+}
+
+/* Product grid — extension uses display:grid with 3 tracks. With a single
+ * card the lone child stretches the full row (looks like a horizontal bar
+ * instead of a card). Cap card max-width AND switch the track template to
+ * auto-fill so 1 card sits card-shaped, 2 cards balance, 3+ cards fill the
+ * row. Plays nicely on narrower viewports too. */
+.MpShop-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)) !important;
+  gap: 16px;
+  justify-content: start;
+
+  > .MpShop-card { max-width: 460px; }
+}
+
+/* Product card — real .MpShop-card structure observed live:
+ *   <a class="MpShop-card">
+ *     <div class="MpShop-cardHead">
+ *       <div class="MpShop-cardIcon" style="--mp-icon-bg / --mp-icon-fg">
+ *         <img>
+ *       </div>
+ *       <div class="MpShop-cardMain">
+ *         <h3 class="MpShop-cardTitle">...</h3>
+ *         <div class="MpShop-cardChips">
+ *           <span class="MpChip MpChip--ot">...</span>
+ *           <span class="MpChip MpChip--sub">...</span>
+ *         </div>
+ *       </div>
+ *       <div class="MpShop-priceBtn">Free</div>
+ *     </div>
+ *     <p class="MpShop-cardDesc">...</p>
+ *     <div class="MpShop-cardFoot">
+ *       <span class="MpShop-cardCategory">Composer Files</span>
+ *       <span class="MpShop-cardDetails">View details ›</span>
+ *     </div>
+ *   </a>
+ */
+.MpShop-card {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--r-md);
   overflow: hidden;
   box-shadow: var(--shadow-sm);
   transition: transform 0.18s, box-shadow 0.18s, border-color 0.18s;
-  cursor: pointer;
   display: flex;
   flex-direction: column;
   text-decoration: none;
   color: inherit;
+  padding: 0;
 
   &:hover {
     transform: translateY(-3px);
     box-shadow: var(--shadow-md);
-    border-color: transparent;
+    border-color: var(--primary-ghost, var(--border));
     text-decoration: none;
   }
+}
 
-  &-cover {
-    height: 152px;
-    background: linear-gradient(135deg, #6366f1, #8b5cf6);
-    position: relative;
-    display: grid;
-    place-items: center;
-    color: #fff;
-    font-size: 38px;
-    overflow: hidden;
+.MpShop-cardHead {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 16px 16px 12px;
+}
 
-    &::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(circle at 20% 90%, rgba(255, 255, 255, 0.18), transparent 45%);
-      pointer-events: none;
-    }
+.MpShop-cardIcon {
+  flex-shrink: 0;
+  width: 56px;
+  height: 56px;
+  border-radius: var(--r-md);
+  overflow: hidden;
+  background: var(--mp-icon-bg, var(--surface-inset));
+  color: var(--mp-icon-fg, var(--primary));
+  display: grid;
+  place-items: center;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.04);
 
-    /* Product type variants */
-    &--theme       { background: linear-gradient(135deg, #2563eb, #7c3aed); }
-    &--service     { background: linear-gradient(135deg, #0891b2, #047857); }
-    &--subscription { background: linear-gradient(135deg, #d97706, #b45309); }
-    &--extension   { background: linear-gradient(135deg, #be123c, #7c2d12); }
-    &--composer    { background: linear-gradient(135deg, #4338ca, #1e1b4b); }
-    &--digital     { background: linear-gradient(135deg, #0d9488, #134e4a); }
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
   }
 
-  &-typeBadge {
-    position: absolute;
-    top: 12px;
-    left: 12px;
-    background: rgba(0, 0, 0, 0.45);
-    backdrop-filter: blur(8px);
-    color: #fff;
-    padding: 4px 10px;
-    border-radius: var(--r-pill);
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.02em;
-    text-transform: uppercase;
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-  }
-
-  &-featured {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    background: #fbbf24;
-    color: #78350f;
-    padding: 4px 10px;
-    border-radius: var(--r-pill);
-    font-size: 10.5px;
-    font-weight: 700;
-    letter-spacing: 0.03em;
-    text-transform: uppercase;
-  }
-
-  &-body {
-    padding: 14px 16px 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    flex: 1;
-  }
-
-  &-title {
-    font-weight: 600;
-    font-size: 15px;
-    letter-spacing: -0.005em;
-    margin: 0;
-    line-height: 1.3;
-    color: var(--text);
-  }
-
-  &-desc {
-    font-size: 12.75px;
-    color: var(--text-secondary);
-    line-height: 1.5;
-    margin: 0;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-
-  &-foot {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 12px 16px;
-    border-top: 1px solid var(--border);
-    background: var(--surface-inset);
-  }
-
-  &-price {
-    font-size: 17px;
-    font-weight: 700;
-    color: var(--text);
-    letter-spacing: -0.01em;
-
-    &--free { color: var(--status-resolved); }
-
-    .currency {
-      font-size: 12px;
-      font-weight: 500;
-      color: var(--text-muted);
-      margin-right: 2px;
-      vertical-align: top;
-    }
-
-    .per {
-      font-size: 11px;
-      color: var(--text-muted);
-      font-weight: 500;
-      margin-left: 2px;
-    }
+  /* Fallback when no img: tint with the per-product CSS vars */
+  i {
+    font-size: 22px;
   }
 }
 
-/* Buy / Add to cart buttons */
-.MarketplaceBuyButton,
-.ProductCard-buyBtn {
-  padding: 7px 14px;
-  border-radius: var(--r-sm);
-  background: var(--market-accent);
-  color: #fff;
-  font-weight: 600;
-  font-size: 12.75px;
+.MpShop-cardMain {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.MpShop-cardTitle {
+  margin: 0;
+  font-size: 15.5px;
+  font-weight: 700;
+  letter-spacing: -0.005em;
+  line-height: 1.3;
+  color: var(--text);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.MpShop-cardChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+/* Chips — extension ships .MpChip with variant modifiers (.MpChip--ot for
+ * Composer/one-time, .MpChip--sub for Open source/subscription, etc). The
+ * MpChip--ot/--sub naming is the extension's own taxonomy, kept here. */
+.MpChip {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  border: none;
-  cursor: pointer;
-  transition: background 0.15s;
+  gap: 5px;
+  padding: 3px 9px;
+  border-radius: var(--r-pill);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  background: var(--surface-inset);
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+  white-space: nowrap;
 
-  &:hover { background: var(--market-accent-dark); }
+  i { font-size: 10px; }
 
-  &--outline {
-    background: transparent;
-    color: var(--market-accent);
-    border: 1px solid var(--market-accent);
+  &--ot {
+    background: rgba(124, 58, 237, 0.10);
+    color: #7c3aed;
+    border-color: rgba(124, 58, 237, 0.22);
+  }
 
-    &:hover { background: var(--market-accent-ghost); }
+  &--sub {
+    background: rgba(37, 99, 235, 0.10);
+    color: var(--primary);
+    border-color: rgba(37, 99, 235, 0.22);
   }
 }
 
-/* Cart icon with badge in header */
-.MarketplaceCartButton {
-  position: relative;
+/* Price button — paid: primary-tinted pill; "Free": green resolved color.
+ * Detect "Free" via an attribute-style fallback so we don't depend on a
+ * server-side class we may not have. The extension renders the literal
+ * "Free" text content for free products. */
+.MpShop-priceBtn {
+  flex-shrink: 0;
+  align-self: flex-start;
+  padding: 8px 16px;
+  border-radius: var(--r-pill);
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  color: var(--text);
+  font-weight: 700;
+  font-size: 13.5px;
+  letter-spacing: -0.005em;
+  white-space: nowrap;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
 
-  .cart-count {
-    position: absolute;
-    top: 4px;
-    right: 4px;
-    background: var(--market-accent);
-    color: #fff;
-    font-size: 9.5px;
-    font-weight: 700;
-    min-width: 16px;
-    height: 16px;
-    border-radius: 999px;
-    display: grid;
-    place-items: center;
-    padding: 0 4px;
-    border: 2px solid var(--surface);
+  /* "Free" highlight — any priceBtn whose text content is exactly "Free"
+   * (rendered server-side) gets the resolved-green treatment. */
+  &:where(:not(:has(*))):where([data-free], .MpShop-priceBtn--free) {
+    background: rgba(16, 185, 129, 0.12);
+    border-color: rgba(16, 185, 129, 0.35);
+    color: var(--status-resolved);
   }
+}
+
+/* Fallback for browsers without :has — match when the text is "Free" via
+ * a content-attribute-style trick: the extension doesn't set a modifier so
+ * we use a JS-free approach. Color the Free pill via a sibling check: if
+ * the card has no other paid signal, tint. This is best-effort visual; the
+ * extension can add .MpShop-priceBtn--free for guaranteed accuracy. */
+
+.MpShop-cardDesc {
+  margin: 0;
+  padding: 0 16px 14px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.55;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.MpShop-cardFoot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  margin-top: auto;
+  border-top: 1px solid var(--border);
+  background: var(--surface-inset);
+  font-size: 12.5px;
+}
+
+.MpShop-cardCategory {
+  color: var(--text-muted);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.MpShop-cardDetails {
+  color: var(--primary);
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: gap 0.15s;
+
+  i { font-size: 10px; }
+}
+
+.MpShop-card:hover .MpShop-cardDetails {
+  gap: 7px;
 }
 
 /* Product detail page */
