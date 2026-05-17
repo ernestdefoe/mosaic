@@ -525,38 +525,75 @@ nav.DiscussionPage-nav {
 .Post.is-answer {
   border: 1px solid var(--status-resolved) !important;
   box-shadow: 0 4px 16px rgba(5, 150, 105, 0.08), var(--shadow-sm) !important;
+  position: relative;
 
-  /* Banner as a BLOCK pseudo-element, not absolute-positioned.
+  /* Hide my generic "✓ Marked as solution" ::before banner. fof/
+   * best-answer renders a real DOM element with the dynamic
+   * "set by USER N ago" text — we promote THAT into the top banner
+   * instead of a static pseudo-element, so the banner actually
+   * carries useful attribution like the render mockup did. */
+  &::before { display: none; }
+
+  /* Reserve space at the top of the card for the banner. 38px
+   * banner height + 14px gap = 52px (Flarum's stock 20px padding
+   * still applies on top of this, so total content offset is
+   * 20px + 52px = 72px from card top). */
+  > .Post-container {
+    padding-top: 52px;
+  }
+
+  /* Pull fof/best-answer's indicator OUT of the post header's flex
+   * flow and onto the top of the card as a full-width banner.
    *
-   * Earlier version used `position: absolute; top: 0; left: 0;
-   * right: 0;` which positioned the banner relative to .Post's
-   * PADDING edge (per CSS spec for abs positioning). Combined with
-   * Flarum's stock 20px padding on .Post, the banner sat ~20px
-   * inside the card border on all sides — read as a "floating chip"
-   * inside the card rather than the integrated header banner the
-   * design wanted.
-   *
-   * Block ::before with negative margins on top/left/right pulls the
-   * banner OUT of the padding zone so it extends flush with the
-   * card's actual border edge. Margin-bottom provides the gap to
-   * the post content below; no padding-top hack on Post-container
-   * needed. */
-  &::before {
-    content: '✓ Marked as solution';
-    display: block;
-    margin: -20px -20px 14px;
-    padding: 8px 22px;
+   * `.item-isBestAnswer` is the <li> wrapping the chip — making it
+   * absolute removes it from the header. Negative inset offsets
+   * (-1px on top/left/right) tuck the banner inside the card's
+   * 1px border at all three edges so it lines up with the rounded
+   * corners cleanly. */
+  .item-isBestAnswer {
+    position: absolute;
+    top: -1px;
+    left: -1px;
+    right: -1px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    z-index: 2;
+  }
+
+  /* The chip inside .item-isBestAnswer fills the banner area. Note
+   * this overrides our compact-pill .Post .Post--BestAnswer rule
+   * for THIS specific best-answer post context — other posts still
+   * get the small chip in their header. */
+  .item-isBestAnswer .Post--BestAnswer {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 38px;
+    padding: 0 22px;
+    border: none;
+    border-radius: calc(var(--r-md) - 1px) calc(var(--r-md) - 1px) 0 0;
     background: var(--status-resolved-bg);
     color: var(--status-resolved);
     font-size: 11.5px;
     font-weight: 700;
     letter-spacing: 0.06em;
     text-transform: uppercase;
+    white-space: normal;
     border-bottom: 1px solid rgba(5, 150, 105, 0.18);
-    /* Top corners follow the card's outer radius — inner radius
-       slightly smaller (1px less for the border) for a clean nest. */
-    border-top-left-radius: calc(var(--r-md) - 1px);
-    border-top-right-radius: calc(var(--r-md) - 1px);
+    box-shadow: none;
+  }
+
+  /* "set by USER N ago" suffix: drop uppercase + tracking, mute
+   * opacity slightly so the BEST ANSWER label is the visual
+   * emphasis and the attribution reads as supporting meta. */
+  .item-isBestAnswer .BestAnswer--User {
+    text-transform: none;
+    letter-spacing: 0;
+    margin-left: 8px;
+    opacity: 0.8;
+    font-weight: 500;
+    font-size: 11px;
   }
 }
 
