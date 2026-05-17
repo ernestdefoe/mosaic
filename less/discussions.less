@@ -16,6 +16,16 @@
   box-shadow: none;
 }
 
+/* Per-item base border lives at LOW specificity (single class, 0,0,1,0)
+   so ramon/colored's `html[data-colored-border=left] .DiscussionListItem
+   { border-left: 3px solid <tag> }` rule (0,0,2,1) wins on the LEFT
+   side. My higher-specificity rule above sets background, radius, etc.
+   but DELIBERATELY omits `border` so it can't stomp ramon/colored's
+   left-side override. Top/right/bottom stay 1px from this rule. */
+.DiscussionListItem {
+  border: 1px solid var(--border);
+}
+
 /* Each row is now its own rounded card with surface bg + border +
    shadow + full border-radius. ramon/colored's border-left wraps
    all 4 corners the same way .Post does. Rows stack with an 8px gap
@@ -34,13 +44,10 @@
    trigger inside the card. */
 .IndexPage .DiscussionList .DiscussionListItem {
   background: var(--surface);
-  border: 1px solid var(--border);
   border-radius: var(--r-md);
   box-shadow: var(--shadow-sm);
   padding: 18px 48px 18px 26px;
   margin-bottom: 8px;
-  /* No bottom border — the gap between rows is the separator now. */
-  border-bottom: 1px solid var(--border);
   transition: background 0.12s, border-color 0.15s;
 
   &:last-child { margin-bottom: 0; }
