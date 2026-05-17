@@ -98,16 +98,23 @@
               transform 0.18s cubic-bezier(0.4, 0, 0.2, 1),
               visibility 0s linear 0.18s;
 
-  /* Invisible bridge that fills the 10px margin between the popup and
-     the trigger button below — so the cursor can travel from button
-     to popup without crossing a hover-dead zone. */
+  /* Invisible bridge spanning the gap between the popup and the
+     trigger button below.
+     Live probe showed the actual rendered gap between popup bottom
+     and trigger top is ~19px (the 10px margin-bottom plus the
+     translate transform offset and button padding interactions). A
+     10px bridge left a 9px dead zone — small but enough that real-
+     world cursor movement crossed it, dropped hover, and the popup
+     snapped shut before reach. Bumped the bridge to 30px so it
+     comfortably overlaps the trigger area; extra coverage doesn't
+     hurt because the bridge is transparent. */
   &::after {
     content: '';
     position: absolute;
-    left: 0;
-    right: 0;
-    bottom: -10px;
-    height: 10px;
+    left: -20px;
+    right: -20px;
+    bottom: -30px;
+    height: 30px;
   }
 
   /* Little arrow pointing down at the trigger */
