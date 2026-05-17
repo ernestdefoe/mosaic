@@ -8,9 +8,33 @@ import HeroPanel from './components/HeroPanel';
 import CategoryTiles from './components/CategoryTiles';
 import SidebarPanels from './components/SidebarPanels';
 import SectionHeader from './components/SectionHeader';
+import MobileSessionAvatar from './components/MobileSessionAvatar';
 import { navItems, startDiscussionButton } from './components/HeaderNav';
 
 app.initializers.add('ernestdefoe-mosaic', () => {
+  /*
+   * Mount the mobile session avatar to its own root on document.body.
+   *
+   * Why a separate Mithril root: Flarum's #drawer (which holds the
+   * entire .App-header, including the avatar) is transform-translated
+   * off-screen on mobile. CSS transforms create a containing block for
+   * position:fixed descendants, so any floating element inside #drawer
+   * renders relative to the off-screen drawer — invisible. Mounting
+   * outside #drawer (directly on body) escapes the trap.
+   *
+   * Component is display:none on >767px viewports, so desktop is
+   * untouched.
+   */
+  if (typeof document !== 'undefined') {
+    const existing = document.getElementById('mosaic-mobile-session-root');
+    const root = existing || document.createElement('div');
+    if (!existing) {
+      root.id = 'mosaic-mobile-session-root';
+      document.body.appendChild(root);
+    }
+    m.mount(root, MobileSessionAvatar);
+  }
+
   /*
    * Replace the IndexPage hero with our branded panel + category tiles.
    * The two render as siblings in the hero slot above the page grid.
