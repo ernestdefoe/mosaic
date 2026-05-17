@@ -69,11 +69,22 @@
  * px from the viewport edge while the hero's left edge is ~32px out —
  * a noticeable misalignment. Widen the header container to match. */
 
+/* `width: auto` is the load-bearing piece — Flarum's .container sets
+ * an explicit `width: 1100px` at the ≥xl breakpoint, which beats
+ * `max-width: 1600px` even with !important because width is the
+ * dominant property when both are present. Without overriding width
+ * here the header stayed clamped to ~1100px while the hero/grid sat
+ * in a 1600px container, producing the persistent misalignment
+ * (logo at x≈210, hero left edge at x≈32). */
 .App-header > .container,
 .App-header .container {
   max-width: 1600px !important;
+  width: auto !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
   padding-left: 32px !important;
   padding-right: 32px !important;
+  box-sizing: border-box;
 }
 
 @media (max-width: 1100px) {
