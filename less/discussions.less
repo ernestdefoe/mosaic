@@ -5,13 +5,16 @@
 .DiscussionList {
   background: var(--surface);
   border: 1px solid var(--border);
+  /* No left border. The colored left stripe ramon/colored paints
+     onto each .DiscussionListItem now becomes the outermost visual
+     element on the list's left edge — hugging where the list border
+     would have been instead of sitting 1px inside it. The first +
+     last item's per-item border-radius (below) gives the stripe its
+     rounded top-left and bottom-left corners so the visual is one
+     integrated rounded shape, not a floating chip. */
+  border-left: none;
   border-radius: var(--r-md);
   box-shadow: var(--shadow-sm);
-  /* No overflow:hidden here — that clipped the colored left border
-     ramon/colored paints onto rows. Instead we round the first +
-     last items themselves below so each item's own border-radius
-     contains its hover background AND curves around its colored
-     left border naturally. */
 }
 
 /* Round the first and last list items so their hover background and
