@@ -525,21 +525,27 @@ nav.DiscussionPage-nav {
 .Post.is-answer {
   border: 1px solid var(--status-resolved) !important;
   box-shadow: 0 4px 16px rgba(5, 150, 105, 0.08), var(--shadow-sm) !important;
-  position: relative;
 
-  > .Post-container {
-    padding-top: 36px;
-  }
-
+  /* Banner as a BLOCK pseudo-element, not absolute-positioned.
+   *
+   * Earlier version used `position: absolute; top: 0; left: 0;
+   * right: 0;` which positioned the banner relative to .Post's
+   * PADDING edge (per CSS spec for abs positioning). Combined with
+   * Flarum's stock 20px padding on .Post, the banner sat ~20px
+   * inside the card border on all sides — read as a "floating chip"
+   * inside the card rather than the integrated header banner the
+   * design wanted.
+   *
+   * Block ::before with negative margins on top/left/right pulls the
+   * banner OUT of the padding zone so it extends flush with the
+   * card's actual border edge. Margin-bottom provides the gap to
+   * the post content below; no padding-top hack on Post-container
+   * needed. */
   &::before {
     content: '✓ Marked as solution';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 32px;
-    line-height: 32px;
-    padding: 0 22px;
+    display: block;
+    margin: -20px -20px 14px;
+    padding: 8px 22px;
     background: var(--status-resolved-bg);
     color: var(--status-resolved);
     font-size: 11.5px;
@@ -547,12 +553,10 @@ nav.DiscussionPage-nav {
     letter-spacing: 0.06em;
     text-transform: uppercase;
     border-bottom: 1px solid rgba(5, 150, 105, 0.18);
-    z-index: 1;
-    /* Match the Post's outer radius on the top corners so the banner
-       tucks into the rounded corners cleanly now that .Post has
-       overflow:visible (needed for dropdowns + reactions popup). */
-    border-top-left-radius: var(--r-md);
-    border-top-right-radius: var(--r-md);
+    /* Top corners follow the card's outer radius — inner radius
+       slightly smaller (1px less for the border) for a clean nest. */
+    border-top-left-radius: calc(var(--r-md) - 1px);
+    border-top-right-radius: calc(var(--r-md) - 1px);
   }
 }
 
