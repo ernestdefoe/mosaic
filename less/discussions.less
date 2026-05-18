@@ -50,6 +50,16 @@
   margin-bottom: 8px;
   transition: background 0.12s, border-color 0.15s;
 
+  /* Mobile: the desktop 26/48 horizontal padding only leaves ~250px
+     of inner width on a 375px viewport once the avatar + 12px gap is
+     accounted for, which forces the title onto 2 lines and pushes the
+     comment-count badge off into a near-collision with the title. Drop
+     to a tighter 14/16 inset (the per-item controls dropdown for
+     mods/admins still has comfortable room past the count badge). */
+  @media (max-width: 767.98px) {
+    padding: 14px 16px;
+  }
+
   &:last-child { margin-bottom: 0; }
 
   &:last-child { border-bottom: none; }

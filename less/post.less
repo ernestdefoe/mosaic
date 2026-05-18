@@ -198,6 +198,23 @@
   padding: 18px 24px 20px;
 }
 
+/* Mobile (<=767.98px): Flarum's stock CSS hides the .Post-side avatar
+ * and shows an inline avatar in .PostUser-name instead. With the avatar
+ * gone, our 96px reserved rail is just empty space eating ~26% of a
+ * 375px viewport. Collapse Post-side to 0 width (keep `display: flex`
+ * so .CommentPost.editing rules that target descendants still apply)
+ * and reclaim the room for content. */
+@media (max-width: 767.98px) {
+  .Post-side {
+    flex: 0 0 0;
+    padding: 0;
+    gap: 0;
+  }
+  .Post-main {
+    padding: 14px 16px 16px;
+  }
+}
+
 /* Post header — name + badges + meta on one row */
 .Post-header {
   margin-bottom: 14px;
@@ -254,9 +271,14 @@
   a:hover { color: var(--primary); }
 
   /* The duplicate inline avatar that Flarum renders in the name link.
-     Post-side already shows it large; hide here to dedupe. */
-  .Avatar.Post-avatar {
-    display: none !important;
+     Post-side already shows it large on desktop; hide ONLY there to dedupe.
+     Flarum's stock CSS hides .Post-side .Post-avatar at <=767.98px and
+     expects the inline one in .PostUser-name to take over — keeping our
+     hide rule unconditional kills both avatars on mobile. */
+  @media (min-width: 768px) {
+    .Avatar.Post-avatar {
+      display: none !important;
+    }
   }
 
   .UserOnline {
@@ -452,6 +474,18 @@ button.ReplyPlaceholder {
     font-size: 14px;
     display: flex;
     align-items: center;
+  }
+
+  /* Mobile: drop the avatar rail's empty placeholder so "Write a
+     Reply..." sits flush with the card edge instead of being indented
+     ~96px past nothing. */
+  @media (max-width: 767.98px) {
+    .Post-side {
+      flex: 0 0 0;
+      padding: 0;
+    }
+    .Post-side .Avatar { display: none; }
+    .Post-main { padding: 16px 18px; }
   }
   .Post-header {
     margin: 0;
