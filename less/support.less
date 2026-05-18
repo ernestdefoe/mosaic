@@ -21,6 +21,28 @@
   }
 }
 
+/* linkrobins/support reuses Flarum core's .IndexPage-nav scaffold and
+ * inherits the stock nav items (All Discussions / Groups / Following /
+ * Support self-link / Tags) above its own SUPPORT heading + status
+ * filter chips. Those stock items are already in our HeaderPrimary nav
+ * (Discussions / Tickets / Tags), so re-rendering them in the support
+ * sidebar is pure duplication — and the "Support" self-link is a link
+ * to the page the visitor is currently on.
+ *
+ * Hide them so the sidebar reads cleanly: [+ New ticket] then the
+ * SUPPORT heading + filter chips. Scoped to .LinkRobinsSupport-sidebar
+ * so /, /tags, /groups etc. keep their normal nav intact. */
+.LinkRobinsSupport-sidebar {
+  .item-allDiscussions,
+  .item-following,
+  .item-tags,
+  .item-groups,
+  .item-social-groups,
+  .item-linkrobins-support {
+    display: none;
+  }
+}
+
 /* Ticket list row — extends DiscussionListItem styling */
 .TicketListItem {
   &-id {
