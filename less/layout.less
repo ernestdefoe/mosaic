@@ -100,12 +100,24 @@
 }
 
 /* The render moves Flarum's stock nav (Start a Discussion + Tags +
-   Messages + Groups + ...) up into the header. Hide the IndexPage-nav
-   block here so the sidebar shows only our own widget stack. The
-   underlying functionality stays — links live in HeaderPrimary now
-   and the "Start a Discussion" button moves to HeaderSecondary. */
-.IndexPage .Page-sidebar > .IndexPage-nav,
-.IndexPage .Page-sidebar > nav.IndexPage-nav { display: none; }
+   Messages + Groups + ...) up into the header. Hide that IndexPage-nav
+   block so the sidebar shows only our own widget stack. The underlying
+   functionality stays — links live in HeaderPrimary now and the
+   "Start a Discussion" button moves to HeaderSecondary.
+ *
+ * IMPORTANT: extensions reuse the `.IndexPage-nav` class on pages that
+ * also carry `.IndexPage` (e.g. linkrobins/support renders its status-
+ * filter chips + "New ticket" button as `.IndexPage-nav .sideNav
+ * .LinkRobinsSupport-sidebar`). Hiding `.IndexPage-nav` unconditionally
+ * here used to kill the support extension's entire control panel — an
+ * admin landing on /support saw just "No tickets yet" with no way to
+ * switch from the implicit Mine filter to All, and no New-Ticket
+ * button. The `:not()` excludes keep those extension surfaces visible.
+ * Add a new exclude here when another extension layers onto IndexPage. */
+.IndexPage .Page-sidebar > .IndexPage-nav:not(.LinkRobinsSupport-sidebar),
+.IndexPage .Page-sidebar > nav.IndexPage-nav:not(.LinkRobinsSupport-sidebar) {
+  display: none;
+}
 
 /* The .Page-pane on the left (used for mobile drawer) — collapse on
    desktop so it doesn't add empty space. */
