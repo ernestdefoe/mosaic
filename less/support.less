@@ -21,6 +21,55 @@
   }
 }
 
+/* Empty / minimal-content support index — the "No tickets yet" card
+ * gets the full width of the content column instead of being a small
+ * pill at the top, and the message sits vertically + horizontally
+ * centered inside it. The sidebar (filter chips) stays where the
+ * IndexPage grid puts it on the right.
+ *
+ * Without these rules the empty card was ~250px wide and clung to the
+ * top-left of a 1000px+ content column, with the sidebar way off to
+ * the right of an otherwise-blank page. */
+.LinkRobinsSupport-page {
+  .LinkRobinsSupport-empty {
+    /* Fill the content column horizontally (the IndexPage grid already
+     * pins it to ~858px of a 1280px viewport once the 320px sidebar +
+     * gap are subtracted), and stay short vertically — just enough
+     * vertical padding to read as a deliberate empty-state card, not
+     * the whole viewport's worth of dead space. */
+    margin: 0;
+    padding: 28px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-size: 15px;
+    line-height: 1.55;
+    color: var(--text-secondary);
+    background: var(--surface);
+    border: 1px dashed var(--border-strong);
+    border-radius: var(--r-md);
+  }
+}
+
+/* Flarum core hard-codes `.sideNav, .sideNav > ul { width: 190px }`
+ * on the support sidebar. Our IndexPage grid gives the right column
+ * 320px — so the sidebar's 190px content sat flush LEFT inside its
+ * 320px slot, leaving ~130px of dead space to the right of every
+ * filter chip. Push the nav and its UL right by auto-marginning the
+ * left edge; chips now sit flush against the right rail of the
+ * content area instead of floating mid-column.
+ *
+ * `width: auto` on `.sideNav > ul` lets the ul follow the chip
+ * widths so the right edge stays clean. */
+.LinkRobinsSupport-sidebar {
+  &.sideNav,
+  &.sideNav > ul {
+    margin-left: auto;
+    margin-right: 0;
+  }
+}
+
 /* linkrobins/support reuses Flarum core's .IndexPage-nav scaffold and
  * inherits the stock nav items (All Discussions / Groups / Following /
  * Support self-link / Tags) above its own SUPPORT heading + status
