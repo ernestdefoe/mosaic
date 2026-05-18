@@ -88,7 +88,7 @@ export default class HeroPanel extends Component {
         <div className="MosaicHero-stats">
           {this.renderStat('fa-solid fa-users', formatNumber(stats.members), 'Members')}
           {this.renderStat('fa-regular fa-comments', formatNumber(stats.discussions), 'Discussions')}
-          {this.renderStat('fa-solid fa-circle-check', formatNumber(stats.resolved), 'Tickets resolved')}
+          {this.renderStat('fa-solid fa-ticket', formatNumber(stats.resolved), 'Tickets resolved')}
           {this.renderStat('fa-regular fa-pen-to-square', formatNumber(stats.posts), 'Posts')}
           {this.renderOnlineNowStat(stats.online)}
         </div>
