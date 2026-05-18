@@ -249,23 +249,24 @@
   }
 }
 
+/* Flarum's stock <Avatar> renders as either an <img> (uploaded image)
+ * or a <span> with a one-letter initial colored from User.color() —
+ * which auto-derives from displayName via stringToColor(). Sizing
+ * applies to either form via the .Avatar base class; we just need to
+ * pin the dimensions used inside the popover row.
+ *
+ * Earlier this rule (and a `--fallback` modifier) hand-rolled both
+ * shapes — the fallback used a primary-color gradient on EVERY user,
+ * which collided visually with the per-user colored circles the rest
+ * of the forum draws. Letting Avatar own the bg color removes the
+ * inconsistency. */
+.MosaicHero-onlineAvatar.Avatar,
 .MosaicHero-onlineAvatar {
   width: 30px;
   height: 30px;
+  font-size: 12.5px;
   border-radius: 50%;
-  object-fit: cover;
   flex-shrink: 0;
-  background: var(--surface-inset);
-
-  &--fallback {
-    display: grid;
-    place-items: center;
-    font-size: 11.5px;
-    font-weight: 700;
-    color: #fff;
-    background: linear-gradient(135deg, var(--primary), var(--primary-dark, var(--primary)));
-    letter-spacing: 0.02em;
-  }
 }
 
 .MosaicHero-onlineName {

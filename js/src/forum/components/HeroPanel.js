@@ -1,4 +1,6 @@
 import Component from 'flarum/common/Component';
+import Avatar from 'flarum/common/components/Avatar';
+import User from 'flarum/common/models/User';
 import app from 'flarum/forum/app';
 
 /* Inline icon helper — Flarum 2 removed flarum/common/helpers/icon. */
@@ -108,6 +110,29 @@ export default class HeroPanel extends Component {
     );
   }
 
+  /* Return a User model instance for one online-user payload. Prefer
+   * the store's hydrated record (richer attrs from other parts of the
+   * SPA) when available; otherwise build a standalone model from the
+   * forum-attribute shape. Memoize per render to avoid re-constructing
+   * on every redraw caused by the popover toggle. */
+  userFor(u) {
+    if (!this._userCache) this._userCache = new Map();
+    if (this._userCache.has(u.id)) return this._userCache.get(u.id);
+
+    const fromStore = app.store.getById('users', u.id);
+    const user = fromStore || new User({
+      id: String(u.id),
+      type: 'users',
+      attributes: {
+        username: u.username,
+        displayName: u.displayName || u.username,
+        avatarUrl: u.avatarUrl || null,
+      },
+    });
+    this._userCache.set(u.id, user);
+    return user;
+  }
+
   renderOnlineNowStat(rawCount) {
     const users = app.forum.attribute('mosaicOnlineUsers') || [];
     const value = formatNumber(rawCount);
@@ -152,31 +177,38 @@ export default class HeroPanel extends Component {
               </div>
             ) : (
               <ul className="MosaicHero-onlineList">
-                {users.map((u) => (
-                  <li key={u.id}>
-                    <a
-                      href={'/u/' + encodeURIComponent(u.username || '')}
-                      className="MosaicHero-onlineRow"
-                      role="menuitem"
-                      onclick={() => { this.onlineOpen = false; }}
-                    >
-                      {u.avatarUrl ? (
-                        <img src={u.avatarUrl} alt="" className="MosaicHero-onlineAvatar" loading="lazy" />
-                      ) : (
-                        <div
-                          className="MosaicHero-onlineAvatar MosaicHero-onlineAvatar--fallback"
-                          aria-hidden="true"
-                        >
-                          {initials(u.displayName || u.username || '?')}
-                        </div>
-                      )}
-                      <span className="MosaicHero-onlineName">
-                        {u.displayName || u.username}
-                      </span>
-                      <span className="MosaicHero-onlineDot" aria-hidden="true" />
-                    </a>
-                  </li>
-                ))}
+                {users.map((u) => {
+                  /* Build a User model (or fetch a hydrated one from the
+                   * store) so Flarum's stock Avatar component paints the
+                   * same auto-colored initial circle it draws everywhere
+                   * else — matches DiscussionListItem, Post, profile.
+                   *
+                   * Why not just <img src={u.avatarUrl}>: when avatarUrl
+                   * is null (the common case — most accounts don't upload
+                   * an image), the previous render fell through to a
+                   * neutral gray initials box that didn't match the rest
+                   * of the forum. Avatar.color() derives a per-user color
+                   * from displayName via stringToColor(), so the dropdown
+                   * row now visually matches the post-card avatar for the
+                   * same user. */
+                  const userModel = this.userFor(u);
+                  return (
+                    <li key={u.id}>
+                      <a
+                        href={'/u/' + encodeURIComponent(u.username || '')}
+                        className="MosaicHero-onlineRow"
+                        role="menuitem"
+                        onclick={() => { this.onlineOpen = false; }}
+                      >
+                        <Avatar user={userModel} className="MosaicHero-onlineAvatar" />
+                        <span className="MosaicHero-onlineName">
+                          {u.displayName || u.username}
+                        </span>
+                        <span className="MosaicHero-onlineDot" aria-hidden="true" />
+                      </a>
+                    </li>
+                  );
+                })}
               </ul>
             )}
           </div>
@@ -192,9 +224,3 @@ function formatNumber(n) {
   return Number(n).toLocaleString('en-US');
 }
 
-function initials(name) {
-  const parts = String(name).trim().split(/\s+/).filter(Boolean);
-  if (!parts.length) return '?';
-  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
-  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
-}
