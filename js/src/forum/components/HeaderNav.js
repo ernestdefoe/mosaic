@@ -24,26 +24,13 @@ export function navItems() {
     </LinkButton>
   );
 
-  if (hasExt('linkrobins-support')) {
-    items.push(
-      <LinkButton
-        href={app.forum.attribute('supportUrl') || '/support'}
-        icon="fa-solid fa-headset"
-             >
-        {translate('nav.tickets', 'Tickets')}
-      </LinkButton>
-    );
-  }
-
-  /* Marketplace intentionally omitted. ramon/marketplace registers its
-   * own "Shop" Dropdown into IndexSidebar.navItems with a category
-   * submenu — the canonical surface. Hardcoding a Marketplace pill
-   * here used to produce two pills resolving to the same destination
-   * (one bare link, one with the dropdown), which read as a bug.
-   *
-   * Same convention applies to other future nav contributions: let the
-   * extension add itself to IndexSidebar.navItems, MosaicHeroNav will
-   * pick it up and wrap it in a pill automatically. */
+  /* Extension-contributed nav items (Support / Tickets, Marketplace /
+   * Shop, Tags, etc.) are intentionally NOT hardcoded here. Every
+   * well-behaved Flarum 2 extension registers its own entries into
+   * IndexSidebar.navItems — MosaicHeroNav mirrors that list and wraps
+   * each entry in a pill automatically. Hardcoding extension-specific
+   * pills here produces duplicates (the extension's contribution +
+   * mosaic's), which is the bug we're avoiding. */
 
   /* Tags intentionally omitted. flarum/tags adds its own 'tags' entry
    * to IndexSidebar.navItems; MosaicHeroNav filters that out so neither
