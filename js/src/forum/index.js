@@ -1,15 +1,15 @@
 import app from 'flarum/forum/app';
 import { extend, override } from 'flarum/common/extend';
 import IndexPage from 'flarum/forum/components/IndexPage';
-import HeaderPrimary from 'flarum/forum/components/HeaderPrimary';
-import HeaderSecondary from 'flarum/forum/components/HeaderSecondary';
+import IndexSidebar from 'flarum/forum/components/IndexSidebar';
 
 import HeroPanel from './components/HeroPanel';
 import CategoryTiles from './components/CategoryTiles';
+import MosaicHeroNav from './components/MosaicHeroNav';
 import SidebarPanels from './components/SidebarPanels';
 import SectionHeader from './components/SectionHeader';
 import MobileSessionAvatar from './components/MobileSessionAvatar';
-import { navItems, startDiscussionButton } from './components/HeaderNav';
+import { navItems } from './components/HeaderNav';
 
 app.initializers.add('ernestdefoe-mosaic', () => {
   /*
@@ -43,16 +43,16 @@ app.initializers.add('ernestdefoe-mosaic', () => {
     return [
       HeroPanel.component({ stats: getForumStats() }),
       CategoryTiles.component(),
+      MosaicHeroNav.component(),
     ];
   });
 
   /*
-   * Append our widget stack (Quick Actions / Top Contributors /
-   * Trending / Marketplace promo) to the existing IndexPage sidebar.
-   *
-   * Returning an array makes Mithril render the original sidebar plus
-   * our panels as siblings — same DOM container (.Page-sidebar), no
-   * vdom archaeology, no extra wrapper.
+   * Sidebar: keep IndexSidebar mounted (its App-titleControl is the
+   * phone nav surface — see the @media (min-width:768px) hide rule in
+   * layout.less for the desktop side). The stock newDiscussion button
+   * is stripped above. Append our widget stack (Quick Actions / Top
+   * Contributors / Trending / Marketplace promo) below.
    */
   override(IndexPage.prototype, 'sidebar', function (original) {
     return [original(), SidebarPanels.component()];
@@ -68,23 +68,44 @@ app.initializers.add('ernestdefoe-mosaic', () => {
   });
 
   /*
-   * Promote the top-level destinations (Discussions / Tickets /
-   * Marketplace / Categories) into HeaderPrimary so the header
-   * becomes the navigation surface — matches the render. The stock
-   * IndexPage-nav is hidden by layout.less.
+   * Nav destinations live in Flarum's canonical IndexSidebar.navItems
+   * ItemList — the same list flarum/tags, flarum/subscriptions, and any
+   * future extension adds to. Adding our own mosaic bridges (Tickets,
+   * Marketplace) here means they show up alongside extension items
+   * automatically.
+   *
+   * Flarum 2 renders this list responsively without any extra work from
+   * us:
+   *   - desktop  → vertical sidebar to the left of the page content
+   *   - tablet   → horizontal scrolling pill row above the content
+   *   - phone    → SelectDropdown attached to the page-title bar; tap
+   *                opens a bottom-sheet menu with every nav item
+   *
+   * On phone the hamburger DRAWER keeps Flarum's stock contents (search,
+   * notifications, auth) — the page title dropdown is the nav surface.
+   * Same pattern Avocado uses.
    */
-  extend(HeaderPrimary.prototype, 'items', function (items) {
+  extend(IndexSidebar.prototype, 'navItems', function (items) {
     navItems().forEach((vnode, i) =>
-      items.add(`mosaic-nav-${i}`, vnode, 100 - i)
+      items.add(`mosaic-nav-${i}`, vnode, 95 - i)
     );
   });
 
   /*
-   * Move "Start a Discussion" into HeaderSecondary, just before the
-   * sign-up / log-in / avatar items.
+   * Mobile nav surface: Flarum's native phone pattern. IndexSidebar's
+   * top-level Dropdown--select has class App-titleControl, which core's
+   * @phone CSS positions absolute to the top of the screen — it becomes
+   * the centered tappable page title that opens a bottom-sheet menu of
+   * all nav destinations.
+   *
+   * For this to work we just need IndexSidebar mounted somewhere; its
+   * desktop rendering is hidden by CSS (only the phone-escaped
+   * title-control surfaces visually). The "+ Start a Discussion" button
+   * is removed below — the composer trigger inside the hero handles
+   * that affordance.
    */
-  extend(HeaderSecondary.prototype, 'items', function (items) {
-    items.add('mosaic-start-discussion', startDiscussionButton(), 50);
+  extend(IndexSidebar.prototype, 'items', function (items) {
+    items.remove('newDiscussion');
   });
 });
 

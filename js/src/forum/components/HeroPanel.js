@@ -2,6 +2,7 @@ import Component from 'flarum/common/Component';
 import Avatar from 'flarum/common/components/Avatar';
 import User from 'flarum/common/models/User';
 import app from 'flarum/forum/app';
+import MosaicComposerTrigger from './MosaicComposerTrigger';
 
 /* Inline icon helper — Flarum 2 removed flarum/common/helpers/icon. */
 const fa = (name, style) => <i className={`icon ${name}`} style={style} aria-hidden="true" />;
@@ -69,23 +70,7 @@ export default class HeroPanel extends Component {
             'Search the community for answers, or start a new topic to get help from our team and other users.'}
         </p>
 
-        <form
-          className="MosaicHero-search"
-          onsubmit={(e) => {
-            e.preventDefault();
-            const q = e.target.querySelector('input').value.trim();
-            if (q) m.route.set(app.route('index', { q }));
-          }}
-        >
-          {fa('fa-solid fa-magnifying-glass', { color: 'var(--text-muted)' })}
-          <input
-            type="text"
-            placeholder={'Try "2FA not working" or "export data"…'}
-          />
-          <button type="submit" className="MosaicHero-searchBtn">
-            Search
-          </button>
-        </form>
+        {MosaicComposerTrigger.component()}
 
         <div className="MosaicHero-stats">
           {this.renderStat('fa-solid fa-users', formatNumber(stats.members), 'Members')}

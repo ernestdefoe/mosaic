@@ -29,8 +29,7 @@ export function navItems() {
       <LinkButton
         href={app.forum.attribute('supportUrl') || '/support'}
         icon="fa-solid fa-headset"
-        className="MosaicHeaderNav-item"
-      >
+             >
         {translate('nav.tickets', 'Tickets')}
       </LinkButton>
     );
@@ -49,13 +48,10 @@ export function navItems() {
     );
   }
 
-  if (hasExt('flarum-tags')) {
-    items.push(
-      <LinkButton href={app.route('tags')} icon="fa-solid fa-tag" className="MosaicHeaderNav-item">
-        {translate('nav.tags', 'Tags')}
-      </LinkButton>
-    );
-  }
+  /* Tags intentionally omitted. flarum/tags adds its own 'tags' entry
+   * to IndexSidebar.navItems; MosaicHeroNav filters that out so neither
+   * Tags link surfaces in the hero pill row. The CategoryTiles grid
+   * above the pill row is the canonical tag entry point. */
 
   /* Operator-configured extras: set `mosaicHeaderNavExtras` on the
    * forum serializer to an array of {label, href, icon} for e.g.

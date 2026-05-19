@@ -99,24 +99,25 @@
   }
 }
 
-/* The render moves Flarum's stock nav (Start a Discussion + Tags +
-   Messages + Groups + ...) up into the header. Hide that IndexPage-nav
-   block so the sidebar shows only our own widget stack. The underlying
-   functionality stays — links live in HeaderPrimary now and the
-   "Start a Discussion" button moves to HeaderSecondary.
+/* Nav destinations live in IndexSidebar.navItems.
  *
- * IMPORTANT: extensions reuse the `.IndexPage-nav` class on pages that
- * also carry `.IndexPage` (e.g. linkrobins/support renders its status-
- * filter chips + "New ticket" button as `.IndexPage-nav .sideNav
- * .LinkRobinsSupport-sidebar`). Hiding `.IndexPage-nav` unconditionally
- * here used to kill the support extension's entire control panel — an
- * admin landing on /support saw just "No tickets yet" with no way to
- * switch from the implicit Mine filter to All, and no New-Ticket
- * button. The `:not()` excludes keep those extension surfaces visible.
- * Add a new exclude here when another extension layers onto IndexPage. */
-.IndexPage .Page-sidebar > .IndexPage-nav:not(.LinkRobinsSupport-sidebar),
-.IndexPage .Page-sidebar > nav.IndexPage-nav:not(.LinkRobinsSupport-sidebar) {
-  display: none;
+ * Desktop (≥768px): hide the IndexPage-nav block in the sidebar — the
+ * hero pill row (MosaicHeroNav) owns nav at this viewport.
+ *
+ * Phone (≤767px): leave IndexPage-nav in the DOM. Flarum core's
+ * @phone CSS positions the inner .App-titleControl `position: absolute;
+ * top: 0; left: 50%` so the page-title SelectDropdown escapes to the
+ * top of the screen — tap it to open the bottom-sheet nav menu (this
+ * is Flarum's stock mobile nav pattern).
+ *
+ * The :not(.LinkRobinsSupport-sidebar) keeps the linkrobins/support
+ * extension's own .IndexPage-nav sidebar visible — it ships filter
+ * chips + "New ticket" controls that aren't nav destinations. */
+@media (min-width: 768px) {
+  .IndexPage .Page-sidebar > .IndexPage-nav:not(.LinkRobinsSupport-sidebar),
+  .IndexPage .Page-sidebar > nav.IndexPage-nav:not(.LinkRobinsSupport-sidebar) {
+    display: none;
+  }
 }
 
 /* The .Page-pane on the left (used for mobile drawer) — collapse on
