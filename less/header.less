@@ -24,43 +24,14 @@
   gap: 10px;
 }
 
-/* Primary nav tabs (replaces stock IndexPage nav style) */
-.Header-navigation .nav-link,
-.Navigation-pinned .item .Button {
-  padding: 8px 13px;
-  border-radius: var(--r-sm);
-  font-size: 13.75px;
-  font-weight: 500;
-  color: var(--text-secondary);
-  background: transparent;
-  border: none;
-  transition: background 0.15s, color 0.15s;
-
-  &:hover {
-    background: var(--primary-ghost);
-    color: var(--primary);
-  }
-
-  &.active {
-    background: var(--primary-ghost);
-    color: var(--primary);
-    font-weight: 600;
-  }
-}
-
-/* Header layout — DELIBERATELY minimal on internal sizing.
+/* Header layout — defer to Flarum's stock styling.
  *
- * Past attempts here aggressively flex'd .Header-secondary and forced
- * .item-search to take flex:1 / min-width:240px so the search input
- * would expand across the middle. That broke the rest of the header:
- * other extension items (messages, notifications, cart, avatar)
- * either overlapped the search or got clipped because the forced
- * widths fought their natural sizing.
- *
- * Instead we trust Flarum 2's stock header layout — search is an
- * icon-collapsed Search component that expands on focus into a
- * popover, which is the design intent. We only style the nav tabs we
- * inject into Header-primary, and let everything else inherit.
+ * Mosaic used to inject nav tabs into .Header-primary and reshape the
+ * header icon buttons into 36x36 squares to make them feel like a
+ * native nav row. Since nav moved to MosaicHeroNav (desktop pill row
+ * under the hero) + the stock .App-titleControl SelectDropdown (phone),
+ * the header is back to being just logo + search + notifications +
+ * user dropdown — which Flarum's stock CSS already styles correctly.
  *
  * One thing we DO override: the header's .container max-width. By
  * default Flarum's .container clamps to ~1140px regardless of
@@ -92,22 +63,6 @@
   .App-header .container {
     padding-left: 20px !important;
     padding-right: 20px !important;
-  }
-}
-
-.Header-primary {
-  display: flex;
-  align-items: center;
-
-  .Header-controls {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    list-style: none;
-    margin: 0 0 0 8px;
-    padding: 0;
-
-    > li { display: inline-flex; }
   }
 }
 
@@ -382,37 +337,11 @@
   }
 }
 
-/* Header action icons (notifications, search, etc.) — desktop only.
- *
- * Reshape the dropdown toggles into 36×36 icon squares for the desktop
- * header bar. Scoped to ≥768px because inside the mobile drawer the
- * same selector would squash the bell into a tiny square floating
- * ABOVE the "Notifications" label, instead of letting Flarum's stock
- * drawer row (icon + label inline, like "Flagged Posts") render. */
-@media (min-width: 768px) {
-  .Header-controls .item .Button.hasIcon,
-  .SessionDropdown,
-  .NotificationsDropdown .Dropdown-toggle {
-    width: 36px;
-    height: 36px;
-    border-radius: var(--r-sm);
-    display: grid;
-    place-items: center;
-    color: var(--text-secondary);
-    background: transparent;
-    transition: background 0.15s;
-
-    &:hover {
-      background: var(--surface-inset);
-      color: var(--text);
-    }
-  }
-}
-
-/* User avatar in header */
-.SessionDropdown .Avatar {
-  border-radius: var(--r-sm);
-}
+/* Header action icons (notifications, search, user dropdown) inherit
+ * Flarum's stock styling — circular avatar, native icon button sizing,
+ * default hover treatment. No mosaic overrides; the previous 36×36
+ * icon-square reshape was tied to the now-removed nav row and made the
+ * header feel different from default Flarum without adding value. */
 
 /* Mobile session surface — see MobileSessionAvatar.js.
  *

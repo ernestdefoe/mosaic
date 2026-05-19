@@ -35,36 +35,11 @@
      - honoring colored--instant by suppressing our transitions
    ===================================================================== */
 
-/* When the header is tinted by colored, our injected nav tabs in
-   .Header-primary need contrast — Flarum's --header-color and
-   --header-control-color are set to a readable ink for the tint, so
-   defer to those. */
-html[data-colored-header='true'] {
-  .MosaicHeaderNav-item {
-    color: var(--header-control-color, rgba(255, 255, 255, 0.85));
-
-    &:hover {
-      background: var(--header-control-bg, rgba(255, 255, 255, 0.16));
-      color: var(--header-colored-color, #fff);
-    }
-
-    &.active {
-      background: var(--header-control-bg, rgba(255, 255, 255, 0.22));
-      color: var(--header-colored-color, #fff);
-      font-weight: 600;
-    }
-  }
-
-  .MosaicHeaderNav-start {
-    background: var(--header-control-bg, rgba(255, 255, 255, 0.22));
-    color: var(--header-colored-color, #fff);
-
-    &:hover {
-      background: rgba(255, 255, 255, 0.30);
-      color: #fff;
-    }
-  }
-}
+/* Header tint integration removed: the previous MosaicHeaderNav-item /
+ * MosaicHeaderNav-start contrast overrides targeted nav tabs that used
+ * to live inside .Header-primary. Nav now renders in the hero pill row
+ * (MosaicHeroNav) below the tinted header, so the colored extension's
+ * header treatment doesn't need any mosaic-side compensation. */
 
 /* When the discussion list opts into a full colored row border, our
    row-separator bottom border doubles up — clear it. */
