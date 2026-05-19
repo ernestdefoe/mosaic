@@ -464,67 +464,16 @@
   }
 }
 
-/* Mobile session surface — see MobileSessionAvatar.js.
+/* MosaicMobileSession was a separately-mounted body-level Mithril root
+ * that rendered a top-right avatar (or "Log In" pill for guests) on
+ * mobile, because Flarum 2's .App-header lives inside #drawer.App-drawer
+ * which is transform-translated off-screen — so position:fixed children
+ * inside the drawer can't escape the transform's containing block.
  *
- * Why a separately-mounted component instead of pure CSS:
- * Flarum 2 puts the whole .App-header (including .item-session with
- * the user avatar / login button) INSIDE #drawer.App-drawer. On
- * mobile #drawer is visibility:hidden AND transform:translateX(-N) to
- * slide it off-screen. The transform creates a containing block for
- * position:fixed children, so even with visibility:visible overrides
- * the floating element renders relative to the off-screen drawer.
- *
- * The fix: a tiny extra Mithril root mounted directly on document.body
- * (outside the transform trap) that renders an avatar / log-in button
- * positioned fixed top-right. JS file: MobileSessionAvatar.js, mounted
- * by the forum initializer in index.js. */
-.MosaicMobileSession {
-  display: none;
-  position: fixed;
-  top: 8px;
-  right: 10px;
-  z-index: 102; /* above the App-navigation hamburger bar (z 101) */
-
-  @media (max-width: 767px) {
-    display: block;
-  }
-}
-
-.MosaicMobileSession-trigger {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 4px;
-  border-radius: var(--r-pill);
-  background: var(--surface);
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow-sm);
-  backdrop-filter: saturate(180%) blur(10px);
-  -webkit-backdrop-filter: saturate(180%) blur(10px);
-  color: var(--text);
-  text-decoration: none;
-  transition: background 0.15s, transform 0.12s;
-  cursor: pointer;
-  font: inherit;
-
-  &:hover { background: var(--surface-inset); text-decoration: none; }
-  &:active { transform: scale(0.97); }
-
-  .Avatar {
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    font-size: 13px;
-    flex-shrink: 0;
-  }
-}
-
-.MosaicMobileSession-loginLabel {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text);
-  padding: 0 10px 0 4px;
-}
+ * Removed: the guest "Log In" pill read as grayed-out/non-interactive
+ * (the pill chrome competed with the actual touch target). Mobile
+ * session affordances now live inside the hamburger drawer alongside
+ * Notifications and Search, which is Flarum 2's intended pattern. */
 
 /* Primary CTA button (New Ticket, etc.) */
 .Button--primary {
