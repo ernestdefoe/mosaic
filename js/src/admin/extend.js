@@ -49,6 +49,12 @@ export default [
       label: 'Hide the Trending sidebar widget',
       help: 'Removes the trending-discussions card from the index sidebar.',
     }))
+    .setting(() => ({
+      setting: 'mosaicHideOnlineUsers',
+      type: 'boolean',
+      label: 'Suppress the Online Users payload',
+      help: 'Stops the forum bootstrap from including the list of recently-active usernames. The "Online now" count tile still works; only the user-list popover goes empty. Useful on large communities where the extra payload bytes matter, or on forums that prefer not to surface usernames to guests.',
+    }))
 
     /* --- Section / route URL overrides --- */
     .setting(() => ({
