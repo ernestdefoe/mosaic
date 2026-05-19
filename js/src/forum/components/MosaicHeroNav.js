@@ -18,9 +18,25 @@ import IndexSidebar from 'flarum/forum/components/IndexSidebar';
  */
 export default class MosaicHeroNav extends Component {
   view() {
+    /* Instantiate a real IndexSidebar component to collect its
+     * navItems list. Today's navItems() implementation doesn't touch
+     * `this`, but `new IndexSidebar()` + explicit `.attrs = {}` gives
+     * future-Flarum code a valid component instance to read from
+     * (audit feedback — the previous `.prototype.navItems.call({})`
+     * pattern would have silently failed the moment IndexSidebar's
+     * navItems started reading this.attrs/this.state). The Mithril
+     * vnode lifecycle isn't invoked because we never mount the
+     * component; we just need its method results.
+     *
+     * Wrapped in try/catch as a defense-in-depth fallback so a hard
+     * failure (constructor side-effect, breaking change in the
+     * navItems signature) yields a hidden nav rather than a broken
+     * hero render. */
     let itemList;
     try {
-      itemList = IndexSidebar.prototype.navItems.call({});
+      const sidebar = new IndexSidebar();
+      sidebar.attrs = {};
+      itemList = sidebar.navItems();
     } catch (e) {
       return null;
     }

@@ -1,7 +1,6 @@
 import app from 'flarum/forum/app';
 import Component from 'flarum/common/Component';
 import Avatar from 'flarum/common/components/Avatar';
-import IndexSidebar from 'flarum/forum/components/IndexSidebar';
 
 /**
  * Composer-trigger card that sits above the hero nav pills.
@@ -12,12 +11,16 @@ import IndexSidebar from 'flarum/forum/components/IndexSidebar';
  * stock DiscussionComposer for logged-in users, or the LogInModal for
  * guests.
  *
- * Mirrors ramon/avocado's AvocadoHome-postInput. We don't reimplement
- * the composer open path — IndexSidebar.prototype.newDiscussionAction
- * already wraps the async chunk import for both DiscussionComposer and
- * LogInModal, and works whether or not the IndexSidebar component
- * itself is mounted in the DOM (it only touches app.session,
- * app.composer, and app.modal — all globals).
+ * Implementation: programmatically clicks the hidden
+ * `.IndexPage-newDiscussion` button that IndexSidebar renders for
+ * every index page (we leave it in the items list and rely on
+ * layout.less to hide the sidebar nav block on desktop). That
+ * delegates the whole open-composer flow — async chunk import for
+ * DiscussionComposer, guest → LogInModal branch, focus management —
+ * to Flarum's own handler. We don't reach into the prototype with
+ * `.call({})` any more; if a future Flarum release rewires the
+ * action, the click target continues to work because it's just a
+ * DOM event.
  */
 export default class MosaicComposerTrigger extends Component {
   view() {
@@ -69,10 +72,13 @@ export default class MosaicComposerTrigger extends Component {
   }
 
   open() {
-    try {
-      IndexSidebar.prototype.newDiscussionAction.call({}).catch(() => {});
-    } catch (e) {
-      /* Promise rejects for guest users — the modal is already shown. */
+    /* IndexSidebar renders .IndexPage-newDiscussion as part of its
+     * items list; layout.less hides the surrounding .IndexPage-nav
+     * block but the button itself is in the DOM. Click it to reuse
+     * Flarum's own composer-open flow. */
+    const btn = document.querySelector('.IndexPage-newDiscussion');
+    if (btn instanceof HTMLElement) {
+      btn.click();
     }
   }
 }

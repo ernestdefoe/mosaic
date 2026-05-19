@@ -80,9 +80,17 @@ app.initializers.add('ernestdefoe-mosaic', () => {
    * is removed below — the composer trigger inside the hero handles
    * that affordance.
    */
-  extend(IndexSidebar.prototype, 'items', function (items) {
-    items.remove('newDiscussion');
-  });
+  /*
+   * Note: we deliberately KEEP IndexSidebar's stock 'newDiscussion'
+   * item in the items list. It would otherwise render in the
+   * IndexPage sidebar, but layout.less already hides the entire
+   * .IndexPage-nav on desktop. Keeping the button in the DOM (just
+   * hidden) gives MosaicComposerTrigger a stable click target —
+   * `document.querySelector('.IndexPage-newDiscussion')?.click()`
+   * reuses Flarum's own composer-open path, which lazy-loads the
+   * DiscussionComposer chunk and handles guests → LogInModal for us
+   * with no risk of a broken `.call({})` on the prototype.
+   */
 });
 
 export { default as extend } from './extend';
