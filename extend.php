@@ -106,6 +106,15 @@ return [
                 Schema\Boolean::make('mosaicHideOnlineUsers')
                     ->get(fn () => $hideOnlineUsers),
 
+                /* Hide the "Tickets resolved" hero tile. Auto-hides
+                 * when linkrobins/support isn't installed (the
+                 * resolvedTicketCount() returns null which the frontend
+                 * already treats as "no tile"). This setting is the
+                 * explicit override for forums that have the extension
+                 * installed but don't want the tile in the strip. */
+                Schema\Boolean::make('mosaicHideTicketsTile')
+                    ->get(fn () => $settings->bool('mosaicHideTicketsTile')),
+
                 /* -- Section URL overrides (admin-saved strings) -- */
 
                 Schema\Str::make('supportUrl')

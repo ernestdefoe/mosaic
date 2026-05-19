@@ -55,6 +55,12 @@ export default [
       label: 'Suppress the Online Users payload',
       help: 'Stops the forum bootstrap from including the list of recently-active usernames. The "Online now" count tile still works; only the user-list popover goes empty. Useful on large communities where the extra payload bytes matter, or on forums that prefer not to surface usernames to guests.',
     }))
+    .setting(() => ({
+      setting: 'mosaicHideTicketsTile',
+      type: 'boolean',
+      label: 'Hide the Tickets resolved hero tile',
+      help: 'Removes the "Tickets resolved" stat tile from the hero strip. The tile auto-hides when linkrobins/support is not installed, so you only need this toggle if you DO run the support extension but prefer not to surface the resolved-ticket count.',
+    }))
 
     /* --- Section / route URL overrides --- */
     .setting(() => ({

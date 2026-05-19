@@ -83,7 +83,15 @@ export default class HeroPanel extends Component {
         <div className="MosaicHero-stats">
           {this.renderStat('fa-solid fa-users', formatNumber(stats.members), 'Members')}
           {this.renderStat('fa-regular fa-comments', formatNumber(stats.discussions), 'Discussions')}
-          {this.renderStat('fa-solid fa-ticket', formatNumber(stats.resolved), 'Tickets resolved')}
+          {/* Tickets tile auto-hides when stats.resolved is null
+            * (linkrobins/support isn't installed, so the backend's
+            * resolvedTicketCount() returned null), and can also be
+            * suppressed via the mosaicHideTicketsTile admin toggle
+            * for forums that DO have the extension but don't want the
+            * tile in the strip. */}
+          {stats.resolved != null && !app.forum.attribute('mosaicHideTicketsTile')
+            ? this.renderStat('fa-solid fa-ticket', formatNumber(stats.resolved), 'Tickets resolved')
+            : null}
           {this.renderStat('fa-regular fa-pen-to-square', formatNumber(stats.posts), 'Posts')}
           {this.renderOnlineNowStat(stats.online)}
         </div>
