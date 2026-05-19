@@ -13,50 +13,71 @@ namespace Ernestdefoe\Mosaic\Api;
 
 use Carbon\Carbon;
 use Flarum\User\User;
+use Illuminate\Contracts\Cache\Repository as CacheRepository;
 use Illuminate\Database\ConnectionInterface;
-use Throwable;
+use Illuminate\Database\QueryException;
+use Psr\Log\LoggerInterface;
 
 /**
- * Computes the three count attributes the mosaic hero strip can't
+ * Computes the four count attributes the mosaic hero strip can't
  * otherwise resolve on a vanilla Flarum 2 install: member count,
- * current-online count, and resolved-ticket count from
- * linkrobins/support.
+ * current-online count, online-users list, and resolved-ticket count
+ * from linkrobins/support.
  *
- * We deliberately avoid the Schema and DB facades here — depending on
- * how Flarum 2's container is set up during the ForumResource fields
- * closure, the facade root may not be registered, and a call to
- * `Schema::hasTable()` will throw "A facade root has not been set."
- * The try/catch swallowed that silently and the tile rendered "—"
- * even when the tickets table did in fact exist.
- *
- * Resolving Illuminate\Database\ConnectionInterface from the container
- * gives us a Connection directly and bypasses facade registration.
+ * Instance class (not static) so the container can wire its
+ * dependencies. Every read goes through a 60 s cache because these
+ * stats are pulled on every forum-page bootstrap and used to be
+ * recomputed for every visitor — a few hundred queries per minute
+ * just to paint the hero. The cache TTL is short enough that the
+ * "Online now" tile still feels live, long enough that the bulk of
+ * concurrent requests during a traffic burst share one DB hit.
  */
 class AddForumStatistics
 {
+    /**
+     * Length of the rolling window used by the "online" indicator,
+     * mirroring Flarum's stock 5-minute threshold.
+     */
+    private const ONLINE_WINDOW_MINUTES = 5;
+
+    /** Cache TTL for every stat method, in seconds. */
+    private const CACHE_TTL = 60;
+
+    public function __construct(
+        private CacheRepository $cache,
+        private ConnectionInterface $db,
+        private LoggerInterface $log,
+    ) {}
+
     /** All registered (non-soft-deleted) users. */
-    public static function memberCount(): ?int
+    public function memberCount(): ?int
     {
-        try {
-            return User::query()->count();
-        } catch (Throwable $e) {
-            return null;
-        }
+        return $this->cache->remember('mosaic.stats.memberCount', self::CACHE_TTL, function () {
+            try {
+                return User::query()->count();
+            } catch (QueryException $e) {
+                $this->log->warning('[mosaic] memberCount query failed', ['exception' => $e]);
+                return null;
+            }
+        });
     }
 
     /**
      * Users seen in the last 5 minutes — the same threshold Flarum's
      * own "online" indicator uses.
      */
-    public static function onlineCount(): ?int
+    public function onlineCount(): ?int
     {
-        try {
-            return User::query()
-                ->where('last_seen_at', '>=', Carbon::now()->subMinutes(5))
-                ->count();
-        } catch (Throwable $e) {
-            return null;
-        }
+        return $this->cache->remember('mosaic.stats.onlineCount', self::CACHE_TTL, function () {
+            try {
+                return User::query()
+                    ->where('last_seen_at', '>=', Carbon::now()->subMinutes(self::ONLINE_WINDOW_MINUTES))
+                    ->count();
+            } catch (QueryException $e) {
+                $this->log->warning('[mosaic] onlineCount query failed', ['exception' => $e]);
+                return null;
+            }
+        });
     }
 
     /**
@@ -78,25 +99,28 @@ class AddForumStatistics
      * Returns [] on any failure so the JS dropdown shows an
      * empty-state hint instead of breaking the hero render.
      */
-    public static function onlineUsers(int $limit = 50): array
+    public function onlineUsers(int $limit = 50): array
     {
         $limit = max(1, min($limit, 100));
+        $key   = sprintf('mosaic.stats.onlineUsers.%d', $limit);
 
-        try {
-            return User::query()
-                ->where('last_seen_at', '>=', Carbon::now()->subMinutes(5))
-                ->orderByDesc('last_seen_at')
-                ->limit($limit + 20)
-                ->get()
-                ->filter(fn (User $u) => $u->getPreference('discloseOnline', true))
-                ->take($limit)
-                ->map(fn (User $u) => self::serializeOnlineUser($u))
-                ->values()
-                ->toArray();
-        } catch (Throwable $e) {
-            error_log('[mosaic] onlineUsers failed: ' . $e->getMessage() . ' at ' . $e->getFile() . ':' . $e->getLine());
-            return [];
-        }
+        return $this->cache->remember($key, self::CACHE_TTL, function () use ($limit) {
+            try {
+                return User::query()
+                    ->where('last_seen_at', '>=', Carbon::now()->subMinutes(self::ONLINE_WINDOW_MINUTES))
+                    ->orderByDesc('last_seen_at')
+                    ->limit($limit + 20)
+                    ->get()
+                    ->filter(fn (User $u) => $u->getPreference('discloseOnline', true))
+                    ->take($limit)
+                    ->map(fn (User $u) => $this->serializeOnlineUser($u))
+                    ->values()
+                    ->toArray();
+            } catch (QueryException $e) {
+                $this->log->warning('[mosaic] onlineUsers query failed', ['exception' => $e]);
+                return [];
+            }
+        });
     }
 
     /**
@@ -106,60 +130,94 @@ class AddForumStatistics
      * run in contexts where the DisplayName driver or UrlGenerator
      * isn't bound yet (avatarUrl()/display_name throw). A per-user
      * catch lets one bad accessor produce a partial row instead of
-     * collapsing the entire list to [].
+     * collapsing the entire list to []. The catch is narrow on
+     * purpose — only the framework-binding gaps surface here.
      */
-    private static function serializeOnlineUser(User $u): array
+    private function serializeOnlineUser(User $u): array
     {
         $displayName = $u->username;
-        try { $displayName = $u->display_name ?: $u->username; } catch (Throwable $e) { /* keep username */ }
+        try { $displayName = $u->display_name ?: $u->username; } catch (\BadFunctionCallException | \RuntimeException $e) { /* keep username */ }
 
         $avatarUrl = null;
-        try { $avatarUrl = $u->avatarUrl(); } catch (Throwable $e) { /* leave null, frontend uses initials fallback */ }
+        try { $avatarUrl = $u->avatarUrl(); } catch (\BadFunctionCallException | \RuntimeException $e) { /* leave null, frontend uses initials fallback */ }
 
         return [
-            'id' => (int) $u->id,
-            'username' => $u->username,
+            'id'          => (int) $u->id,
+            'username'    => $u->username,
             'displayName' => $displayName,
-            'avatarUrl' => $avatarUrl,
+            'avatarUrl'   => $avatarUrl,
         ];
     }
 
     /**
      * Count of tickets in the resolved state from linkrobins/support.
      *
-     * Returns null when the table can't be queried (extension not
-     * installed, table name differs, DB error) so the hero tile
-     * renders "—" rather than a misleading 0.
+     * Returns null when the support extension's table isn't present
+     * (extension not installed or table name differs) so the hero
+     * tile renders "—" rather than a misleading 0. The table-existence
+     * probe is a single SHOW TABLES query cached for the full process
+     * lifetime — the previous version threw a QueryException once per
+     * candidate table and caught it as control flow, which is
+     * expensive and indistinguishable from a real DB error.
      */
-    public static function resolvedTicketCount(): ?int
+    public function resolvedTicketCount(): ?int
     {
-        try {
-            /** @var ConnectionInterface $db */
-            $db = resolve(ConnectionInterface::class);
-
-            /*
-             * Try the table name documented in linkrobins/support's
-             * migration first; fall back to a bare 'support_tickets'
-             * in case an older install used the shorter name. If both
-             * queries throw (typical sign of a missing table) we
-             * resolve to null and the JS renders "—".
-             */
-            $candidates = ['linkrobins_support_tickets', 'support_tickets'];
-
-            foreach ($candidates as $table) {
-                try {
-                    return (int) $db->table($table)
-                        ->where('status', 'resolved')
-                        ->count();
-                } catch (Throwable $tableErr) {
-                    /* This table didn't exist — try the next candidate. */
-                    continue;
-                }
+        return $this->cache->remember('mosaic.stats.resolvedTicketCount', self::CACHE_TTL, function () {
+            $table = $this->supportTable();
+            if ($table === null) {
+                return null;
             }
 
-            return null;
-        } catch (Throwable $e) {
-            return null;
+            try {
+                return (int) $this->db->table($table)
+                    ->where('status', 'resolved')
+                    ->count();
+            } catch (QueryException $e) {
+                $this->log->warning('[mosaic] resolvedTicketCount query failed', ['exception' => $e]);
+                return null;
+            }
+        });
+    }
+
+    /**
+     * Resolve the support-tickets table name once and cache for the
+     * full process lifetime. linkrobins/support's canonical table is
+     * `linkrobins_support_tickets`; very early installs used the
+     * shorter `support_tickets`. Either gets returned if present,
+     * with the canonical name preferred. Null when neither exists.
+     *
+     * Cached separately from the count so the schema lookup itself
+     * doesn't run on every cache miss.
+     */
+    private function supportTable(): ?string
+    {
+        $cached = $this->cache->get('mosaic.stats.supportTable');
+        if ($cached !== null) {
+            return $cached === '' ? null : $cached;
         }
+
+        $schema = $this->db->getSchemaBuilder();
+        $resolved = '';
+        foreach (['linkrobins_support_tickets', 'support_tickets'] as $candidate) {
+            try {
+                if ($schema->hasTable($candidate)) {
+                    $resolved = $candidate;
+                    break;
+                }
+            } catch (QueryException $e) {
+                // hasTable() on some drivers throws if the connection
+                // is gone — log and keep walking the candidates.
+                $this->log->warning('[mosaic] supportTable probe failed', [
+                    'table'     => $candidate,
+                    'exception' => $e,
+                ]);
+            }
+        }
+
+        /* Cache the negative result too — null means "extension not
+         * installed" which doesn't change without an admin action. */
+        $this->cache->put('mosaic.stats.supportTable', $resolved, self::CACHE_TTL);
+
+        return $resolved === '' ? null : $resolved;
     }
 }
