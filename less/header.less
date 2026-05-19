@@ -195,8 +195,26 @@
   margin: 18px 0 22px;
   padding-bottom: 8px;
 
+  /* Some extensions wrap their nav contribution in a container
+   * element (e.g. ramon/marketplace renders <div class="MarketplaceLink">
+   * <a>Shop</a></div> instead of a bare LinkButton). `display: contents`
+   * makes the wrapper transparent for layout — its inner link becomes
+   * a direct flex child of MosaicHeroNav so the pill selector below
+   * still matches. */
+  > div, > span, > section, > article {
+    display: contents;
+  }
+
+  /* Pill styling. Matches both direct children (the common case —
+   * <LinkButton> / <Button>) AND nested ones inside a wrapper. The
+   * deep selectors are scoped to .Button / .LinkButton / <a> / <button>
+   * so we don't accidentally restyle decorative inner spans. */
   > .Button,
-  > .LinkButton {
+  > .LinkButton,
+  > a,
+  > button,
+  .Button,
+  .LinkButton {
     position: relative;
     display: inline-flex !important;
     align-items: center;
