@@ -134,16 +134,26 @@ function translate(suffix, fallback) {
  */
 function startDiscussion() {
   const existing = document.querySelector('.IndexPage-newDiscussion');
-  if (existing) {
+  if (existing instanceof HTMLElement) {
     existing.click();
     return;
   }
   m.route.set(app.route('index'));
-  /* Wait two macrotasks: one for Mithril to swap pages, one for the
-   * IndexPage to populate its action items into the DOM. */
-  setTimeout(() => {
-    document.querySelector('.IndexPage-newDiscussion')?.click();
-  }, 350);
+  /* Poll for the IndexSidebar's newDiscussion button via rAF until it
+   * appears in the DOM, with a 1.5 s ceiling. More reliable than a
+   * fixed 350 ms setTimeout (slow devices / blocked main thread) and
+   * the click lands on the frame the button actually mounts —
+   * usually the first or second tick. */
+  const deadline = performance.now() + 1500;
+  const tick = () => {
+    const btn = document.querySelector('.IndexPage-newDiscussion');
+    if (btn instanceof HTMLElement) {
+      btn.click();
+      return;
+    }
+    if (performance.now() < deadline) requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
 }
 
 /**
@@ -157,11 +167,4 @@ function startDiscussion() {
 function startTicket() {
   const base = String(app.forum.attribute('supportUrl') || '/support').replace(/\/+$/, '');
   m.route.set(`${base}/new`);
-}
-
-function hasExt(id) {
-  /* `window.flarum.extensions` is keyed by extension id (e.g.
-   * "ramon-marketplace"). Presence in this object means the JS bundle
-   * loaded, which is a reliable signal that the extension is enabled. */
-  return Boolean(window.flarum?.extensions?.[id]);
 }

@@ -60,15 +60,23 @@ export default class HeroPanel extends Component {
 
   view() {
     const stats = this.attrs.stats ?? {};
+    /* Hero text resolution order:
+     *   1. Flarum's stock welcomeTitle / welcomeMessage forum
+     *      attributes — admins set these in the basics panel.
+     *   2. Translator keys ernestdefoe-mosaic.forum.hero.title /
+     *      .subtitle — lets translators override per language without
+     *      touching admin settings (and gives meaningful keys to the
+     *      ones that previously sat orphaned in locale/en.yml).
+     *   3. Hardcoded English strings as a last-resort fallback. */
+    const heroTitle = app.forum.attribute('welcomeTitle')
+      || translate('hero.title', 'How can we help?');
+    const heroSub = app.forum.attribute('welcomeMessage')
+      || translate('hero.subtitle', 'Search the community for answers, or start a new topic to get help from our team and other users.');
+
     return (
       <section className="MosaicHero">
-        <h1 className="MosaicHero-title">
-          {app.forum.attribute('welcomeTitle') || 'How can we help?'}
-        </h1>
-        <p className="MosaicHero-sub">
-          {app.forum.attribute('welcomeMessage') ||
-            'Search the community for answers, or start a new topic to get help from our team and other users.'}
-        </p>
+        <h1 className="MosaicHero-title">{heroTitle}</h1>
+        <p className="MosaicHero-sub">{heroSub}</p>
 
         {MosaicComposerTrigger.component()}
 
@@ -207,5 +215,21 @@ export default class HeroPanel extends Component {
 function formatNumber(n) {
   if (n === null || n === undefined) return '—';
   return Number(n).toLocaleString('en-US');
+}
+
+/* Safe translator wrapper: returns the fallback when the key isn't
+ * registered (Flarum's trans() returns the raw key on miss, which is
+ * worse than the English fallback). Mirrors the helper used in
+ * MosaicComposerTrigger / HeaderNav. */
+function translate(suffix, fallback) {
+  const key = `ernestdefoe-mosaic.forum.${suffix}`;
+  try {
+    const out = app.translator.trans(key);
+    if (out == null) return fallback;
+    if (typeof out === 'string' && out === key) return fallback;
+    return out;
+  } catch (e) {
+    return fallback;
+  }
 }
 
