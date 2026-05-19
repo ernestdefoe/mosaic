@@ -40,17 +40,23 @@
  * px from the viewport edge while the hero's left edge is ~32px out —
  * a noticeable misalignment. Widen the header container to match. */
 
-/* `width: auto` is the load-bearing piece — Flarum's .container sets
- * an explicit `width: 1100px` at the ≥xl breakpoint, which beats
- * `max-width: 1600px` even with !important because width is the
- * dominant property when both are present. Without overriding width
- * here the header stayed clamped to ~1100px while the hero/grid sat
- * in a 1600px container, producing the persistent misalignment
- * (logo at x≈210, hero left edge at x≈32). */
-.App-header > .container,
+/* Flarum's .container in scaffolding.less sets a FIXED width per
+ * breakpoint (`width: 1100px` at @desktop-hd, etc.), which beats our
+ * `max-width: 1600px` no matter how many !importants we throw at it.
+ *
+ * The previous attempt used `width: auto !important` to neutralise
+ * core's fixed width — but `width: auto` on a flex container makes it
+ * shrink-to-fit its children, which broke the header layout: core's
+ * `.Header-secondary { margin-left: auto }` (the rule that pushes
+ * search / notifications / user dropdown to the right edge) has zero
+ * leftover space to push into when the container is content-width, so
+ * the logo + Header-primary + Header-secondary all bunched together
+ * and read as "centered". `width: 100%` instead makes the container
+ * expand to its parent's full width up to the 1600px cap — and
+ * Header-secondary now has the runway it needs. */
 .App-header .container {
   max-width: 1600px !important;
-  width: auto !important;
+  width: 100% !important;
   margin-left: auto !important;
   margin-right: auto !important;
   padding-left: 32px !important;
@@ -59,7 +65,6 @@
 }
 
 @media (max-width: 1100px) {
-  .App-header > .container,
   .App-header .container {
     padding-left: 20px !important;
     padding-right: 20px !important;
