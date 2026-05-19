@@ -35,18 +35,15 @@ export function navItems() {
     );
   }
 
-  if (hasExt('ramon-marketplace')) {
-    /* Honor the marketplace extension's configured shop path so
-     * a non-default /shop URL still works. */
-    const marketHref =
-      app.forum.attribute('marketplaceUrl') ||
-      '/' + String(app.forum.attribute('marketplace_shop_path') || 'shop').replace(/^\//, '');
-    items.push(
-      <LinkButton href={marketHref} icon="fa-solid fa-store" className="MosaicHeaderNav-item">
-        {translate('nav.marketplace', 'Marketplace')}
-      </LinkButton>
-    );
-  }
+  /* Marketplace intentionally omitted. ramon/marketplace registers its
+   * own "Shop" Dropdown into IndexSidebar.navItems with a category
+   * submenu — the canonical surface. Hardcoding a Marketplace pill
+   * here used to produce two pills resolving to the same destination
+   * (one bare link, one with the dropdown), which read as a bug.
+   *
+   * Same convention applies to other future nav contributions: let the
+   * extension add itself to IndexSidebar.navItems, MosaicHeroNav will
+   * pick it up and wrap it in a pill automatically. */
 
   /* Tags intentionally omitted. flarum/tags adds its own 'tags' entry
    * to IndexSidebar.navItems; MosaicHeroNav filters that out so neither
