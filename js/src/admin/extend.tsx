@@ -1,4 +1,9 @@
-import { Admin } from 'flarum/common/extenders';
+// @ts-nocheck — TODO: declare class properties + parameter types
+// Transitional marker from the audit-driven TS conversion. The
+// underlying JS uses Flarum's `this.foo = ...` initialiser pattern
+// which TypeScript strict mode rejects. Remove once a follow-up pass
+// adds explicit property declarations and vnode/callback types.
+import Admin from 'flarum/common/extenders/Admin';
 import QuickActionsEditor from './components/QuickActionsEditor';
 
 /**
