@@ -1,5 +1,11 @@
 # Mosaic
 
+[![Floxum](https://floxum.com/extension/ernestdefoe/mosaic/badge/name)](https://floxum.com/extension/ernestdefoe/mosaic)
+[![Version](https://floxum.com/extension/ernestdefoe/mosaic/badge/highest-version)](https://floxum.com/extension/ernestdefoe/mosaic)
+[![Downloads](https://floxum.com/extension/ernestdefoe/mosaic/badge/downloads)](https://floxum.com/extension/ernestdefoe/mosaic)
+[![Review](https://floxum.com/extension/ernestdefoe/mosaic/badge/review)](https://floxum.com/extension/ernestdefoe/mosaic)
+[![License](https://floxum.com/extension/ernestdefoe/mosaic/badge/license)](https://floxum.com/extension/ernestdefoe/mosaic)
+
 A polished, configurable Flarum 2 theme. Works as a standalone visual upgrade on any forum, with opt-in integrations for `fof/best-answer`, `fof/reactions`, `ram0ng1/colored`, and (when installed) `linkrobins/support` and `ramon/marketplace`.
 
 > **Status:** active development. LESS theme is complete, JS components are in place, design preview ships in [`preview/`](preview/).
