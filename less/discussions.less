@@ -223,3 +223,67 @@
   &--solved   { background: var(--status-solved-bg);   color: var(--status-solved); }
   &--closed   { background: var(--status-closed-bg);   color: var(--status-closed); }
 }
+
+/* =====================================================================
+   Tags below title — applies to BOTH the list-item card AND the
+   single-discussion hero.
+
+   Flarum core adds `tags` to DiscussionListItem-info at priority 10
+   (first in the inline metadata row, ahead of last-poster / reply-
+   count) and to DiscussionHero-items at priority 5 (above the title,
+   which sits at default priority 0). We don't want to re-extend those
+   item lists from JS — that's a theme concern and CSS reorders are
+   reversible if the user changes their mind.
+
+   See vendor/flarum/tags/js/src/forum/addTagLabels.js for the
+   priorities; vendor/flarum/core/js/src/common/helpers/listItems.tsx
+   for the `item-<key>` class on each <li>.
+   ===================================================================== */
+
+/* DiscussionListItem — tags break onto their own row directly under
+   the title, the rest of the metadata (last-poster, replied-time)
+   flows on the next row. The info <ul> is already positioned below
+   the title <h2> in the source, so we just need to force a row break
+   after the tags <li>.
+
+   Counter-rule: vendor/flarum/tags ships
+   `.DiscussionListItem-info > .item-tags { position: absolute;
+   right: 80px; top: 14px; max-width: 150px; -webkit-mask-image: …;
+   overflow: hidden; }` to float the tag chip into the top-right of
+   the card. We have to unset every one of those properties or
+   `flex-basis: 100%` is ignored (absolute elements are removed from
+   the flex flow). Specificity beats the upstream rule via the
+   parent `.DiscussionListItem` prefix. */
+.DiscussionListItem .DiscussionListItem-info {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  column-gap: 8px;
+  row-gap: 4px;
+
+  > .item-tags {
+    position: static;
+    flex-basis: 100%;
+    max-width: none;
+    overflow: visible;
+    white-space: normal;
+    -webkit-mask-image: none;
+    margin: 0 0 2px;
+    top: auto;
+    right: auto;
+  }
+}
+
+/* DiscussionHero — the items <ul> ships as a column wrapper but
+   without explicit ordering, so badges (10) and tags (5) sit above
+   the title (0) in DOM order. Flip it: badges keep their default
+   top position, but title comes BEFORE tags via flex `order`. */
+.DiscussionHero .DiscussionHero-items {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+
+  > .item-badges { order: 0; }
+  > .item-title  { order: 1; }
+  > .item-tags   { order: 2; margin-top: 6px; }
+}
