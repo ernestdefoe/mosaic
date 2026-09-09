@@ -2454,7 +2454,10 @@ for "small" changes.**
 - [ ] No `"flarum/<sister>": "*"` unbounded constraint.
 - [ ] Optional integrations are in `suggest`, not `require`; their `extend.php` wiring is wrapped in `class_exists(...)`.
 - [ ] Container `bound('<key>')` check precedes any `resolve(...)` / `$container->extend('<key>', ...)` for an optional binding (§44.3).
-- [ ] `"php": "^8.2"` (or stricter) constraint matches the CI matrix and Flarum 2.x baseline.
+- [ ] `"php": "^8.3"` constraint matches the CI matrix. 8.3 is a floor, not a
+      preference: `flarum/core ^2.0` requires `^8.3`, so declaring `^8.2` is a
+      constraint no install can satisfy — and composer rejects the *whole*
+      dependency set rather than naming the extension.
 
 ### Long-lived process safety (§44)
 
@@ -2724,7 +2727,7 @@ The goal is to provide every Flarum v2 extension with:
 
 | File | Trigger | Purpose |
 |---|---|---|
-| `.github/workflows/ci.yml` | `push` to `main`, `pull_request`, manual | PHP lint matrix (8.2/8.3/8.4) + composer validate + JS prettier check + webpack production build |
+| `.github/workflows/ci.yml` | `push` to `main`, `pull_request`, manual | PHP lint matrix (8.3/8.4) + composer validate + JS prettier check + webpack production build |
 | `.github/workflows/release-management.yml` | `push` to `main` | Detects `composer.json` version change → drafts and publishes a GitHub release → posts to Flarum forum |
 | `.github/workflows/publish-to-flarum.yml` | `release` event, manual dispatch | Standalone Flarum-forum-post job (used when a release is published outside the auto pipeline) |
 | `.github/workflows/cleanup-releases.yml` | Manual dispatch | Keeps only the last 5 releases; deletes older releases + tags |
@@ -2758,7 +2761,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php: ['8.2', '8.3', '8.4']
+        php: ['8.3', '8.4']
     steps:
       - uses: actions/checkout@v4
       - uses: shivammathur/setup-php@accd6127cb78bee3e8082180cb391013d204ef9f  # v2 pinned
@@ -3354,7 +3357,7 @@ report breakage**.
 strategy:
   fail-fast: false
   matrix:
-    php: ['8.2', '8.3', '8.4']
+    php: ['8.3', '8.4']
     flarum-core:
       - '^2.0.0-rc.1'
       - '2.x-dev'
@@ -3563,7 +3566,7 @@ Phrase the offer roughly like this:
 > roadmap. Here's what I can scaffold:
 >
 > **Baseline (always applied)** — §35.1–35.12:
-> - `ci.yml` — PHP 8.2/8.3/8.4 lint matrix + JS build on every PR
+> - `ci.yml` — PHP 8.3/8.4 lint matrix + JS build on every PR
 > - `release-management.yml` — auto-release when `composer.json` version bumps
 > - `publish-to-flarum.yml` — forum announcement (optional, gated on `FLARUM_DISCUSSION_ID`)
 > - `cleanup-releases.yml` — keep last 5 releases (manual dispatch)
@@ -4507,7 +4510,7 @@ upgrade silently breaks your integration.
 ```json
 {
   "require": {
-    "php": "^8.2",
+    "php": "^8.3",
     "flarum/core": "^2.0",
     "flarum/tags": "^2.0"             // version-bounded, not "*"
   },
@@ -4553,9 +4556,19 @@ the listener if GDPR is optional, or require GDPR if it's mandatory.
 
 ### 43.5 PHP version constraint
 
-`"php": "^8.2"` is the current Flarum 2.x baseline. Test against the matrix in §35.2
-(8.2/8.3/8.4). Don't claim `"^8.0"` — Flarum 2 relies on 8.1+ features (readonly,
-first-class callable syntax, enums), and your code will fail-fast on 8.0 hosts.
+`"php": "^8.3"` is the current Flarum 2.x baseline, because `flarum/core ^2.0`
+itself requires `php ^8.3`. Test against the matrix in §35.2 (8.3/8.4).
+
+🚨 **Do not declare `"^8.2"`.** It is not a laxer floor, it is an *unsatisfiable*
+one: no PHP exists that satisfies both `^8.2` here and `^8.3` in core. The failure
+is also badly misleading — on PHP 8.2 composer reports "your php version (8.2.x)
+does not satisfy that requirement" against the **whole dependency set**, so it
+reads like a broken environment rather than one wrong character in your
+composer.json. Nothing catches this locally either, since no dev box or server
+runs 8.2; only a CI matrix with an 8.2 job ever will.
+
+Don't claim `"^8.0"` or `"^8.1"` either — the floor is set by core, not by which
+language features you happen to use.
 
 ### 43.6 Quick grep audit
 
