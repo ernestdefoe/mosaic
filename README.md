@@ -115,10 +115,8 @@ The [`preview/`](preview/) directory ships a static HTML mockup of every surface
 
 ## Support
 
-Questions, bug reports, and feature requests:
-
-- **Support forum:** https://ernestdefoe.online
-- **Issues:** https://github.com/ernestdefoe/mosaic/issues
+- **Support forum:** [Mosaic on ernestdefoe.online](https://ernestdefoe.online/d/19)
+- **Bug reports:** [GitHub issues](https://github.com/ernestdefoe/mosaic/issues)
 
 ## License
 
