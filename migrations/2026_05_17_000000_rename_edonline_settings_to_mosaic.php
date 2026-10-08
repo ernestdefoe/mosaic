@@ -34,7 +34,7 @@ return [
             ->get();
 
         foreach ($rows as $row) {
-            $newKey = 'mosaic' . substr($row->key, strlen('edonline'));
+            $newKey = 'mosaic'.substr($row->key, strlen('edonline'));
 
             $exists = $db->table('settings')
                 ->where('key', $newKey)
@@ -61,7 +61,7 @@ return [
             ->get();
 
         foreach ($rows as $row) {
-            $newKey = 'mosaic' . substr($row->key, strlen('edonline'));
+            $newKey = 'mosaic'.substr($row->key, strlen('edonline'));
             $db->table('settings')
                 ->where('key', $newKey)
                 ->where('value', $row->value)

@@ -36,7 +36,8 @@ class AddForumSettings
     public function __construct(
         private SettingsRepositoryInterface $settings,
         private LoggerInterface $log,
-    ) {}
+    ) {
+    }
 
     /** True when the operator has chosen to hide a widget. */
     public function bool(string $key): bool
@@ -45,6 +46,7 @@ class AddForumSettings
         if ($val === null || $val === '') {
             return false;
         }
+
         /* Flarum stores booleans as the strings "0" / "1". */
         return $val === '1' || $val === 1 || $val === true || $val === 'true';
     }
@@ -57,6 +59,7 @@ class AddForumSettings
             return null;
         }
         $val = trim((string) $val);
+
         return $val === '' ? null : $val;
     }
 
@@ -77,15 +80,18 @@ class AddForumSettings
         if (! is_string($raw) || $raw === '') {
             return $default;
         }
+
         try {
             $decoded = json_decode($raw, true, flags: JSON_THROW_ON_ERROR);
         } catch (\JsonException $e) {
             $this->log->warning('[mosaic] settings JSON decode failed', [
-                'key'       => $key,
+                'key' => $key,
                 'exception' => $e,
             ]);
+
             return $default;
         }
+
         return is_array($decoded) ? $decoded : $default;
     }
 }

@@ -49,7 +49,8 @@ class AddForumStatistics
     public function __construct(
         private CacheRepository $cache,
         private LoggerInterface $log,
-    ) {}
+    ) {
+    }
 
     /** All registered (non-soft-deleted) users. */
     public function memberCount(): ?int
@@ -59,6 +60,7 @@ class AddForumStatistics
                 return User::query()->count();
             } catch (QueryException $e) {
                 $this->log->warning('[mosaic] memberCount query failed', ['exception' => $e]);
+
                 return null;
             }
         });
@@ -76,6 +78,7 @@ class AddForumStatistics
                 return Discussion::query()->count();
             } catch (QueryException $e) {
                 $this->log->warning('[mosaic] discussionCount query failed', ['exception' => $e]);
+
                 return null;
             }
         });
@@ -93,6 +96,7 @@ class AddForumStatistics
                 return Post::query()->where('type', 'comment')->count();
             } catch (QueryException $e) {
                 $this->log->warning('[mosaic] postCount query failed', ['exception' => $e]);
+
                 return null;
             }
         });
@@ -111,6 +115,7 @@ class AddForumStatistics
                     ->count();
             } catch (QueryException $e) {
                 $this->log->warning('[mosaic] onlineCount query failed', ['exception' => $e]);
+
                 return null;
             }
         });
@@ -138,7 +143,7 @@ class AddForumStatistics
     public function onlineUsers(int $limit = 50): array
     {
         $limit = max(1, min($limit, 100));
-        $key   = sprintf('mosaic.stats.onlineUsers.%d', $limit);
+        $key = sprintf('mosaic.stats.onlineUsers.%d', $limit);
 
         return $this->cache->remember($key, self::CACHE_TTL, function () use ($limit) {
             try {
@@ -154,6 +159,7 @@ class AddForumStatistics
                     ->toArray();
             } catch (QueryException $e) {
                 $this->log->warning('[mosaic] onlineUsers query failed', ['exception' => $e]);
+
                 return [];
             }
         });
@@ -166,12 +172,12 @@ class AddForumStatistics
     private function serializeOnlineUser(User $u): array
     {
         return [
-            'id'          => (int) $u->id,
-            'username'    => $u->username,
+            'id' => (int) $u->id,
+            'username' => $u->username,
             'displayName' => $u->display_name ?: $u->username,
             // The avatar_url attribute: User has no avatarUrl() method, and
             // calling one threw (into a catch that hid it) for every user.
-            'avatarUrl'   => $u->avatar_url,
+            'avatarUrl' => $u->avatar_url,
         ];
     }
 
@@ -200,6 +206,7 @@ class AddForumStatistics
                     ->count();
             } catch (QueryException $e) {
                 $this->log->warning('[mosaic] resolvedTicketCount query failed', ['exception' => $e]);
+
                 return null;
             }
         });
@@ -234,7 +241,7 @@ class AddForumStatistics
                 // hasTable() on some drivers throws if the connection
                 // is gone — log and keep walking the candidates.
                 $this->log->warning('[mosaic] supportTable probe failed', [
-                    'table'     => $candidate,
+                    'table' => $candidate,
                     'exception' => $e,
                 ]);
             }
@@ -258,7 +265,7 @@ class AddForumStatistics
     {
         $limit = max(1, min($limit, 20));
 
-        return $this->cache->remember('mosaic.stats.topContributors.v2.' . $limit, self::CACHE_TTL, function () use ($limit) {
+        return $this->cache->remember('mosaic.stats.topContributors.v2.'.$limit, self::CACHE_TTL, function () use ($limit) {
             try {
                 return User::query()
                     ->where('comment_count', '>', 0)
@@ -272,6 +279,7 @@ class AddForumStatistics
                     ->toArray();
             } catch (QueryException $e) {
                 $this->log->warning('[mosaic] topContributors query failed', ['exception' => $e]);
+
                 return [];
             }
         });
@@ -283,12 +291,12 @@ class AddForumStatistics
         $displayName = $u->display_name ?: $u->username;
         $avatarUrl = $u->avatar_url;
 
-        $comments    = (int) $u->comment_count;
+        $comments = (int) $u->comment_count;
         $discussions = (int) $u->discussion_count;
 
         // Surface a role badge only for staff-ish primary groups, mirroring
         // the frontend's previous heuristic.
-        $role  = null;
+        $role = null;
         $group = $u->groups->first();
         if ($group) {
             $name = $group->name_singular ?? null;
@@ -298,13 +306,13 @@ class AddForumStatistics
         }
 
         return [
-            'name'      => $displayName,
-            'username'  => $u->username,
-            'role'      => $role,
-            'meta'      => $comments === 1 ? '1 post' : ($comments . ' posts'),
-            'points'    => $comments + $discussions,
+            'name' => $displayName,
+            'username' => $u->username,
+            'role' => $role,
+            'meta' => $comments === 1 ? '1 post' : ($comments.' posts'),
+            'points' => $comments + $discussions,
             'avatarUrl' => $avatarUrl,
-            'href'      => '/u/' . rawurlencode((string) $u->username),
+            'href' => '/u/'.rawurlencode((string) $u->username),
         ];
     }
 
@@ -319,7 +327,7 @@ class AddForumStatistics
     {
         $limit = max(1, min($limit, 10));
 
-        return $this->cache->remember('mosaic.stats.trending.' . $limit, self::CACHE_TTL, function () use ($limit) {
+        return $this->cache->remember('mosaic.stats.trending.'.$limit, self::CACHE_TTL, function () use ($limit) {
             try {
                 return Discussion::query()
                     ->whereVisibleTo(new Guest())
@@ -331,15 +339,16 @@ class AddForumStatistics
                     ->get()
                     ->map(fn (Discussion $d) => [
                         'title' => (string) $d->title,
-                        'meta'  => ((int) $d->comment_count) . ' replies',
+                        'meta' => ((int) $d->comment_count).' replies',
                         // /d/{id} redirects to the canonical slug URL, so we
                         // avoid invoking the slug driver here.
-                        'href'  => '/d/' . (int) $d->id,
+                        'href' => '/d/'.(int) $d->id,
                     ])
                     ->values()
                     ->toArray();
             } catch (QueryException $e) {
                 $this->log->warning('[mosaic] trending query failed', ['exception' => $e]);
+
                 return [];
             }
         });

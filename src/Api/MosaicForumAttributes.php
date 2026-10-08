@@ -75,6 +75,7 @@ class MosaicForumAttributes
             Schema\Arr::make('mosaicTopContributors')
                 ->get(function () {
                     $override = $this->settings->json('mosaicTopContributors', []);
+
                     return ! empty($override) ? $override : $this->stats->topContributors();
                 }),
 
