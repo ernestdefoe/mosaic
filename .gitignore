@@ -4,7 +4,6 @@ vendor/
 Thumbs.db
 *.log
 composer.lock
-package-lock.json
 yarn.lock
 .idea/
 .vscode/
@@ -12,3 +11,6 @@ yarn.lock
 
 # js/dist/ IS committed — Flarum extensions ship compiled assets so end
 # users installing via composer don't need a node toolchain.
+.phpunit.result.cache
+/tests/integration/tmp
+/js/coverage-ts
