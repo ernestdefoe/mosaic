@@ -22,11 +22,7 @@ import marketplaceUrlHelper from '../utils/marketplaceUrl';
 export default class MosaicHeroNav extends Component {
   view(): Mithril.Children {
     const pills: Mithril.Children[] = [
-      <LinkButton
-        href={app.route('index')}
-        icon="fa-solid fa-comments"
-        className="MosaicHeaderNav-item"
-      >
+      <LinkButton href={app.route('index')} icon="fa-solid fa-comments" className="MosaicHeaderNav-item">
         {translate('nav.discussions', 'Discussions')}
       </LinkButton>,
     ];
@@ -55,17 +51,10 @@ export default class MosaicHeroNav extends Component {
       );
     }
 
-    const hasMarketplace = !!(
-      app.forum.attribute<string>('marketplaceUrl') ||
-      app.forum.attribute<string>('marketplace_shop_path')
-    );
+    const hasMarketplace = !!(app.forum.attribute<string>('marketplaceUrl') || app.forum.attribute<string>('marketplace_shop_path'));
     if (hasMarketplace) {
       pills.push(
-        <LinkButton
-          href={marketplaceUrlHelper()}
-          icon="fa-solid fa-store"
-          className="MosaicHeaderNav-item"
-        >
+        <LinkButton href={marketplaceUrlHelper()} icon="fa-solid fa-store" className="MosaicHeaderNav-item">
           {translate('nav.marketplace', 'Marketplace')}
         </LinkButton>
       );
@@ -74,18 +63,12 @@ export default class MosaicHeroNav extends Component {
     // Page Builder content types (Articles, etc.) — ernestdefoe/page-builder
     // serializes the viewable types to the forum payload as
     // `pagebuilderContentTypes`; surface each as a pill linking to /c/{slug}.
-    const contentTypes = app.forum.attribute<Array<{ slug: string; name: string; name_plural: string; icon?: string }>>(
-      'pagebuilderContentTypes'
-    );
+    const contentTypes = app.forum.attribute<Array<{ slug: string; name: string; name_plural: string; icon?: string }>>('pagebuilderContentTypes');
     if (Array.isArray(contentTypes)) {
       contentTypes.forEach((type) => {
         if (!type || !type.slug) return;
         pills.push(
-          <LinkButton
-            href={`/c/${type.slug}`}
-            icon={type.icon || 'fa-solid fa-newspaper'}
-            className="MosaicHeaderNav-item"
-          >
+          <LinkButton href={`/c/${type.slug}`} icon={type.icon || 'fa-solid fa-newspaper'} className="MosaicHeaderNav-item">
             {type.name_plural || type.name || type.slug}
           </LinkButton>
         );

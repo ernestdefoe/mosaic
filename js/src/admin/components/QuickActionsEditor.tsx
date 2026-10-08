@@ -46,26 +46,17 @@ export default class QuickActionsEditor extends Component<QuickActionsEditorAttr
       <div className="Form-group MosaicQuickActionsEditor">
         <label>Quick Actions</label>
         <div className="helpText">
-          Sidebar links shown in the Quick Actions widget. Each row needs an icon class (e.g.{' '}
-          <code>fa-solid fa-bolt</code>), a label, and a URL. Leave the editor empty to use built-in
-          defaults (Start a Discussion / Browse Tags / Recent Activity, plus Support and Marketplace
-          links when those extensions are detected).
+          Sidebar links shown in the Quick Actions widget. Each row needs an icon class (e.g. <code>fa-solid fa-bolt</code>), a label, and a URL.
+          Leave the editor empty to use built-in defaults (Start a Discussion / Browse Tags / Recent Activity, plus Support and Marketplace links when
+          those extensions are detected).
         </div>
 
         <div className="MosaicQuickActionsEditor-rows">
-          {this.actions.length === 0 && (
-            <div className="MosaicQuickActionsEditor-empty">
-              No custom actions configured — using built-in defaults.
-            </div>
-          )}
+          {this.actions.length === 0 && <div className="MosaicQuickActionsEditor-empty">No custom actions configured — using built-in defaults.</div>}
           {this.actions.map((a, i) => this.renderRow(a, i))}
         </div>
 
-        <Button
-          className="Button MosaicQuickActionsEditor-add"
-          icon="fas fa-plus"
-          onclick={() => this.addRow()}
-        >
+        <Button className="Button MosaicQuickActionsEditor-add" icon="fas fa-plus" onclick={() => this.addRow()}>
           Add action
         </Button>
       </div>
@@ -94,13 +85,7 @@ export default class QuickActionsEditor extends Component<QuickActionsEditorAttr
           oninput={(e: Event) => this.update(i, 'href', (e.target as HTMLInputElement).value)}
         />
         <div className="MosaicQuickActionsEditor-rowBtns">
-          <Button
-            className="Button Button--icon"
-            icon="fas fa-arrow-up"
-            title="Move up"
-            disabled={i === 0}
-            onclick={() => this.move(i, -1)}
-          />
+          <Button className="Button Button--icon" icon="fas fa-arrow-up" title="Move up" disabled={i === 0} onclick={() => this.move(i, -1)} />
           <Button
             className="Button Button--icon"
             icon="fas fa-arrow-down"
@@ -108,12 +93,7 @@ export default class QuickActionsEditor extends Component<QuickActionsEditorAttr
             disabled={i === this.actions.length - 1}
             onclick={() => this.move(i, 1)}
           />
-          <Button
-            className="Button Button--icon Button--danger"
-            icon="fas fa-trash"
-            title="Remove"
-            onclick={() => this.remove(i)}
-          />
+          <Button className="Button Button--icon Button--danger" icon="fas fa-trash" title="Remove" onclick={() => this.remove(i)} />
         </div>
       </div>
     );

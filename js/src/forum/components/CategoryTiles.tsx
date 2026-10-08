@@ -48,17 +48,10 @@ export default class CategoryTiles extends Component {
       <div className="MosaicCategoryTiles">
         {tiles.map((t) => {
           const colored = !!t.color;
-          const iconStyle = colored
-            ? { background: hexToRgba(t.color as string, 0.12), color: t.color }
-            : undefined;
+          const iconStyle = colored ? { background: hexToRgba(t.color as string, 0.12), color: t.color } : undefined;
           return (
             <a className="MosaicCategoryTile" href={t.href}>
-              <div
-                className={
-                  'MosaicCategoryTile-icon' + (colored ? '' : ` MosaicCategoryTile-icon--${t.tone}`)
-                }
-                style={iconStyle}
-              >
+              <div className={'MosaicCategoryTile-icon' + (colored ? '' : ` MosaicCategoryTile-icon--${t.tone}`)} style={iconStyle}>
                 {fa(t.icon)}
               </div>
               <div>

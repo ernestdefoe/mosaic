@@ -21,11 +21,7 @@ app.initializers.add('ernestdefoe-mosaic', () => {
    * The two render as siblings in the hero slot above the page grid.
    */
   override(IndexPage.prototype, 'hero', function () {
-    return [
-      HeroPanel.component({ stats: getForumStats() }),
-      CategoryTiles.component(),
-      MosaicHeroNav.component(),
-    ];
+    return [HeroPanel.component({ stats: getForumStats() }), CategoryTiles.component(), MosaicHeroNav.component()];
   });
 
   /*
@@ -109,8 +105,7 @@ app.initializers.add(
         // blog vnode inherits a key while the bare nav vnode has none —
         // that mismatch throws "vnodes must either all have keys or none"
         // and blanks the page. Match the nav's keying to the blog vnode's.
-        const navVnode =
-          blogVnode.key != null ? m(MosaicHeroNav, { key: 'mosaic-blog-nav' }) : m(MosaicHeroNav);
+        const navVnode = blogVnode.key != null ? m(MosaicHeroNav, { key: 'mosaic-blog-nav' }) : m(MosaicHeroNav);
 
         return [navVnode, blogVnode];
       }
@@ -137,32 +132,11 @@ export { default as extend } from './extend';
 function getForumStats(): ForumStats {
   const f = app.forum;
   return {
-    members: firstNum(
-      f.attribute('userCount'),
-      f.attribute('totalUsers'),
-      f.attribute('membersCount'),
-      f.attribute('mosaicUserCount')
-    ),
-    discussions: firstNum(
-      f.attribute('discussionCount'),
-      f.attribute('discussionsCount'),
-      f.attribute('mosaicDiscussionCount')
-    ),
-    resolved: firstNum(
-      f.attribute('resolvedTicketCount'),
-      f.attribute('supportResolvedCount'),
-      f.attribute('mosaicResolvedCount')
-    ),
-    posts: firstNum(
-      f.attribute('postCount'),
-      f.attribute('postsCount'),
-      f.attribute('mosaicPostCount')
-    ),
-    online: firstNum(
-      f.attribute('onlineUserCount'),
-      f.attribute('onlineUsersCount'),
-      f.attribute('mosaicOnlineCount')
-    ),
+    members: firstNum(f.attribute('userCount'), f.attribute('totalUsers'), f.attribute('membersCount'), f.attribute('mosaicUserCount')),
+    discussions: firstNum(f.attribute('discussionCount'), f.attribute('discussionsCount'), f.attribute('mosaicDiscussionCount')),
+    resolved: firstNum(f.attribute('resolvedTicketCount'), f.attribute('supportResolvedCount'), f.attribute('mosaicResolvedCount')),
+    posts: firstNum(f.attribute('postCount'), f.attribute('postsCount'), f.attribute('mosaicPostCount')),
+    online: firstNum(f.attribute('onlineUserCount'), f.attribute('onlineUsersCount'), f.attribute('mosaicOnlineCount')),
   };
 }
 

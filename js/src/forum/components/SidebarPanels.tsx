@@ -8,9 +8,7 @@ import translate from '../utils/translate';
 type IconStyle = Record<string, string | number>;
 
 /* Inline icon helper — Flarum 2 removed flarum/common/helpers/icon. */
-const fa = (name: string, style?: IconStyle): Mithril.Children => (
-  <i className={`icon ${name}`} style={style} aria-hidden="true" />
-);
+const fa = (name: string, style?: IconStyle): Mithril.Children => <i className={`icon ${name}`} style={style} aria-hidden="true" />;
 
 interface QuickAction {
   icon?: string;
@@ -52,9 +50,7 @@ export default class SidebarPanels extends Component {
     /* Admin-configured rows win; otherwise built-in defaults plus
      * auto-detected support/marketplace integrations. */
     const fromAttr = app.forum.attribute<QuickAction[]>('mosaicQuickActions');
-    const configured = Array.isArray(fromAttr)
-      ? fromAttr.filter((a) => a && (a.label || '').trim() && (a.href || '').trim())
-      : [];
+    const configured = Array.isArray(fromAttr) ? fromAttr.filter((a) => a && (a.label || '').trim() && (a.href || '').trim()) : [];
 
     let links: QuickAction[];
     if (configured.length) {
@@ -96,9 +92,7 @@ export default class SidebarPanels extends Component {
         });
       }
       const shopPath = app.forum.attribute<string>('marketplace_shop_path');
-      const marketplaceUrl =
-        app.forum.attribute<string>('marketplaceUrl') ||
-        (shopPath ? '/' + String(shopPath).replace(/^\//, '') : null);
+      const marketplaceUrl = app.forum.attribute<string>('marketplaceUrl') || (shopPath ? '/' + String(shopPath).replace(/^\//, '') : null);
       if (marketplaceUrl) {
         links.push({
           icon: 'fa-solid fa-store',
@@ -153,26 +147,14 @@ export default class SidebarPanels extends Component {
         {contributors.map((c) => (
           <a className="MosaicContribRow" href={c.href || '#'}>
             {c.avatarUrl ? (
-              <img
-                className="MosaicContribRow-avatar MosaicContribRow-avatar--img"
-                src={c.avatarUrl}
-                alt=""
-              />
+              <img className="MosaicContribRow-avatar MosaicContribRow-avatar--img" src={c.avatarUrl} alt="" />
             ) : (
-              <div className={`MosaicContribRow-avatar av-${c.tone || 'slate'}`}>
-                {initials(c.name)}
-              </div>
+              <div className={`MosaicContribRow-avatar av-${c.tone || 'slate'}`}>{initials(c.name)}</div>
             )}
             <div className="MosaicContribRow-meta">
               <div className="MosaicContribRow-name">
                 {c.name}
-                {c.role && (
-                  <span
-                    className={`MosaicRoleBadge MosaicRoleBadge--${String(c.role).toLowerCase()}`}
-                  >
-                    {c.role}
-                  </span>
-                )}
+                {c.role && <span className={`MosaicRoleBadge MosaicRoleBadge--${String(c.role).toLowerCase()}`}>{c.role}</span>}
               </div>
               <div className="MosaicContribRow-sub">{c.meta}</div>
             </div>
@@ -188,8 +170,7 @@ export default class SidebarPanels extends Component {
     // guest visibility, so nothing private leaks) and exposed as the
     // mosaicTrending attribute. Reliable on every page, unlike the old store
     // snapshot of the current page's discussions.
-    const items =
-      app.forum.attribute<{ title: string; meta: string; href: string }[]>('mosaicTrending');
+    const items = app.forum.attribute<{ title: string; meta: string; href: string }[]>('mosaicTrending');
 
     if (!Array.isArray(items) || !items.length) return null;
 
@@ -218,21 +199,13 @@ export default class SidebarPanels extends Component {
       <a className="MosaicSideCard MosaicMarketplacePromo" href={url}>
         <div className="MosaicMarketplacePromo-bg">{fa('fa-solid fa-store')}</div>
         <div className="MosaicMarketplacePromo-inner">
-          <div className="MosaicMarketplacePromo-kicker">
-            {translate('marketplace_promo.kicker', 'NEW · Marketplace')}
-          </div>
-          <div className="MosaicMarketplacePromo-title">
-            {translate('marketplace_promo.title', 'Premium themes & extensions')}
-          </div>
+          <div className="MosaicMarketplacePromo-kicker">{translate('marketplace_promo.kicker', 'NEW · Marketplace')}</div>
+          <div className="MosaicMarketplacePromo-title">{translate('marketplace_promo.title', 'Premium themes & extensions')}</div>
           <div className="MosaicMarketplacePromo-desc">
-            {translate(
-              'marketplace_promo.desc',
-              'Digital products, services, subscriptions, and private extensions from trusted sellers.'
-            )}
+            {translate('marketplace_promo.desc', 'Digital products, services, subscriptions, and private extensions from trusted sellers.')}
           </div>
           <div className="MosaicMarketplacePromo-cta">
-            {translate('marketplace_promo.cta', 'Browse the store')}{' '}
-            {fa('fa-solid fa-arrow-right', { fontSize: '11px' })}
+            {translate('marketplace_promo.cta', 'Browse the store')} {fa('fa-solid fa-arrow-right', { fontSize: '11px' })}
           </div>
         </div>
       </a>

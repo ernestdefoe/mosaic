@@ -30,9 +30,7 @@ interface HeroPanelAttrs extends ComponentAttrs {
 type IconStyle = Record<string, string | number>;
 
 /* Inline icon helper — Flarum 2 removed flarum/common/helpers/icon. */
-const fa = (name: string, style?: IconStyle): Mithril.Children => (
-  <i className={`icon ${name}`} style={style} aria-hidden="true" />
-);
+const fa = (name: string, style?: IconStyle): Mithril.Children => <i className={`icon ${name}`} style={style} aria-hidden="true" />;
 
 /**
  * HeroPanel — replaces Flarum's stock IndexPage hero.
@@ -89,15 +87,10 @@ export default class HeroPanel extends Component<HeroPanelAttrs> {
     const stats = this.attrs.stats ?? {};
     /* Hero text resolution: Flarum's welcomeTitle/welcomeMessage admin
      * attributes first, then translator keys, then hardcoded English. */
-    const heroTitle =
-      app.forum.attribute<string | undefined>('welcomeTitle') ||
-      translate('hero.title', 'How can we help?');
+    const heroTitle = app.forum.attribute<string | undefined>('welcomeTitle') || translate('hero.title', 'How can we help?');
     const heroSub =
       app.forum.attribute<string | undefined>('welcomeMessage') ||
-      translate(
-        'hero.subtitle',
-        'Search the community for answers, or start a new topic to get help from our team and other users.'
-      );
+      translate('hero.subtitle', 'Search the community for answers, or start a new topic to get help from our team and other users.');
 
     return (
       <section className="MosaicHero">
@@ -107,43 +100,22 @@ export default class HeroPanel extends Component<HeroPanelAttrs> {
         {MosaicComposerTrigger.component()}
 
         <div className="MosaicHero-stats">
-          {this.renderStat(
-            'fa-solid fa-users',
-            formatNumber(stats.members),
-            translate('hero.stat_members', 'Members')
-          )}
-          {this.renderStat(
-            'fa-regular fa-comments',
-            formatNumber(stats.discussions),
-            translate('hero.stat_discussions', 'Discussions')
-          )}
+          {this.renderStat('fa-solid fa-users', formatNumber(stats.members), translate('hero.stat_members', 'Members'))}
+          {this.renderStat('fa-regular fa-comments', formatNumber(stats.discussions), translate('hero.stat_discussions', 'Discussions'))}
           {/* Tickets tile auto-hides when stats.resolved is null (support
            * extension not installed) and can be suppressed via the
            * mosaicHideTicketsTile admin toggle. */}
           {stats.resolved != null && !app.forum.attribute<boolean>('mosaicHideTicketsTile')
-            ? this.renderStat(
-                'fa-solid fa-ticket',
-                formatNumber(stats.resolved),
-                translate('hero.stat_resolved', 'Tickets resolved')
-              )
+            ? this.renderStat('fa-solid fa-ticket', formatNumber(stats.resolved), translate('hero.stat_resolved', 'Tickets resolved'))
             : null}
-          {this.renderStat(
-            'fa-regular fa-pen-to-square',
-            formatNumber(stats.posts),
-            translate('hero.stat_posts', 'Posts')
-          )}
+          {this.renderStat('fa-regular fa-pen-to-square', formatNumber(stats.posts), translate('hero.stat_posts', 'Posts'))}
           {this.renderOnlineNowStat(stats.online ?? null)}
         </div>
       </section>
     );
   }
 
-  renderStat(
-    iconName: string,
-    value: Mithril.Children,
-    label: Mithril.Children,
-    { iconStyle }: { iconStyle?: IconStyle } = {}
-  ): Mithril.Children {
+  renderStat(iconName: string, value: Mithril.Children, label: Mithril.Children, { iconStyle }: { iconStyle?: IconStyle } = {}): Mithril.Children {
     return (
       <div className="MosaicHero-stat">
         <div className="MosaicHero-stat-ic">{fa(iconName, iconStyle)}</div>
@@ -195,9 +167,7 @@ export default class HeroPanel extends Component<HeroPanelAttrs> {
             this.onlineOpen = !this.onlineOpen;
           }}
         >
-          <div className="MosaicHero-stat-ic">
-            {fa('fa-solid fa-circle', { fontSize: '8px', color: '#4ade80' })}
-          </div>
+          <div className="MosaicHero-stat-ic">{fa('fa-solid fa-circle', { fontSize: '8px', color: '#4ade80' })}</div>
           <div>
             <div className="MosaicHero-stat-val">
               {value} <span className="MosaicHero-stat-live">live</span>

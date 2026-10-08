@@ -17,11 +17,7 @@ export function navItems(): Mithril.Children[] {
   const items: Mithril.Children[] = [];
 
   items.push(
-    <LinkButton
-      href={app.route('index')}
-      icon="fa-solid fa-comments"
-      className="MosaicHeaderNav-item"
-    >
+    <LinkButton href={app.route('index')} icon="fa-solid fa-comments" className="MosaicHeaderNav-item">
       {translate('nav.discussions', 'Discussions')}
     </LinkButton>
   );
@@ -57,9 +53,7 @@ export function startDiscussionButton(): Mithril.Children {
       icon={inTickets ? 'fa-solid fa-headset' : 'fa-solid fa-edit'}
       onclick={inTickets ? startTicket : openComposer}
     >
-      {inTickets
-        ? translate('nav.start_ticket', 'Start a Ticket')
-        : translate('nav.start_discussion', 'Start a Discussion')}
+      {inTickets ? translate('nav.start_ticket', 'Start a Ticket') : translate('nav.start_discussion', 'Start a Discussion')}
     </Button>
   );
 }
