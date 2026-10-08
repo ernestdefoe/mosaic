@@ -160,28 +160,18 @@ class AddForumStatistics
     }
 
     /**
-     * Project a User into the shape the hero dropdown expects.
-     *
-     * Each accessor is wrapped because the Schema-field closure can
-     * run in contexts where the DisplayName driver or UrlGenerator
-     * isn't bound yet (avatarUrl()/display_name throw). A per-user
-     * catch lets one bad accessor produce a partial row instead of
-     * collapsing the entire list to []. The catch is narrow on
-     * purpose — only the framework-binding gaps surface here.
+     * Project a User into the shape the hero dropdown expects. A null
+     * avatarUrl makes the frontend fall back to initials.
      */
     private function serializeOnlineUser(User $u): array
     {
-        $displayName = $u->username;
-        try { $displayName = $u->display_name ?: $u->username; } catch (\BadFunctionCallException | \RuntimeException $e) { /* keep username */ }
-
-        $avatarUrl = null;
-        try { $avatarUrl = $u->avatarUrl(); } catch (\BadFunctionCallException | \RuntimeException $e) { /* leave null, frontend uses initials fallback */ }
-
         return [
             'id'          => (int) $u->id,
             'username'    => $u->username,
-            'displayName' => $displayName,
-            'avatarUrl'   => $avatarUrl,
+            'displayName' => $u->display_name ?: $u->username,
+            // The avatar_url attribute: User has no avatarUrl() method, and
+            // calling one threw (into a catch that hid it) for every user.
+            'avatarUrl'   => $u->avatar_url,
         ];
     }
 
@@ -290,11 +280,8 @@ class AddForumStatistics
     /** Project a User into the shape the contributor panel expects. */
     private function serializeContributor(User $u): array
     {
-        $displayName = $u->username;
-        try { $displayName = $u->display_name ?: $u->username; } catch (\BadFunctionCallException | \RuntimeException $e) { /* keep username */ }
-
-        $avatarUrl = null;
-        try { $avatarUrl = $u->avatar_url; } catch (\BadFunctionCallException | \RuntimeException $e) { /* initials fallback */ }
+        $displayName = $u->display_name ?: $u->username;
+        $avatarUrl = $u->avatar_url;
 
         $comments    = (int) $u->comment_count;
         $discussions = (int) $u->discussion_count;
