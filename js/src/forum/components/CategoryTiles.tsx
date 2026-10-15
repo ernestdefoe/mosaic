@@ -78,7 +78,7 @@ export default class CategoryTiles extends Component {
           const count = t.discussionCount?.() ?? 0;
           return {
             title: t.name?.() ?? '—',
-            meta: count === 1 ? '1 topic' : `${count} topics`,
+            meta: app.translator.trans('ernestdefoe-mosaic.forum.categories.topic_count', { count }, true),
             href: routeTag ? routeTag(t) : `/t/${t.slug?.()}`,
             /* Tag.icon() returns the full FA classes; default to fa-folder
              * when the operator left the icon field blank. */
@@ -95,43 +95,43 @@ export default class CategoryTiles extends Component {
     const home = app.route('index');
     return [
       {
-        title: 'General Help',
-        meta: 'Ask anything',
+        title: app.translator.trans('ernestdefoe-mosaic.forum.categories.general_help', {}, true),
+        meta: app.translator.trans('ernestdefoe-mosaic.forum.categories.general_help_meta', {}, true),
         icon: 'fa-solid fa-circle-question',
         tone: 'blue',
         href: home,
       },
       {
-        title: 'Bug Reports',
-        meta: 'Something broken?',
+        title: app.translator.trans('ernestdefoe-mosaic.forum.categories.bug_reports', {}, true),
+        meta: app.translator.trans('ernestdefoe-mosaic.forum.categories.bug_reports_meta', {}, true),
         icon: 'fa-solid fa-bug',
         tone: 'rose',
         href: home,
       },
       {
-        title: 'Feature Requests',
-        meta: 'Shape the roadmap',
+        title: app.translator.trans('ernestdefoe-mosaic.forum.categories.feature_requests', {}, true),
+        meta: app.translator.trans('ernestdefoe-mosaic.forum.categories.feature_requests_meta', {}, true),
         icon: 'fa-solid fa-lightbulb',
         tone: 'purple',
         href: home,
       },
       {
-        title: 'Tutorials & Guides',
-        meta: 'Curated by staff',
+        title: app.translator.trans('ernestdefoe-mosaic.forum.categories.tutorials', {}, true),
+        meta: app.translator.trans('ernestdefoe-mosaic.forum.categories.tutorials_meta', {}, true),
         icon: 'fa-solid fa-graduation-cap',
         tone: 'green',
         href: home,
       },
       {
-        title: 'Account & Billing',
-        meta: 'Plan & payment help',
+        title: app.translator.trans('ernestdefoe-mosaic.forum.categories.account', {}, true),
+        meta: app.translator.trans('ernestdefoe-mosaic.forum.categories.account_meta', {}, true),
         icon: 'fa-solid fa-credit-card',
         tone: 'amber',
         href: home,
       },
       {
-        title: 'Announcements',
-        meta: 'Official updates',
+        title: app.translator.trans('ernestdefoe-mosaic.forum.categories.announcements', {}, true),
+        meta: app.translator.trans('ernestdefoe-mosaic.forum.categories.announcements_meta', {}, true),
         icon: 'fa-solid fa-bullhorn',
         tone: 'teal',
         href: home,

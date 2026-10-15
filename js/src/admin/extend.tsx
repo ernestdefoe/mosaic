@@ -1,3 +1,4 @@
+import app from 'flarum/admin/app';
 import Admin from 'flarum/common/extenders/Admin';
 import type Mithril from 'mithril';
 import QuickActionsEditor from './components/QuickActionsEditor';
@@ -37,54 +38,54 @@ export default [
     .setting(() => ({
       setting: 'mosaicHideMarketplacePromo',
       type: 'boolean',
-      label: 'Hide the Marketplace promo sidebar widget',
-      help: 'Removes the purple Marketplace promo card from the index sidebar.',
+      label: app.translator.trans('ernestdefoe-mosaic.admin.settings.hide_marketplace_promo_label'),
+      help: app.translator.trans('ernestdefoe-mosaic.admin.settings.hide_marketplace_promo_help'),
     }))
     .setting(() => ({
       setting: 'mosaicHideQuickActions',
       type: 'boolean',
-      label: 'Hide the Quick Actions sidebar widget',
-      help: 'Removes the entire Quick Actions card from the sidebar regardless of how many rows are configured below.',
+      label: app.translator.trans('ernestdefoe-mosaic.admin.settings.hide_quick_actions_label'),
+      help: app.translator.trans('ernestdefoe-mosaic.admin.settings.hide_quick_actions_help'),
     }))
     .setting(() => ({
       setting: 'mosaicHideTopContributors',
       type: 'boolean',
-      label: 'Hide the Top Contributors sidebar widget',
-      help: 'Removes the contributor leaderboard card. Auto-hides when no qualifying users exist.',
+      label: app.translator.trans('ernestdefoe-mosaic.admin.settings.hide_top_contributors_label'),
+      help: app.translator.trans('ernestdefoe-mosaic.admin.settings.hide_top_contributors_help'),
     }))
     .setting(() => ({
       setting: 'mosaicHideTrending',
       type: 'boolean',
-      label: 'Hide the Trending sidebar widget',
-      help: 'Removes the trending-discussions card from the index sidebar.',
+      label: app.translator.trans('ernestdefoe-mosaic.admin.settings.hide_trending_label'),
+      help: app.translator.trans('ernestdefoe-mosaic.admin.settings.hide_trending_help'),
     }))
     .setting(() => ({
       setting: 'mosaicHideOnlineUsers',
       type: 'boolean',
-      label: 'Suppress the Online Users payload',
-      help: 'Stops the forum bootstrap from including the list of recently-active usernames. The "Online now" count tile still works; only the user-list popover goes empty. Useful on large communities where the extra payload bytes matter, or on forums that prefer not to surface usernames to guests.',
+      label: app.translator.trans('ernestdefoe-mosaic.admin.settings.hide_online_users_label'),
+      help: app.translator.trans('ernestdefoe-mosaic.admin.settings.hide_online_users_help'),
     }))
     .setting(() => ({
       setting: 'mosaicHideTicketsTile',
       type: 'boolean',
-      label: 'Hide the Tickets resolved hero tile',
-      help: 'Removes the "Tickets resolved" stat tile from the hero strip. The tile auto-hides when linkrobins/support is not installed, so you only need this toggle if you DO run the support extension but prefer not to surface the resolved-ticket count.',
+      label: app.translator.trans('ernestdefoe-mosaic.admin.settings.hide_tickets_tile_label'),
+      help: app.translator.trans('ernestdefoe-mosaic.admin.settings.hide_tickets_tile_help'),
     }))
 
     /* --- Section / route URL overrides --- */
     .setting(() => ({
       setting: 'supportUrl',
       type: 'text',
-      label: 'Support extension URL',
+      label: app.translator.trans('ernestdefoe-mosaic.admin.settings.support_url_label'),
       placeholder: '/support',
-      help: 'Base URL for linkrobins/support (auto-detected; override if you mount it elsewhere). Leave blank if you do not run a support extension.',
+      help: app.translator.trans('ernestdefoe-mosaic.admin.settings.support_url_help'),
     }))
     .setting(() => ({
       setting: 'marketplaceUrl',
       type: 'text',
-      label: 'Marketplace URL',
+      label: app.translator.trans('ernestdefoe-mosaic.admin.settings.marketplace_url_label'),
       placeholder: '/shop',
-      help: 'Base URL for ramon/marketplace (auto-detected from marketplace_shop_path). Leave blank if you do not run a marketplace extension.',
+      help: app.translator.trans('ernestdefoe-mosaic.admin.settings.marketplace_url_help'),
     }))
 
     /* --- Quick Actions row editor (custom component slot) ---

@@ -42,7 +42,8 @@ export default class MosaicHeroNav extends Component {
     // that canCreateBlogPost exists in the payload (defined for all actors).
     const blogInstalled = app.forum.attribute<boolean | undefined>('canCreateBlogPost') !== undefined;
     if (blogInstalled) {
-      const blogLabel = app.forum.attribute<string | null>('linkrobinsBlogNavLabel') || 'Blog';
+      const blogLabel =
+        app.forum.attribute<string | null>('linkrobinsBlogNavLabel') || app.translator.trans('ernestdefoe-mosaic.forum.nav.blog', {}, true);
       const blogIcon = app.forum.attribute<string | null>('linkrobinsBlogNavIcon') || 'fas fa-feather-alt';
       pills.push(
         <LinkButton href="/blog" icon={blogIcon} className="MosaicHeaderNav-item">
@@ -76,7 +77,7 @@ export default class MosaicHeroNav extends Component {
     }
 
     return (
-      <nav className="MosaicHeroNav" aria-label="Sections">
+      <nav className="MosaicHeroNav" aria-label={app.translator.trans('ernestdefoe-mosaic.forum.nav.sections_label', {}, true)}>
         {pills}
       </nav>
     );

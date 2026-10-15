@@ -188,7 +188,7 @@ export default class HeroPanel extends Component<HeroPanelAttrs> {
         {this.onlineOpen && (
           <div className="MosaicHero-onlinePopover" role="menu">
             {users.length === 0 ? (
-              <div className="MosaicHero-onlinePopover-empty">No one's online right now.</div>
+              <div className="MosaicHero-onlinePopover-empty">{app.translator.trans('ernestdefoe-mosaic.forum.hero.online_empty')}</div>
             ) : (
               <ul className="MosaicHero-onlineList">
                 {users.map((u) => {

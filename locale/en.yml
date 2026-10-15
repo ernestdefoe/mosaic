@@ -8,11 +8,26 @@ ernestdefoe-mosaic:
       stat_resolved: Tickets resolved
       stat_posts: Posts
       stat_online: Online now
+      online_empty: No one's online right now.
     marketplace_promo:
       kicker: NEW · Marketplace
       title: Premium themes & extensions
       desc: Digital products, services, subscriptions, and private extensions from trusted sellers.
       cta: Browse the store
+    categories:
+      topic_count: "{count, plural, one {# topic} other {# topics}}"
+      general_help: General Help
+      general_help_meta: Ask anything
+      bug_reports: Bug Reports
+      bug_reports_meta: Something broken?
+      feature_requests: Feature Requests
+      feature_requests_meta: Shape the roadmap
+      tutorials: Tutorials & Guides
+      tutorials_meta: Curated by staff
+      account: Account & Billing
+      account_meta: Plan & payment help
+      announcements: Announcements
+      announcements_meta: Official updates
     home:
       start_discussion: Tell everyone what you are working on…
       guest_prompt: Sign in to start a discussion…
@@ -24,6 +39,8 @@ ernestdefoe-mosaic:
       tags: Tags
       start_discussion: Start a Discussion
       start_ticket: Start a Ticket
+      blog: Blog
+      sections_label: Sections
     sidebar:
       quick_actions_title: Quick Actions
       top_contributors_title: Top Contributors
@@ -34,3 +51,31 @@ ernestdefoe-mosaic:
       qa_write_blog: Write a Blog Post
       qa_support_ticket: Open a Support Ticket
       qa_marketplace: Visit the Marketplace
+  admin:
+    settings:
+      hide_marketplace_promo_label: Hide the Marketplace promo sidebar widget
+      hide_marketplace_promo_help: Removes the purple Marketplace promo card from the index sidebar.
+      hide_quick_actions_label: Hide the Quick Actions sidebar widget
+      hide_quick_actions_help: Removes the entire Quick Actions card from the sidebar regardless of how many rows are configured below.
+      hide_top_contributors_label: Hide the Top Contributors sidebar widget
+      hide_top_contributors_help: Removes the contributor leaderboard card. Auto-hides when no qualifying users exist.
+      hide_trending_label: Hide the Trending sidebar widget
+      hide_trending_help: Removes the trending-discussions card from the index sidebar.
+      hide_online_users_label: Suppress the Online Users payload
+      hide_online_users_help: 'Stops the forum bootstrap from including the list of recently-active usernames. The "Online now" count tile still works; only the user-list popover goes empty. Useful on large communities where the extra payload bytes matter, or on forums that prefer not to surface usernames to guests.'
+      hide_tickets_tile_label: Hide the Tickets resolved hero tile
+      hide_tickets_tile_help: 'Removes the "Tickets resolved" stat tile from the hero strip. The tile auto-hides when linkrobins/support is not installed, so you only need this toggle if you DO run the support extension but prefer not to surface the resolved-ticket count.'
+      support_url_label: Support extension URL
+      support_url_help: "Base URL for linkrobins/support (auto-detected; override if you mount it elsewhere). Leave blank if you do not run a support extension."
+      marketplace_url_label: Marketplace URL
+      marketplace_url_help: "Base URL for ramon/marketplace (auto-detected from marketplace_shop_path). Leave blank if you do not run a marketplace extension."
+    quick_actions:
+      label: Quick Actions
+      help: "Sidebar links shown in the Quick Actions widget. Each row needs an icon class (e.g. <code>fa-solid fa-bolt</code>), a label, and a URL. Leave the editor empty to use built-in defaults (Start a Discussion / Browse Tags / Recent Activity, plus Support and Marketplace links when those extensions are detected)."
+      empty: No custom actions configured — using built-in defaults.
+      add: Add action
+      label_placeholder: Label shown to visitors
+      href_placeholder: /path or https://…
+      move_up: Move up
+      move_down: Move down
+      remove: Remove

@@ -1,6 +1,12 @@
+import app from 'flarum/admin/app';
 import Component, { ComponentAttrs } from 'flarum/common/Component';
 import Button from 'flarum/common/components/Button';
 import type Mithril from 'mithril';
+
+const k = (key: string) => `ernestdefoe-mosaic.admin.quick_actions.${key}`;
+const t = (key: string, params: Record<string, unknown> = {}) => app.translator.trans(k(key), params);
+/** Plain-string form, for attributes (placeholder, title). */
+const ts = (key: string) => app.translator.trans(k(key), {}, true);
 
 interface QuickAction {
   icon?: string;
@@ -44,20 +50,16 @@ export default class QuickActionsEditor extends Component<QuickActionsEditorAttr
   view() {
     return (
       <div className="Form-group MosaicQuickActionsEditor">
-        <label>Quick Actions</label>
-        <div className="helpText">
-          Sidebar links shown in the Quick Actions widget. Each row needs an icon class (e.g. <code>fa-solid fa-bolt</code>), a label, and a URL.
-          Leave the editor empty to use built-in defaults (Start a Discussion / Browse Tags / Recent Activity, plus Support and Marketplace links when
-          those extensions are detected).
-        </div>
+        <label>{t('label')}</label>
+        <div className="helpText">{t('help', { code: <code /> })}</div>
 
         <div className="MosaicQuickActionsEditor-rows">
-          {this.actions.length === 0 && <div className="MosaicQuickActionsEditor-empty">No custom actions configured — using built-in defaults.</div>}
+          {this.actions.length === 0 && <div className="MosaicQuickActionsEditor-empty">{t('empty')}</div>}
           {this.actions.map((a, i) => this.renderRow(a, i))}
         </div>
 
         <Button className="Button MosaicQuickActionsEditor-add" icon="fas fa-plus" onclick={() => this.addRow()}>
-          Add action
+          {t('add')}
         </Button>
       </div>
     );
@@ -74,26 +76,26 @@ export default class QuickActionsEditor extends Component<QuickActionsEditorAttr
         />
         <input
           className="FormControl MosaicQuickActionsEditor-label"
-          placeholder="Label shown to visitors"
+          placeholder={ts('label_placeholder')}
           value={a.label || ''}
           oninput={(e: Event) => this.update(i, 'label', (e.target as HTMLInputElement).value)}
         />
         <input
           className="FormControl MosaicQuickActionsEditor-href"
-          placeholder="/path or https://…"
+          placeholder={ts('href_placeholder')}
           value={a.href || ''}
           oninput={(e: Event) => this.update(i, 'href', (e.target as HTMLInputElement).value)}
         />
         <div className="MosaicQuickActionsEditor-rowBtns">
-          <Button className="Button Button--icon" icon="fas fa-arrow-up" title="Move up" disabled={i === 0} onclick={() => this.move(i, -1)} />
+          <Button className="Button Button--icon" icon="fas fa-arrow-up" title={ts('move_up')} disabled={i === 0} onclick={() => this.move(i, -1)} />
           <Button
             className="Button Button--icon"
             icon="fas fa-arrow-down"
-            title="Move down"
+            title={ts('move_down')}
             disabled={i === this.actions.length - 1}
             onclick={() => this.move(i, 1)}
           />
-          <Button className="Button Button--icon Button--danger" icon="fas fa-trash" title="Remove" onclick={() => this.remove(i)} />
+          <Button className="Button Button--icon Button--danger" icon="fas fa-trash" title={ts('remove')} onclick={() => this.remove(i)} />
         </div>
       </div>
     );
