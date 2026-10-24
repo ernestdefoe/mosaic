@@ -30,3 +30,13 @@ export default function marketplaceUrl() {
 
   return '/shop';
 }
+
+/**
+ * Is there a marketplace to link to? Either the Mosaic admin set a
+ * Marketplace URL, or ramon/marketplace is enabled (it serialises
+ * `marketplace_shop_path`). Without one, every marketplace link and the
+ * promo card stay hidden instead of pointing at a /shop that 404s.
+ */
+export function hasMarketplace(): boolean {
+  return !!(app.forum.attribute<string>('marketplaceUrl') || app.forum.attribute<string>('marketplace_shop_path'));
+}

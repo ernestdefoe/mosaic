@@ -3,7 +3,7 @@ import Component from 'flarum/common/Component';
 import LinkButton from 'flarum/common/components/LinkButton';
 import type Mithril from 'mithril';
 import translate from '../utils/translate';
-import marketplaceUrlHelper from '../utils/marketplaceUrl';
+import marketplaceUrlHelper, { hasMarketplace } from '../utils/marketplaceUrl';
 
 /**
  * Inline pill-row nav under the hero.
@@ -52,8 +52,7 @@ export default class MosaicHeroNav extends Component {
       );
     }
 
-    const hasMarketplace = !!(app.forum.attribute<string>('marketplaceUrl') || app.forum.attribute<string>('marketplace_shop_path'));
-    if (hasMarketplace) {
+    if (hasMarketplace()) {
       pills.push(
         <LinkButton href={marketplaceUrlHelper()} icon="fa-solid fa-store" className="MosaicHeaderNav-item">
           {translate('nav.marketplace', 'Marketplace')}

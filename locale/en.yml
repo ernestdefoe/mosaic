@@ -54,7 +54,7 @@ ernestdefoe-mosaic:
   admin:
     settings:
       hide_marketplace_promo_label: Hide the Marketplace promo sidebar widget
-      hide_marketplace_promo_help: Removes the purple Marketplace promo card from the index sidebar.
+      hide_marketplace_promo_help: Removes the purple Marketplace promo card from the index sidebar. The card only shows when ramon/marketplace is enabled or a Marketplace URL is set below.
       hide_quick_actions_label: Hide the Quick Actions sidebar widget
       hide_quick_actions_help: Removes the entire Quick Actions card from the sidebar regardless of how many rows are configured below.
       hide_top_contributors_label: Hide the Top Contributors sidebar widget

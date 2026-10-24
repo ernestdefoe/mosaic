@@ -2,7 +2,7 @@ import Component from 'flarum/common/Component';
 import app from 'flarum/forum/app';
 import type Mithril from 'mithril';
 import extractText from 'flarum/common/utils/extractText';
-import marketplaceUrlHelper from '../utils/marketplaceUrl';
+import marketplaceUrlHelper, { hasMarketplace } from '../utils/marketplaceUrl';
 import translate from '../utils/translate';
 
 type IconStyle = Record<string, string | number>;
@@ -38,7 +38,7 @@ export default class SidebarPanels extends Component {
   view() {
     return (
       <div className="MosaicSidebarPanels">
-        {!app.forum.attribute<boolean>('mosaicHideMarketplacePromo') && this.marketplacePromo()}
+        {!app.forum.attribute<boolean>('mosaicHideMarketplacePromo') && hasMarketplace() && this.marketplacePromo()}
         {!app.forum.attribute<boolean>('mosaicHideQuickActions') && this.quickActions()}
         {!app.forum.attribute<boolean>('mosaicHideTopContributors') && this.topContributors()}
         {!app.forum.attribute<boolean>('mosaicHideTrending') && this.trending()}
@@ -91,13 +91,11 @@ export default class SidebarPanels extends Component {
           href: supportUrl,
         });
       }
-      const shopPath = app.forum.attribute<string>('marketplace_shop_path');
-      const marketplaceUrl = app.forum.attribute<string>('marketplaceUrl') || (shopPath ? '/' + String(shopPath).replace(/^\//, '') : null);
-      if (marketplaceUrl) {
+      if (hasMarketplace()) {
         links.push({
           icon: 'fa-solid fa-store',
           label: extractText(translate('sidebar.qa_marketplace', 'Visit the Marketplace')),
-          href: marketplaceUrl,
+          href: marketplaceUrlHelper(),
         });
       }
     }
