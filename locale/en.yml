@@ -66,7 +66,7 @@ ernestdefoe-mosaic:
       hide_tickets_tile_label: Hide the Tickets resolved hero tile
       hide_tickets_tile_help: 'Removes the "Tickets resolved" stat tile from the hero strip. The tile auto-hides when linkrobins/support is not installed, so you only need this toggle if you DO run the support extension but prefer not to surface the resolved-ticket count.'
       support_url_label: Support extension URL
-      support_url_help: "Base URL for linkrobins/support (auto-detected; override if you mount it elsewhere). Leave blank if you do not run a support extension."
+      support_url_help: "Base URL for the Tickets link and support quick action. Leave blank to use linkrobins/support's /support page automatically when that extension is enabled; fill it in to point somewhere else."
       marketplace_url_label: Marketplace URL
       marketplace_url_help: "Base URL for ramon/marketplace (auto-detected from marketplace_shop_path). Leave blank if you do not run a marketplace extension."
     quick_actions:

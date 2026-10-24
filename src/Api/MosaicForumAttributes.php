@@ -12,6 +12,8 @@
 namespace Ernestdefoe\Mosaic\Api;
 
 use Flarum\Api\Schema;
+use Flarum\Extension\ExtensionManager;
+use Flarum\Http\UrlGenerator;
 
 /**
  * Builds the mosaic fields added to ForumResource.
@@ -33,6 +35,8 @@ class MosaicForumAttributes
     public function __construct(
         private AddForumStatistics $stats,
         private AddForumSettings $settings,
+        private ExtensionManager $extensions,
+        private UrlGenerator $url,
     ) {
     }
 
@@ -107,9 +111,13 @@ class MosaicForumAttributes
 
             /* -- Section URL overrides (admin-saved strings) -- */
 
+            /* The admin's override, else linkrobins/support's own /support
+             * page when that extension is enabled (no query: the enabled list
+             * is already loaded). Null hides the Tickets pill + quick action. */
             Schema\Str::make('supportUrl')
                 ->nullable()
-                ->get(fn () => $this->settings->str('supportUrl')),
+                ->get(fn () => $this->settings->str('supportUrl')
+                    ?? ($this->extensions->isEnabled('linkrobins-support') ? $this->url->to('forum')->path('support') : null)),
 
             Schema\Str::make('marketplaceUrl')
                 ->nullable()

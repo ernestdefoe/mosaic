@@ -3,7 +3,9 @@
 namespace Ernestdefoe\Mosaic\Tests\integration\api;
 
 use Carbon\Carbon;
+use Ernestdefoe\Mosaic\Api\MosaicForumAttributes;
 use Flarum\Discussion\Discussion;
+use Flarum\Extension\ExtensionManager;
 use Flarum\Post\Post;
 use Flarum\Testing\integration\RetrievesAuthorizedUsers;
 use Flarum\Testing\integration\TestCase;
@@ -125,5 +127,39 @@ class ForumAttributesTest extends TestCase
         $this->assertFalse($forum['mosaicHideQuickActions']);
         $this->assertSame('https://help.example', $forum['supportUrl']);
         $this->assertNull($forum['marketplaceUrl']);
+    }
+
+    #[Test]
+    public function no_support_extension_means_no_tickets_link()
+    {
+        $this->assertNull($this->forum()['supportUrl']);
+    }
+
+    #[Test]
+    public function the_support_url_is_detected_when_linkrobins_support_is_enabled()
+    {
+        $this->enableSupportExtension();
+
+        $this->assertSame('http://localhost/support', $this->forum()['supportUrl']);
+    }
+
+    #[Test]
+    public function the_admins_support_url_overrides_detection()
+    {
+        $this->setting('supportUrl', '/help');
+        $this->enableSupportExtension();
+
+        $this->assertSame('/help', $this->forum()['supportUrl']);
+    }
+
+    /** linkrobins/support is not a dev dependency, so report it enabled to Mosaic alone. */
+    private function enableSupportExtension(): void
+    {
+        $container = $this->app()->getContainer();
+        $real = $container->make(ExtensionManager::class);
+        $extensions = $this->createStub(ExtensionManager::class);
+        $extensions->method('isEnabled')->willReturnCallback(fn (string $id) => $id === 'linkrobins-support' || $real->isEnabled($id));
+
+        $container->when(MosaicForumAttributes::class)->needs(ExtensionManager::class)->give(fn () => $extensions);
     }
 }
