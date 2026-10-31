@@ -112,10 +112,12 @@
  *
  * The :not(.LinkRobinsSupport-sidebar) keeps the linkrobins/support
  * extension's own .IndexPage-nav sidebar visible — it ships filter
- * chips + "New ticket" controls that aren't nav destinations. */
+ * chips + "New ticket" controls that aren't nav destinations. Only the
+ * sidebar Mosaic builds (with its widget panels) hides it: an
+ * extension's page that brings its own sidebar (Depot's downloads)
+ * keeps its nav, which the header and pill row don't carry. */
 @media (min-width: 768px) {
-  .IndexPage .Page-sidebar > .IndexPage-nav:not(.LinkRobinsSupport-sidebar),
-  .IndexPage .Page-sidebar > nav.IndexPage-nav:not(.LinkRobinsSupport-sidebar) {
+  .IndexPage .Page-sidebar:has(> .MosaicSidebarPanels) > .IndexPage-nav:not(.LinkRobinsSupport-sidebar) {
     display: none;
   }
 }
