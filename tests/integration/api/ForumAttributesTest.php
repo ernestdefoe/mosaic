@@ -112,6 +112,17 @@ class ForumAttributesTest extends TestCase
     }
 
     #[Test]
+    public function contributor_and_trending_links_follow_a_sub_directory_install()
+    {
+        $this->config('url', 'http://localhost/community');
+
+        $forum = $this->forum();
+
+        $this->assertSame('http://localhost/community/u/online15', $forum['mosaicTopContributors'][0]['href']);
+        $this->assertSame('http://localhost/community/d/1', $forum['mosaicTrending'][0]['href']);
+    }
+
+    #[Test]
     public function the_admin_settings_are_served()
     {
         $this->setting('mosaicTopContributors', json_encode([['name' => 'Pinned']]));

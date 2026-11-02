@@ -64,7 +64,11 @@ class MosaicForumAttributes
                 ->get(fn () => $this->stats->onlineCount()),
 
             /* Recently-active users for the hero "Online now" dropdown.
-             * Capped + privacy-filtered server-side; empty when disabled. */
+             * Capped + privacy-filtered server-side; empty when disabled.
+             * These lists ride the forum bootstrap on every page on purpose:
+             * the hero + sidebar render on the index, which members reach by
+             * SPA navigation from any page, so index-only data would vanish
+             * there. All three lists are capped (50 / 5 / 4) and cached 60 s. */
             Schema\Arr::make('mosaicOnlineUsers')
                 ->get(fn () => $hideOnlineUsers ? [] : $this->stats->onlineUsers()),
 

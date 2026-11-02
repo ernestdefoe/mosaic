@@ -106,6 +106,8 @@ export default class SidebarPanels extends Component {
           {fa('fa-solid fa-bolt', { color: 'var(--primary)' })}
           <span>{translate('sidebar.quick_actions_title', 'Quick Actions')}</span>
         </h3>
+        {/* Unkeyed on purpose: the admin's JSON may repeat an href, and Mithril
+            throws on duplicate keys; the list never reorders between redraws. */}
         {links.map((l) => (
           <a className="MosaicQuickAction" href={l.href}>
             <span className="MosaicQuickAction-ic">{fa(l.icon || 'fa-solid fa-link')}</span>
@@ -179,7 +181,7 @@ export default class SidebarPanels extends Component {
           <span>{translate('sidebar.trending_title', 'Trending')}</span>
         </h3>
         {items.map((t, i) => (
-          <a href={t.href} className="MosaicTrendRow">
+          <a key={t.href} href={t.href} className="MosaicTrendRow">
             <span className={`MosaicTrendRow-num ${i < 2 ? 'is-top' : ''}`}>{i + 1}</span>
             <div>
               <div className="MosaicTrendRow-title">{t.title}</div>

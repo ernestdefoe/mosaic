@@ -14,6 +14,7 @@ namespace Ernestdefoe\Mosaic\Api;
 use Carbon\Carbon;
 use Ernestdefoe\Mosaic\SupportTicket;
 use Flarum\Discussion\Discussion;
+use Flarum\Http\UrlGenerator;
 use Flarum\Post\Post;
 use Flarum\User\Guest;
 use Flarum\User\User;
@@ -49,6 +50,7 @@ class AddForumStatistics
     public function __construct(
         private CacheRepository $cache,
         private LoggerInterface $log,
+        private UrlGenerator $url,
     ) {
     }
 
@@ -312,7 +314,7 @@ class AddForumStatistics
             'meta' => $comments === 1 ? '1 post' : ($comments.' posts'),
             'points' => $comments + $discussions,
             'avatarUrl' => $avatarUrl,
-            'href' => '/u/'.rawurlencode((string) $u->username),
+            'href' => $this->url->to('forum')->path('u/'.rawurlencode((string) $u->username)),
         ];
     }
 
@@ -340,9 +342,10 @@ class AddForumStatistics
                     ->map(fn (Discussion $d) => [
                         'title' => (string) $d->title,
                         'meta' => ((int) $d->comment_count).' replies',
-                        // /d/{id} redirects to the canonical slug URL, so we
-                        // avoid invoking the slug driver here.
-                        'href' => '/d/'.(int) $d->id,
+                        // d/{id} redirects to the canonical slug URL, so we
+                        // avoid invoking the slug driver here. Built from the
+                        // forum's base URL so sub-directory installs link right.
+                        'href' => $this->url->to('forum')->path('d/'.(int) $d->id),
                     ])
                     ->values()
                     ->toArray();
