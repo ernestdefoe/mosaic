@@ -99,6 +99,38 @@
   }
 }
 
+/* fof/forum-widgets-core's "end" area is a third child of .Page-container
+ * (.FofWidgets-sideNavAlt, built for core's flex row). Our two-column grid
+ * wrapped it under the whole discussion list; give it the right-hand column
+ * instead, stacked under the sidebar and its start widgets. The column then
+ * scrolls with the page: a sticky, height-capped sidebar would clip the
+ * widgets under it. Only matches when end widgets render, so the layout is
+ * unchanged without the extension or without end widgets. */
+.IndexPage .Page-container:has(> .FofWidgets-sideNavAlt) {
+  grid-template-rows: auto 1fr;
+  grid-template-areas: 'content sidebar' 'content end';
+
+  @media (max-width: 920px) {
+    grid-template-rows: none;
+    grid-template-areas: 'content' 'sidebar' 'end';
+  }
+
+  > .Page-sidebar {
+    position: static;
+    max-height: none;
+    overflow: visible;
+    padding-right: 0;
+  }
+
+  > .FofWidgets-sideNavAlt {
+    grid-area: end;
+    width: auto;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+  }
+}
+
 /* Nav destinations live in IndexSidebar.navItems.
  *
  * Desktop (≥768px): hide the IndexPage-nav block in the sidebar — the
