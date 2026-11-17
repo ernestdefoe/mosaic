@@ -54,12 +54,16 @@ class AddForumStatistics
     ) {
     }
 
-    /** All registered (non-soft-deleted) users. */
-    public function memberCount(): ?int
+    /** All registered users the actor may see; null when it can't view the forum. */
+    public function memberCount(User $actor): ?int
     {
-        return $this->cache->remember('mosaic.stats.memberCount', self::CACHE_TTL, function () {
+        if ($actor->cannot('viewForum')) {
+            return null;
+        }
+
+        return $this->cache->remember($this->audienceKey('memberCount', $actor), self::CACHE_TTL, function () use ($actor) {
             try {
-                return User::query()->count();
+                return User::query()->whereVisibleTo($actor)->count();
             } catch (QueryException $e) {
                 $this->log->warning('[mosaic] memberCount query failed', ['exception' => $e]);
 
@@ -73,11 +77,15 @@ class AddForumStatistics
      * instead of counting the ~20 discussions the SPA happens to have in its
      * store on the current page.
      */
-    public function discussionCount(): ?int
+    public function discussionCount(User $actor): ?int
     {
-        return $this->cache->remember('mosaic.stats.discussionCount', self::CACHE_TTL, function () {
+        if ($actor->cannot('viewForum')) {
+            return null;
+        }
+
+        return $this->cache->remember($this->actorKey('discussionCount', $actor), self::CACHE_TTL, function () use ($actor) {
             try {
-                return Discussion::query()->count();
+                return Discussion::query()->whereVisibleTo($actor)->count();
             } catch (QueryException $e) {
                 $this->log->warning('[mosaic] discussionCount query failed', ['exception' => $e]);
 
@@ -91,11 +99,15 @@ class AddForumStatistics
      * real reply count), excluding event posts like renames and tag changes —
      * the same definition flarum/statistics uses.
      */
-    public function postCount(): ?int
+    public function postCount(User $actor): ?int
     {
-        return $this->cache->remember('mosaic.stats.postCount', self::CACHE_TTL, function () {
+        if ($actor->cannot('viewForum')) {
+            return null;
+        }
+
+        return $this->cache->remember($this->actorKey('postCount', $actor), self::CACHE_TTL, function () use ($actor) {
             try {
-                return Post::query()->where('type', 'comment')->count();
+                return Post::query()->whereVisibleTo($actor)->where('type', 'comment')->count();
             } catch (QueryException $e) {
                 $this->log->warning('[mosaic] postCount query failed', ['exception' => $e]);
 
@@ -108,11 +120,16 @@ class AddForumStatistics
      * Users seen in the last 5 minutes — the same threshold Flarum's
      * own "online" indicator uses.
      */
-    public function onlineCount(): ?int
+    public function onlineCount(User $actor): ?int
     {
-        return $this->cache->remember('mosaic.stats.onlineCount', self::CACHE_TTL, function () {
+        if ($actor->cannot('viewForum')) {
+            return null;
+        }
+
+        return $this->cache->remember($this->audienceKey('onlineCount', $actor), self::CACHE_TTL, function () use ($actor) {
             try {
                 return User::query()
+                    ->whereVisibleTo($actor)
                     ->where('last_seen_at', '>=', Carbon::now()->subMinutes(self::ONLINE_WINDOW_MINUTES))
                     ->count();
             } catch (QueryException $e) {
@@ -135,21 +152,27 @@ class AddForumStatistics
      *   - Fetches a small over-quota (limit + 20) so the post-filter
      *     for opt-outs doesn't shrink the visible list below `$limit`
      *     on installs where many users opt out.
+     *   - Empty unless the viewer can see the forum and search users,
+     *     the permission core gates its own user directory on.
      *   - Capped at 100 either way — large communities should expose a
      *     dedicated "online users" page rather than ballooning the
-     *     forum payload, which serializeToForum hands to every guest.
+     *     forum payload, which rides every page.
      *
      * Returns [] on any failure so the JS dropdown shows an
      * empty-state hint instead of breaking the hero render.
      */
-    public function onlineUsers(int $limit = 50): array
+    public function onlineUsers(User $actor, int $limit = 50): array
     {
-        $limit = max(1, min($limit, 100));
-        $key = sprintf('mosaic.stats.onlineUsers.%d', $limit);
+        if (! $this->canListUsers($actor)) {
+            return [];
+        }
 
-        return $this->cache->remember($key, self::CACHE_TTL, function () use ($limit) {
+        $limit = max(1, min($limit, 100));
+
+        return $this->cache->remember($this->audienceKey('onlineUsers.'.$limit, $actor), self::CACHE_TTL, function () use ($actor, $limit) {
             try {
                 return User::query()
+                    ->whereVisibleTo($actor)
                     ->where('last_seen_at', '>=', Carbon::now()->subMinutes(self::ONLINE_WINDOW_MINUTES))
                     ->orderByDesc('last_seen_at')
                     ->limit($limit + 20)
@@ -194,8 +217,12 @@ class AddForumStatistics
      * candidate table and caught it as control flow, which is
      * expensive and indistinguishable from a real DB error.
      */
-    public function resolvedTicketCount(): ?int
+    public function resolvedTicketCount(User $actor): ?int
     {
+        if ($actor->cannot('viewForum')) {
+            return null;
+        }
+
         return $this->cache->remember('mosaic.stats.resolvedTicketCount', self::CACHE_TTL, function () {
             $table = $this->supportTable();
             if ($table === null) {
@@ -263,13 +290,18 @@ class AddForumStatistics
      *
      * @return list<array<string, mixed>>
      */
-    public function topContributors(int $limit = 5): array
+    public function topContributors(User $actor, int $limit = 5): array
     {
+        if (! $this->canListUsers($actor)) {
+            return [];
+        }
+
         $limit = max(1, min($limit, 20));
 
-        return $this->cache->remember('mosaic.stats.topContributors.v2.'.$limit, self::CACHE_TTL, function () use ($limit) {
+        return $this->cache->remember($this->audienceKey('topContributors.v2.'.$limit, $actor), self::CACHE_TTL, function () use ($actor, $limit) {
             try {
                 return User::query()
+                    ->whereVisibleTo($actor)
                     ->where('comment_count', '>', 0)
                     ->orderByDesc('comment_count')
                     ->orderByDesc('discussion_count')
@@ -325,8 +357,12 @@ class AddForumStatistics
      *
      * @return list<array<string, mixed>>
      */
-    public function trending(int $limit = 4): array
+    public function trending(User $actor, int $limit = 4): array
     {
+        if ($actor->cannot('viewForum')) {
+            return [];
+        }
+
         $limit = max(1, min($limit, 10));
 
         return $this->cache->remember('mosaic.stats.trending.'.$limit, self::CACHE_TTL, function () use ($limit) {
@@ -355,5 +391,35 @@ class AddForumStatistics
                 return [];
             }
         });
+    }
+
+    /**
+     * Listing users is the same permission core gates its user directory on,
+     * on top of being allowed into the forum at all.
+     */
+    private function canListUsers(User $actor): bool
+    {
+        return $actor->can('viewForum') && $actor->can('searchUsers');
+    }
+
+    /**
+     * Cache key for a user list or user count. Core's user visibility depends
+     * only on the audience, so guests, members and admins each get their own
+     * entry and one audience's list is never served to another.
+     */
+    private function audienceKey(string $stat, User $actor): string
+    {
+        $audience = $actor->isGuest() ? 'guest' : ($actor->isAdmin() ? 'admin' : 'member');
+
+        return 'mosaic.stats.'.$stat.'.'.$audience;
+    }
+
+    /**
+     * Cache key for a discussion or post count. Tag permissions and private
+     * discussions make these differ per person, so members are cached apart.
+     */
+    private function actorKey(string $stat, User $actor): string
+    {
+        return 'mosaic.stats.'.$stat.'.'.($actor->isGuest() ? 'guest' : 'u'.(int) $actor->id);
     }
 }

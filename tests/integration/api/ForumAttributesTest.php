@@ -54,12 +54,12 @@ class ForumAttributesTest extends TestCase
         ]);
     }
 
-    private function forum(): array
+    private function forum(?int $as = 1): array
     {
         // The stats are cached for a minute; a test must not read another's.
         $this->app()->getContainer()->make('cache.store')->flush();
 
-        $response = $this->send($this->request('GET', '/api'));
+        $response = $this->send($this->request('GET', '/api', $as === null ? [] : ['authenticatedAs' => $as]));
         $this->assertSame(200, $response->getStatusCode());
 
         return json_decode((string) $response->getBody(), true)['data']['attributes'];
@@ -73,7 +73,7 @@ class ForumAttributesTest extends TestCase
         $this->assertSame(8, $forum['mosaicUserCount']);
         $this->assertSame(3, $forum['mosaicDiscussionCount']);
         $this->assertSame(5, $forum['mosaicPostCount'], 'Comments only, not event posts');
-        $this->assertSame(6, $forum['mosaicOnlineCount']);
+        $this->assertSame(7, $forum['mosaicOnlineCount'], 'Six members plus the admin reading the page');
         $this->assertNull($forum['mosaicResolvedCount'], 'No support extension, no tile');
     }
 
@@ -82,7 +82,7 @@ class ForumAttributesTest extends TestCase
     {
         $online = array_column($this->forum()['mosaicOnlineUsers'], null, 'username');
 
-        $this->assertCount(5, $online);
+        $this->assertCount(6, $online, 'Five who disclose it plus the admin reading the page');
         $this->assertArrayNotHasKey('online15', $online, 'Chose not to disclose being online');
         $this->assertStringEndsWith('avatar10.png', $online['online10']['avatarUrl']);
     }
@@ -172,5 +172,87 @@ class ForumAttributesTest extends TestCase
         $extensions->method('isEnabled')->willReturnCallback(fn (string $id) => $id === 'linkrobins-support' || $real->isEnabled($id));
 
         $container->when(MosaicForumAttributes::class)->needs(ExtensionManager::class)->give(fn () => $extensions);
+    }
+
+    /** Revoke a permission from guests (2) and, optionally, members (3). */
+    private function revoke(string $permission, array $groups = [2]): void
+    {
+        $this->database()->table('group_permission')->where('permission', $permission)->whereIn('group_id', $groups)->delete();
+    }
+
+    #[Test]
+    public function a_guest_who_cannot_view_the_forum_gets_no_users_and_no_counts()
+    {
+        $this->revoke('viewForum');
+
+        $forum = $this->forum(null);
+
+        $this->assertSame([], $forum['mosaicOnlineUsers']);
+        $this->assertSame([], $forum['mosaicTopContributors']);
+        $this->assertSame([], $forum['mosaicTrending']);
+        $this->assertNull($forum['mosaicUserCount']);
+        $this->assertNull($forum['mosaicOnlineCount']);
+        $this->assertNull($forum['mosaicDiscussionCount']);
+        $this->assertNull($forum['mosaicPostCount']);
+        $this->assertStringNotContainsString('online1', json_encode($forum));
+
+        $this->setting('mosaicTopContributors', json_encode([['name' => 'Pinned']]));
+        $this->assertSame([], $this->forum(null)['mosaicTopContributors'], 'Nor the admin-pinned list');
+    }
+
+    #[Test]
+    public function a_guest_who_cannot_search_users_sees_counts_but_no_user_lists()
+    {
+
+        $forum = $this->forum(null);
+
+        $this->assertSame([], $forum['mosaicOnlineUsers']);
+        $this->assertSame([], $forum['mosaicTopContributors']);
+        $this->assertStringNotContainsString('online1', json_encode($forum));
+        $this->assertSame(2, $forum['mosaicDiscussionCount'], 'The hidden discussion is not counted for a guest');
+        $this->assertSame(4, $forum['mosaicPostCount']);
+        $this->assertSame(['Busy', 'Quiet'], array_column($forum['mosaicTrending'], 'title'));
+    }
+
+    #[Test]
+    public function a_member_who_can_search_users_gets_the_lists_a_guest_does_not()
+    {
+        // Core grants searchUsers to members only, so a guest's list is empty.
+        $guest = $this->forum(null);
+        $this->assertSame([], $guest['mosaicOnlineUsers']);
+
+        // Neither audience's cached list may be served to the other.
+        $member = json_decode((string) $this->send($this->request('GET', '/api', ['authenticatedAs' => 2]))->getBody(), true)['data']['attributes'];
+        $this->assertCount(6, $member['mosaicOnlineUsers']);
+        $this->assertCount(5, $member['mosaicTopContributors']);
+        $this->assertSame(2, $member['mosaicDiscussionCount']);
+
+        $again = json_decode((string) $this->send($this->request('GET', '/api'))->getBody(), true)['data']['attributes'];
+        $this->assertSame([], $again['mosaicOnlineUsers'], 'A member\'s cached list is never served to a guest');
+        $this->assertSame([], $again['mosaicTopContributors']);
+    }
+
+    #[Test]
+    public function a_member_on_a_members_only_forum_sees_what_a_guest_does_not()
+    {
+        $this->revoke('viewForum');
+        $this->database()->table('group_permission')->insert(['group_id' => 3, 'permission' => 'viewForum']);
+
+        $member = $this->forum(2);
+        $this->assertCount(6, $member['mosaicOnlineUsers']);
+        $this->assertSame(8, $member['mosaicUserCount']);
+
+        $guest = json_decode((string) $this->send($this->request('GET', '/api'))->getBody(), true)['data']['attributes'];
+        $this->assertSame([], $guest['mosaicOnlineUsers'], 'Cached for the member, not served to a guest');
+        $this->assertNull($guest['mosaicUserCount']);
+    }
+
+    #[Test]
+    public function an_admin_counts_the_hidden_discussion()
+    {
+        $forum = $this->forum(1);
+
+        $this->assertSame(3, $forum['mosaicDiscussionCount']);
+        $this->assertSame(5, $forum['mosaicPostCount']);
     }
 }

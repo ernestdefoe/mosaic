@@ -11,6 +11,7 @@
 
 namespace Ernestdefoe\Mosaic\Api;
 
+use Flarum\Api\Context;
 use Flarum\Api\Schema;
 use Flarum\Extension\ExtensionManager;
 use Flarum\Http\UrlGenerator;
@@ -49,46 +50,53 @@ class MosaicForumAttributes
 
             Schema\Integer::make('mosaicUserCount')
                 ->nullable()
-                ->get(fn () => $this->stats->memberCount()),
+                ->get(fn ($forum, Context $context) => $this->stats->memberCount($context->getActor())),
 
             Schema\Integer::make('mosaicDiscussionCount')
                 ->nullable()
-                ->get(fn () => $this->stats->discussionCount()),
+                ->get(fn ($forum, Context $context) => $this->stats->discussionCount($context->getActor())),
 
             Schema\Integer::make('mosaicPostCount')
                 ->nullable()
-                ->get(fn () => $this->stats->postCount()),
+                ->get(fn ($forum, Context $context) => $this->stats->postCount($context->getActor())),
 
             Schema\Integer::make('mosaicOnlineCount')
                 ->nullable()
-                ->get(fn () => $this->stats->onlineCount()),
+                ->get(fn ($forum, Context $context) => $this->stats->onlineCount($context->getActor())),
 
             /* Recently-active users for the hero "Online now" dropdown.
              * Capped + privacy-filtered server-side; empty when disabled.
              * These lists ride the forum bootstrap on every page on purpose:
              * the hero + sidebar render on the index, which members reach by
              * SPA navigation from any page, so index-only data would vanish
-             * there. All three lists are capped (50 / 5 / 4) and cached 60 s. */
+             * there. All three lists are capped (50 / 5 / 4) and cached 60 s,
+             * and each is empty for a viewer who can't see the forum (or, for
+             * the user lists, can't search users), so a members-only forum
+             * never hands them to a guest. */
             Schema\Arr::make('mosaicOnlineUsers')
-                ->get(fn () => $hideOnlineUsers ? [] : $this->stats->onlineUsers()),
+                ->get(fn ($forum, Context $context) => $hideOnlineUsers ? [] : $this->stats->onlineUsers($context->getActor())),
 
             Schema\Integer::make('mosaicResolvedCount')
                 ->nullable()
-                ->get(fn () => $this->stats->resolvedTicketCount()),
+                ->get(fn ($forum, Context $context) => $this->stats->resolvedTicketCount($context->getActor())),
 
             /* Forum-wide top contributors + trending discussions, computed and
              * cached server-side so the sidebar panels reflect the whole forum
              * rather than the ~20 records in the current page's store. An admin
              * JSON override (mosaicTopContributors setting) wins when set. */
             Schema\Arr::make('mosaicTopContributors')
-                ->get(function () {
+                ->get(function ($forum, Context $context) {
                     $override = $this->settings->json('mosaicTopContributors', []);
 
-                    return ! empty($override) ? $override : $this->stats->topContributors();
+                    if (! empty($override)) {
+                        return $context->getActor()->can('viewForum') ? $override : [];
+                    }
+
+                    return $this->stats->topContributors($context->getActor());
                 }),
 
             Schema\Arr::make('mosaicTrending')
-                ->get(fn () => $this->stats->trending()),
+                ->get(fn ($forum, Context $context) => $this->stats->trending($context->getActor())),
 
             /* -- Sidebar widget visibility (admin-saved booleans) -- */
 
