@@ -71,8 +71,8 @@ class ForumAttributesTest extends TestCase
         $forum = $this->forum();
 
         $this->assertSame(8, $forum['mosaicUserCount']);
-        $this->assertSame(3, $forum['mosaicDiscussionCount']);
-        $this->assertSame(5, $forum['mosaicPostCount'], 'Comments only, not event posts');
+        $this->assertSame(2, $forum['mosaicDiscussionCount'], 'Hidden discussions are left out');
+        $this->assertSame(4, $forum['mosaicPostCount'], 'Comments only, not event posts');
         $this->assertSame(7, $forum['mosaicOnlineCount'], 'Six members plus the admin reading the page');
         $this->assertNull($forum['mosaicResolvedCount'], 'No support extension, no tile');
     }
@@ -241,6 +241,7 @@ class ForumAttributesTest extends TestCase
         $member = $this->forum(2);
         $this->assertCount(6, $member['mosaicOnlineUsers']);
         $this->assertSame(8, $member['mosaicUserCount']);
+        $this->assertSame(['Busy', 'Quiet'], array_column($member['mosaicTrending'], 'title'), 'Trending works on a members-only forum');
 
         $guest = json_decode((string) $this->send($this->request('GET', '/api'))->getBody(), true)['data']['attributes'];
         $this->assertSame([], $guest['mosaicOnlineUsers'], 'Cached for the member, not served to a guest');
@@ -248,11 +249,15 @@ class ForumAttributesTest extends TestCase
     }
 
     #[Test]
-    public function an_admin_counts_the_hidden_discussion()
+    public function private_discussions_and_hidden_groups_stay_out_of_the_shared_stats()
     {
+        $this->database()->table('discussions')->where('id', 2)->update(['is_private' => true]);
+        $this->database()->table('groups')->where('id', 4)->update(['is_hidden' => true]);
+
         $forum = $this->forum(1);
 
-        $this->assertSame(3, $forum['mosaicDiscussionCount']);
-        $this->assertSame(5, $forum['mosaicPostCount']);
+        $this->assertSame(1, $forum['mosaicDiscussionCount'], 'Cached per group set, so a private discussion is never counted');
+        $this->assertSame(['Busy'], array_column($forum['mosaicTrending'], 'title'));
+        $this->assertNull($forum['mosaicTopContributors'][1]['role'], 'A hidden group is not shown as a role');
     }
 }

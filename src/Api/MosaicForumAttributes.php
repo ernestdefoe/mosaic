@@ -27,7 +27,8 @@ use Flarum\Http\UrlGenerator;
  *
  * Two groups of fields:
  *   1. Statistics — counts + lists the hero strip and sidebar panels read,
- *      computed forum-wide and cached server-side in AddForumStatistics.
+ *      computed for what the viewer may see and cached per audience in
+ *      AddForumStatistics.
  *   2. Settings bridge — admin-saved booleans/strings exposed so the forum
  *      frontend can read them via app.forum.attribute(key).
  */

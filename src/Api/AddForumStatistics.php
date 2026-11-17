@@ -15,26 +15,21 @@ use Carbon\Carbon;
 use Ernestdefoe\Mosaic\SupportTicket;
 use Flarum\Discussion\Discussion;
 use Flarum\Http\UrlGenerator;
-use Flarum\Post\Post;
-use Flarum\User\Guest;
 use Flarum\User\User;
 use Illuminate\Contracts\Cache\Repository as CacheRepository;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\QueryException;
 use Psr\Log\LoggerInterface;
 
 /**
- * Computes the four count attributes the mosaic hero strip can't
- * otherwise resolve on a vanilla Flarum 2 install: member count,
- * current-online count, online-users list, and resolved-ticket count
- * from linkrobins/support.
+ * Computes the hero strip's counts and the sidebar's lists for the viewer:
+ * nothing for someone who can't view the forum, no user lists for someone
+ * who can't search users, and only what the viewer's groups may see.
  *
- * Instance class (not static) so the container can wire its
- * dependencies. Every read goes through a 60 s cache because these
- * stats are pulled on every forum-page bootstrap and used to be
- * recomputed for every visitor — a few hundred queries per minute
- * just to paint the hero. The cache TTL is short enough that the
- * "Online now" tile still feels live, long enough that the bulk of
- * concurrent requests during a traffic burst share one DB hit.
+ * Every read goes through a 60 s cache keyed by audience (guest, member,
+ * admin for user stats; the permission group set for discussion stats), so
+ * concurrent page loads share one query and one audience's result is never
+ * served to another.
  */
 class AddForumStatistics
 {
@@ -83,9 +78,9 @@ class AddForumStatistics
             return null;
         }
 
-        return $this->cache->remember($this->actorKey('discussionCount', $actor), self::CACHE_TTL, function () use ($actor) {
+        return $this->cache->remember($this->groupKey('discussionCount', $actor), self::CACHE_TTL, function () use ($actor) {
             try {
-                return Discussion::query()->whereVisibleTo($actor)->count();
+                return $this->publicDiscussions($actor)->count();
             } catch (QueryException $e) {
                 $this->log->warning('[mosaic] discussionCount query failed', ['exception' => $e]);
 
@@ -95,9 +90,10 @@ class AddForumStatistics
     }
 
     /**
-     * Forum-wide comment-post total. Counts only `comment`-type posts (the
-     * real reply count), excluding event posts like renames and tag changes —
-     * the same definition flarum/statistics uses.
+     * Comment total across the public discussions the viewer's groups can
+     * see: the sum of each discussion's comment_count, which already leaves
+     * out event posts (renames, tag changes) and hidden replies. One indexed
+     * query instead of a visibility-scoped scan of every post.
      */
     public function postCount(User $actor): ?int
     {
@@ -105,9 +101,9 @@ class AddForumStatistics
             return null;
         }
 
-        return $this->cache->remember($this->actorKey('postCount', $actor), self::CACHE_TTL, function () use ($actor) {
+        return $this->cache->remember($this->groupKey('postCount', $actor), self::CACHE_TTL, function () use ($actor) {
             try {
-                return Post::query()->whereVisibleTo($actor)->where('type', 'comment')->count();
+                return (int) $this->publicDiscussions($actor)->sum('comment_count');
             } catch (QueryException $e) {
                 $this->log->warning('[mosaic] postCount query failed', ['exception' => $e]);
 
@@ -211,11 +207,8 @@ class AddForumStatistics
      *
      * Returns null when the support extension's table isn't present
      * (extension not installed or table name differs) so the hero
-     * tile renders "—" rather than a misleading 0. The table-existence
-     * probe is a single SHOW TABLES query cached for the full process
-     * lifetime — the previous version threw a QueryException once per
-     * candidate table and caught it as control flow, which is
-     * expensive and indistinguishable from a real DB error.
+     * tile renders "—" rather than a misleading 0. The table lookup is
+     * cached on its own (see supportTable()).
      */
     public function resolvedTicketCount(User $actor): ?int
     {
@@ -242,8 +235,8 @@ class AddForumStatistics
     }
 
     /**
-     * Resolve the support-tickets table name once and cache for the
-     * full process lifetime. linkrobins/support's canonical table is
+     * Resolve the support-tickets table name, cached for the same 60 s
+     * as the stats. linkrobins/support's canonical table is
      * `linkrobins_support_tickets`; very early installs used the
      * shorter `support_tickets`. Either gets returned if present,
      * with the canonical name preferred. Null when neither exists.
@@ -305,7 +298,7 @@ class AddForumStatistics
                     ->where('comment_count', '>', 0)
                     ->orderByDesc('comment_count')
                     ->orderByDesc('discussion_count')
-                    ->with('groups')
+                    ->with(['groups' => fn ($q) => $q->where('is_hidden', false)])
                     ->limit($limit)
                     ->get()
                     ->map(fn (User $u) => $this->serializeContributor($u))
@@ -328,8 +321,8 @@ class AddForumStatistics
         $comments = (int) $u->comment_count;
         $discussions = (int) $u->discussion_count;
 
-        // Surface a role badge only for staff-ish primary groups, mirroring
-        // the frontend's previous heuristic.
+        // Surface a role badge only for staff-ish groups the public can see;
+        // hidden groups are filtered out when the relation is loaded.
         $role = null;
         $group = $u->groups->first();
         if ($group) {
@@ -351,9 +344,10 @@ class AddForumStatistics
     }
 
     /**
-     * Forum-wide trending discussions by participant count (cached). Computed
-     * against GUEST visibility so the cached list is safe to serve to every
-     * viewer — it never surfaces a discussion a guest couldn't already see.
+     * Trending discussions by participant count, among the public discussions
+     * the viewer's groups can see (cached per group set), so members-only
+     * forums still have a list and no viewer gets a discussion they couldn't
+     * open.
      *
      * @return list<array<string, mixed>>
      */
@@ -365,11 +359,9 @@ class AddForumStatistics
 
         $limit = max(1, min($limit, 10));
 
-        return $this->cache->remember('mosaic.stats.trending.'.$limit, self::CACHE_TTL, function () use ($limit) {
+        return $this->cache->remember($this->groupKey('trending.'.$limit, $actor), self::CACHE_TTL, function () use ($actor, $limit) {
             try {
-                return Discussion::query()
-                    ->whereVisibleTo(new Guest())
-                    ->whereNull('hidden_at')
+                return $this->publicDiscussions($actor)
                     ->where('comment_count', '>', 0)
                     ->orderByDesc('participant_count')
                     ->orderByDesc('comment_count')
@@ -415,11 +407,31 @@ class AddForumStatistics
     }
 
     /**
-     * Cache key for a discussion or post count. Tag permissions and private
-     * discussions make these differ per person, so members are cached apart.
+     * Discussions the viewer can see that look the same to everyone with the
+     * same groups: private discussions (recipients) and hidden ones (their
+     * authors, moderators) depend on the person, so they are left out and
+     * the result can be cached per group set.
+     *
+     * @return Builder<Discussion>
      */
-    private function actorKey(string $stat, User $actor): string
+    private function publicDiscussions(User $actor): Builder
     {
-        return 'mosaic.stats.'.$stat.'.'.($actor->isGuest() ? 'guest' : 'u'.(int) $actor->id);
+        return Discussion::query()
+            ->whereVisibleTo($actor)
+            ->where('discussions.is_private', false)
+            ->whereNull('discussions.hidden_at');
+    }
+
+    /**
+     * Cache key for a discussion stat. Tag permissions follow the groups a
+     * viewer's permissions come from, so everyone in the same groups shares
+     * one entry: a handful per forum, not one per member.
+     */
+    private function groupKey(string $stat, User $actor): string
+    {
+        $groups = array_unique(array_map('intval', $actor->permissionGroupIds()));
+        sort($groups);
+
+        return 'mosaic.stats.'.$stat.'.g'.implode('-', $groups);
     }
 }
