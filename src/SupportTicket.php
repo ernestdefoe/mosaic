@@ -12,27 +12,20 @@
 namespace Ernestdefoe\Mosaic;
 
 use Flarum\Database\AbstractModel;
-use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
- * Lightweight read-model for the optional linkrobins/support tickets table.
+ * Read-only view of linkrobins/support's tickets, for the hero's resolved-ticket
+ * count. Only queried when that extension is enabled (see extend.php), so the
+ * table always exists; soft-deleted tickets are left out, as they are there.
  *
- * The table name is resolved at runtime (the canonical
- * `linkrobins_support_tickets`, or the legacy `support_tickets`) and bound
- * with queryTable(), so AddForumStatistics can count resolved tickets through
- * Eloquent instead of borrowing a raw ConnectionInterface and calling
- * ->table() on it.
+ * @property string $status
  */
 class SupportTicket extends AbstractModel
 {
+    use SoftDeletes;
+
+    protected $table = 'linkrobins_support_tickets';
+
     public $timestamps = false;
-
-    /** A query builder bound to the given (runtime-resolved) table name. */
-    public static function queryTable(string $table): Builder
-    {
-        $model = new self();
-        $model->setTable($table);
-
-        return $model->newQuery();
-    }
 }

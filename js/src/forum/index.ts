@@ -1,6 +1,5 @@
 import app from 'flarum/forum/app';
 import { extend, override } from 'flarum/common/extend';
-import Component from 'flarum/common/Component';
 import IndexPage from 'flarum/forum/components/IndexPage';
 import IndexSidebar from 'flarum/forum/components/IndexSidebar';
 import HeaderSecondary from 'flarum/forum/components/HeaderSecondary';
@@ -14,6 +13,7 @@ import MosaicHeroNav from './components/MosaicHeroNav';
 import SidebarPanels from './components/SidebarPanels';
 import SectionHeader from './components/SectionHeader';
 import { navItems } from './components/HeaderNav';
+import { hasBlog, onBlogPage } from './utils/links';
 
 app.initializers.add('ernestdefoe-mosaic', () => {
   /*
@@ -43,21 +43,19 @@ app.initializers.add('ernestdefoe-mosaic', () => {
   });
 
   /*
-   * Blog compose button — injected into the persistent site header so it
-   * appears on the /blog page (which uses the blog extension's own layout,
-   * not IndexPage, so Mosaic's hero/sidebar overrides don't reach it).
-   * Only rendered when the actor has canCreateBlogPost and is on a /blog route.
+   * A "Write a Post" button in the site header on linkrobins/blog's pages,
+   * which use their own layout, so the hero and sidebar don't reach them.
    */
   extend(HeaderSecondary.prototype, 'items', function (items: ItemList<Mithril.Children>) {
-    if (!app.forum.attribute<boolean>('canCreateBlogPost')) return;
-
-    const path = (window.location?.pathname || '').replace(/\/+$/, '');
-    const onBlog = path === '/blog' || path.startsWith('/blog/');
-    if (!onBlog) return;
+    if (!hasBlog() || !onBlogPage() || !app.forum.attribute<boolean>('canCreateBlogPost')) return;
 
     items.add(
       'mosaic-blog-compose',
-      m(Button, { className: 'Button Button--primary', icon: 'fas fa-feather-alt', onclick: () => m.route.set('/blog/compose') }, 'Write a Post'),
+      m(
+        Button,
+        { className: 'Button Button--primary', icon: 'fas fa-feather-alt', onclick: () => m.route.set(app.route('linkrobins-blog.compose')) },
+        app.translator.trans('ernestdefoe-mosaic.forum.nav.write_post')
+      ),
       10
     );
   });
@@ -76,58 +74,24 @@ app.initializers.add('ernestdefoe-mosaic', () => {
 });
 
 /*
- * Blog-page nav pills — extend the blog index and category route components
- * to prepend MosaicHeroNav so the section pills are present when /blog is set
- * as the home page or when users navigate directly to the blog section.
- *
- * Runs at priority -5 so the blog extension's initializer (which registers
- * its routes into app.routes) has already completed before we reach in.
+ * The section pills on linkrobins/blog's index and category pages (one page
+ * component serves both), so they're there when the blog is the home page or
+ * someone lands on it directly.
  */
-app.initializers.add(
-  'ernestdefoe-mosaic-blog-nav',
-  () => {
-    // Replace the blog's route components with a Component subclass that
-    // prepends MosaicHeroNav pills then delegates to the original blog
-    // component. A plain object cannot be used here because Flarum's router
-    // calls the static .component() method inherited from Component.
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const routes = app.routes as any;
-    const OriginalBlogComponent = routes?.['linkrobins-blog.index']?.component;
-    if (!OriginalBlogComponent) return;
+app.initializers.add('ernestdefoe-mosaic-blog-nav', () => {
+  if (!hasBlog()) return;
 
-    class MosaicBlogNavWrapper extends Component {
-      view() {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const blogVnode = m(OriginalBlogComponent, (this.attrs ?? {}) as any);
-
-        // Mithril forbids mixed keyed/unkeyed vnodes within one fragment.
-        // On SPA route transitions Flarum keys the route component, so the
-        // blog vnode inherits a key while the bare nav vnode has none —
-        // that mismatch throws "vnodes must either all have keys or none"
-        // and blanks the page. Match the nav's keying to the blog vnode's.
-        const navVnode = blogVnode.key != null ? m(MosaicHeroNav, { key: 'mosaic-blog-nav' }) : m(MosaicHeroNav);
-
-        return [navVnode, blogVnode];
-      }
-    }
-
-    ['linkrobins-blog.index', 'linkrobins-blog.category'].forEach((routeName) => {
-      if (routes[routeName]) {
-        routes[routeName].component = MosaicBlogNavWrapper;
-      }
-    });
-  },
-  -5
-);
+  override('ext:linkrobins/blog/forum/components/BlogIndexPage', 'view', function (original: () => Mithril.Children) {
+    return [m(MosaicHeroNav), original()];
+  });
+});
 
 export { default as extend } from './extend';
 
 /**
- * Reads forum-wide stats for the hero strip. Members / discussions / posts /
- * online counts are computed server-side and exposed as `mosaic*` forum
- * attributes by AddForumStatistics (see extend.php); flarum/statistics names
- * are tried first for installs that ship it. Each falls back to null so the
- * tile renders "—" instead of a misleading 0.
+ * The hero strip's figures: another extension's forum attribute when one
+ * provides it (flarum/statistics and similar), else Mosaic's own `mosaic*`
+ * attributes. A missing figure is null, so its tile shows "—" rather than 0.
  */
 function getForumStats(): ForumStats {
   const f = app.forum;

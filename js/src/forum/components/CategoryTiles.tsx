@@ -25,19 +25,27 @@ interface TagLike {
   discussionCount?: () => number | null | undefined;
   icon?: () => string | null | undefined;
   color?: () => string | null | undefined;
-  slug?: () => string;
 }
 
-/** app.route.tag is registered by flarum/tags, so it's optional here. */
-type RouteWithTag = typeof app.route & { tag?: (tag: TagLike) => string };
+/** app.route.tag is added by flarum/tags. */
+type RouteWithTag = typeof app.route & { tag: (tag: TagLike) => string };
+
+/** Locale key, icon and colour of each tile shown before the forum has tags. */
+const FALLBACK_TILES: [string, string, string][] = [
+  ['general_help', 'fa-solid fa-circle-question', 'blue'],
+  ['bug_reports', 'fa-solid fa-bug', 'rose'],
+  ['feature_requests', 'fa-solid fa-lightbulb', 'purple'],
+  ['tutorials', 'fa-solid fa-graduation-cap', 'green'],
+  ['account', 'fa-solid fa-credit-card', 'amber'],
+  ['announcements', 'fa-solid fa-bullhorn', 'teal'],
+];
 
 /**
  * CategoryTiles — grid of help-topic tiles below the hero.
  *
- * When `flarum/tags` is installed, pulls the top-level tags and renders one
- * tile per tag using the tag's real icon and color. Falls back to a hardcoded
- * support-category set when no tags exist so the layout never goes empty; the
- * fallback tiles route to the index (rather than a dead '#') on fresh installs.
+ * One tile per top-level tag (up to six) with the tag's own icon and colour
+ * when flarum/tags is enabled; otherwise a starter set of support categories
+ * linking to the index, so the grid is never empty.
  */
 export default class CategoryTiles extends Component {
   view() {
@@ -66,9 +74,9 @@ export default class CategoryTiles extends Component {
   }
 
   collectTiles(): Tile[] {
-    /* Prefer real tags when flarum/tags is installed. */
-    const tagsStore = app.store.all('tags') as unknown as TagLike[];
-    if (tagsStore?.length) {
+    /* The forum's own top-level tags when flarum/tags is enabled. */
+    const tagsStore = 'flarum-tags' in flarum.extensions ? (app.store.all('tags') as unknown as TagLike[]) : [];
+    if (tagsStore.length) {
       const routeTag = (app.route as RouteWithTag).tag;
       return tagsStore
         .filter((t) => typeof t.name === 'function' && !t.parent?.())
@@ -79,7 +87,7 @@ export default class CategoryTiles extends Component {
           return {
             title: t.name?.() ?? '—',
             meta: app.translator.trans('ernestdefoe-mosaic.forum.categories.topic_count', { count }, true),
-            href: routeTag ? routeTag(t) : `/t/${t.slug?.()}`,
+            href: routeTag(t),
             /* Tag.icon() returns the full FA classes; default to fa-folder
              * when the operator left the icon field blank. */
             icon: t.icon?.() || 'fa-solid fa-folder',
@@ -89,54 +97,15 @@ export default class CategoryTiles extends Component {
         });
     }
 
-    /* Fallback: opinionated default category set for support forums. Tiles
-     * route to the index so a click on a fresh (tag-less) install navigates
-     * somewhere sensible instead of scrolling to the top of the page. */
+    /* No tags yet: a starter set of support categories, linking to the index. */
     const home = app.route('index');
-    return [
-      {
-        title: app.translator.trans('ernestdefoe-mosaic.forum.categories.general_help', {}, true),
-        meta: app.translator.trans('ernestdefoe-mosaic.forum.categories.general_help_meta', {}, true),
-        icon: 'fa-solid fa-circle-question',
-        tone: 'blue',
-        href: home,
-      },
-      {
-        title: app.translator.trans('ernestdefoe-mosaic.forum.categories.bug_reports', {}, true),
-        meta: app.translator.trans('ernestdefoe-mosaic.forum.categories.bug_reports_meta', {}, true),
-        icon: 'fa-solid fa-bug',
-        tone: 'rose',
-        href: home,
-      },
-      {
-        title: app.translator.trans('ernestdefoe-mosaic.forum.categories.feature_requests', {}, true),
-        meta: app.translator.trans('ernestdefoe-mosaic.forum.categories.feature_requests_meta', {}, true),
-        icon: 'fa-solid fa-lightbulb',
-        tone: 'purple',
-        href: home,
-      },
-      {
-        title: app.translator.trans('ernestdefoe-mosaic.forum.categories.tutorials', {}, true),
-        meta: app.translator.trans('ernestdefoe-mosaic.forum.categories.tutorials_meta', {}, true),
-        icon: 'fa-solid fa-graduation-cap',
-        tone: 'green',
-        href: home,
-      },
-      {
-        title: app.translator.trans('ernestdefoe-mosaic.forum.categories.account', {}, true),
-        meta: app.translator.trans('ernestdefoe-mosaic.forum.categories.account_meta', {}, true),
-        icon: 'fa-solid fa-credit-card',
-        tone: 'amber',
-        href: home,
-      },
-      {
-        title: app.translator.trans('ernestdefoe-mosaic.forum.categories.announcements', {}, true),
-        meta: app.translator.trans('ernestdefoe-mosaic.forum.categories.announcements_meta', {}, true),
-        icon: 'fa-solid fa-bullhorn',
-        tone: 'teal',
-        href: home,
-      },
-    ];
+    return FALLBACK_TILES.map(([key, icon, tone]) => ({
+      title: app.translator.trans(`ernestdefoe-mosaic.forum.categories.${key}`, {}, true),
+      meta: app.translator.trans(`ernestdefoe-mosaic.forum.categories.${key}_meta`, {}, true),
+      icon,
+      tone,
+      href: home,
+    }));
   }
 }
 

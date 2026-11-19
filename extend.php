@@ -12,6 +12,7 @@
 namespace Ernestdefoe\Mosaic;
 
 use Ernestdefoe\Mosaic\Api\MosaicForumAttributes;
+use Ernestdefoe\Mosaic\Api\SupportForumAttributes;
 use Flarum\Api\Resource\ForumResource;
 use Flarum\Extend;
 
@@ -26,12 +27,13 @@ return [
 
     new Extend\Locales(__DIR__.'/locale'),
 
-    /*
-     * Forum payload extensions — statistics the hero/sidebar read, plus the
-     * admin settings bridge. Built by the container-resolved
-     * MosaicForumAttributes invokable (constructor-injected services, no
-     * resolve() calls).
-     */
+    /* The statistics the hero and sidebar read, plus the admin settings. */
     (new Extend\ApiResource(ForumResource::class))
         ->fields(MosaicForumAttributes::class),
+
+    (new Extend\Conditional())
+        ->whenExtensionEnabled('linkrobins-support', fn () => [
+            (new Extend\ApiResource(ForumResource::class))
+                ->fields(SupportForumAttributes::class),
+        ]),
 ];

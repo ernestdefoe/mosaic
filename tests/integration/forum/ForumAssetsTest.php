@@ -66,6 +66,6 @@ class ForumAssetsTest extends TestCase
     {
         $js = $this->page('/admin', ['authenticatedAs' => 1], 'admin.js')['admin.js'];
 
-        $this->assertStringContainsString('initializers.add("ernestdefoe-mosaic"', $js);
+        $this->assertStringContainsString('mosaicSupportUrl', $js, 'The admin bundle registers Mosaic\'s settings');
     }
 }

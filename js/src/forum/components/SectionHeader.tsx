@@ -10,15 +10,16 @@ interface SectionHeaderAttrs extends ComponentAttrs {
  * SectionHeader — the "Recent Discussions" title + count badge that sits above
  * the IndexPage toolbar/filter row.
  *
- * The count tries a forum attribute first (now backed server-side by
- * mosaicDiscussionCount), then the loaded-store size, else hides.
+ * The count is another extension's discussion-count attribute when there is
+ * one, else Mosaic's mosaicDiscussionCount, else the number of discussions
+ * loaded on the page.
  */
 export default class SectionHeader extends Component<SectionHeaderAttrs> {
   view() {
     const count = this.attrs.count ?? resolveCount();
     return (
       <div className="MosaicSectionHead">
-        <h2 className="MosaicSectionHead-title">{this.attrs.title || 'Recent Discussions'}</h2>
+        <h2 className="MosaicSectionHead-title">{this.attrs.title || app.translator.trans('ernestdefoe-mosaic.forum.home.recent_discussions')}</h2>
         {count != null && <span className="MosaicSectionHead-count">{format(count)}</span>}
       </div>
     );

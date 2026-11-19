@@ -3,9 +3,8 @@
 namespace Ernestdefoe\Mosaic\Tests\integration\api;
 
 use Carbon\Carbon;
-use Ernestdefoe\Mosaic\Api\MosaicForumAttributes;
+use Ernestdefoe\Mosaic\Api\AddForumStatistics;
 use Flarum\Discussion\Discussion;
-use Flarum\Extension\ExtensionManager;
 use Flarum\Post\Post;
 use Flarum\Testing\integration\RetrievesAuthorizedUsers;
 use Flarum\Testing\integration\TestCase;
@@ -74,7 +73,7 @@ class ForumAttributesTest extends TestCase
         $this->assertSame(2, $forum['mosaicDiscussionCount'], 'Hidden discussions are left out');
         $this->assertSame(4, $forum['mosaicPostCount'], 'Comments only, not event posts');
         $this->assertSame(7, $forum['mosaicOnlineCount'], 'Six members plus the admin reading the page');
-        $this->assertNull($forum['mosaicResolvedCount'], 'No support extension, no tile');
+        $this->assertArrayNotHasKey('mosaicResolvedCount', $forum, 'No support extension, no tile');
     }
 
     #[Test]
@@ -107,8 +106,10 @@ class ForumAttributesTest extends TestCase
         $this->assertSame(['online15', 'online14', 'online13', 'online12', 'online11'], array_column($top, 'username'));
         $this->assertSame('Mod', $top[1]['role'], 'Staff groups are named');
         $this->assertStringEndsWith('avatar15.png', $top[0]['avatarUrl']);
+        $this->assertSame(15, $top[0]['posts'], 'A number, worded by the frontend');
 
         $this->assertSame(['Busy', 'Quiet'], array_column($forum['mosaicTrending'], 'title'), 'Hidden discussions do not trend');
+        $this->assertSame([3, 1], array_column($forum['mosaicTrending'], 'replies'));
     }
 
     #[Test]
@@ -128,7 +129,7 @@ class ForumAttributesTest extends TestCase
         $this->setting('mosaicTopContributors', json_encode([['name' => 'Pinned']]));
         $this->setting('mosaicQuickActions', json_encode([['label' => 'Rules', 'href' => '/rules']]));
         $this->setting('mosaicHideTrending', '1');
-        $this->setting('supportUrl', '  https://help.example  ');
+        $this->setting('mosaicSupportUrl', '  https://help.example  ');
 
         $forum = $this->forum();
 
@@ -136,42 +137,72 @@ class ForumAttributesTest extends TestCase
         $this->assertSame([['label' => 'Rules', 'href' => '/rules']], $forum['mosaicQuickActions']);
         $this->assertTrue($forum['mosaicHideTrending']);
         $this->assertFalse($forum['mosaicHideQuickActions']);
-        $this->assertSame('https://help.example', $forum['supportUrl']);
-        $this->assertNull($forum['marketplaceUrl']);
+        $this->assertSame('https://help.example', $forum['mosaicSupportUrl']);
+        $this->assertNull($forum['mosaicMarketplaceUrl']);
     }
 
     #[Test]
-    public function no_support_extension_means_no_tickets_link()
+    public function the_resolved_ticket_count_reads_linkrobins_support_and_skips_deleted_tickets()
     {
-        $this->assertNull($this->forum()['supportUrl']);
+        $schema = $this->database()->getSchemaBuilder();
+        // Temporary: a real CREATE TABLE commits the test's transaction on MySQL.
+        $schema->create('linkrobins_support_tickets', function ($table) {
+            $table->temporary();
+            $table->increments('id');
+            $table->string('status', 32);
+            $table->timestamp('deleted_at')->nullable();
+        });
+        $this->database()->table('linkrobins_support_tickets')->insert([
+            ['status' => 'resolved', 'deleted_at' => null],
+            ['status' => 'resolved', 'deleted_at' => null],
+            ['status' => 'resolved', 'deleted_at' => Carbon::now()],
+            ['status' => 'open', 'deleted_at' => null],
+        ]);
+
+        $stats = $this->app()->getContainer()->make(AddForumStatistics::class);
+
+        $this->assertSame(2, $stats->resolvedTicketCount(User::find(1)));
+
+        $this->revoke('viewForum');
+        $this->assertNull($stats->resolvedTicketCount(new \Flarum\User\Guest()), 'Nothing for a visitor who cannot view the forum');
     }
 
     #[Test]
-    public function the_support_url_is_detected_when_linkrobins_support_is_enabled()
-    {
-        $this->enableSupportExtension();
-
-        $this->assertSame('http://localhost/support', $this->forum()['supportUrl']);
-    }
-
-    #[Test]
-    public function the_admins_support_url_overrides_detection()
+    public function the_url_settings_move_to_mosaic_prefixed_keys_and_back()
     {
         $this->setting('supportUrl', '/help');
-        $this->enableSupportExtension();
+        $this->setting('mosaicMarketplaceUrl', '/store');
+        $this->setting('marketplaceUrl', '/old-store');
+        $this->app();
 
-        $this->assertSame('/help', $this->forum()['supportUrl']);
+        $migration = require __DIR__.'/../../../migrations/2026_11_19_000000_prefix_mosaic_url_settings.php';
+        $schema = $this->database()->getSchemaBuilder();
+        $settings = fn () => $this->database()->table('settings')->whereIn('key', ['supportUrl', 'marketplaceUrl', 'mosaicSupportUrl', 'mosaicMarketplaceUrl'])->pluck('value', 'key')->sortKeys()->all();
+
+        $migration['up']($schema);
+        $this->assertSame(['mosaicMarketplaceUrl' => '/store', 'mosaicSupportUrl' => '/help'], $settings(), 'An existing prefixed value wins');
+
+        $migration['down']($schema);
+        $this->assertSame(['marketplaceUrl' => '/store', 'supportUrl' => '/help'], $settings());
     }
 
-    /** linkrobins/support is not a dev dependency, so report it enabled to Mosaic alone. */
-    private function enableSupportExtension(): void
+    #[Test]
+    public function the_edonline_rename_copies_in_one_pass_and_keeps_newer_values()
     {
-        $container = $this->app()->getContainer();
-        $real = $container->make(ExtensionManager::class);
-        $extensions = $this->createStub(ExtensionManager::class);
-        $extensions->method('isEnabled')->willReturnCallback(fn (string $id) => $id === 'linkrobins-support' || $real->isEnabled($id));
+        $this->setting('edonlineHideTrending', '1');
+        $this->setting('edonlineHideQuickActions', '1');
+        $this->setting('mosaicHideQuickActions', '0');
+        $this->app();
 
-        $container->when(MosaicForumAttributes::class)->needs(ExtensionManager::class)->give(fn () => $extensions);
+        $migration = require __DIR__.'/../../../migrations/2026_05_17_000000_rename_edonline_settings_to_mosaic.php';
+        $schema = $this->database()->getSchemaBuilder();
+        $mosaic = fn () => $this->database()->table('settings')->whereIn('key', ['mosaicHideTrending', 'mosaicHideQuickActions'])->pluck('value', 'key')->sortKeys()->all();
+
+        $migration['up']($schema);
+        $this->assertSame(['mosaicHideQuickActions' => '0', 'mosaicHideTrending' => '1'], $mosaic());
+
+        $migration['down']($schema);
+        $this->assertSame(['mosaicHideQuickActions' => '0'], $mosaic(), 'Only the untouched copy is removed');
     }
 
     /** Revoke a permission from guests (2) and, optionally, members (3). */

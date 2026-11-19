@@ -1,26 +1,20 @@
 import app from 'flarum/forum/app';
 import Component from 'flarum/common/Component';
 import Avatar from 'flarum/common/components/Avatar';
-import translate from '../utils/translate';
 import openComposer from '../utils/openComposer';
 
 /**
  * Composer-trigger card that sits above the hero nav pills.
  *
  * Renders the actor's avatar (or a fallback edit-pencil for guests), a prompt,
- * and a primary "+ New Discussion" button. Clicking anywhere on the card
- * programmatically clicks the hidden `.IndexPage-newDiscussion` button that
- * IndexSidebar renders — delegating the whole open-composer flow (async chunk
- * import, guest → LogInModal branch, focus) to Flarum's own handler.
+ * and a primary "+ New Discussion" button. Clicking anywhere on the card opens
+ * the composer through IndexSidebar's own action (see utils/openComposer).
  */
 export default class MosaicComposerTrigger extends Component {
   view() {
     const user = app.session.user;
-    const placeholder = translate(
-      user ? 'home.start_discussion' : 'home.guest_prompt',
-      user ? 'Tell everyone what you are working on…' : 'Sign in to start a discussion…'
-    );
-    const ctaLabel = translate('home.new_discussion', 'New Discussion');
+    const placeholder = app.translator.trans(`ernestdefoe-mosaic.forum.home.${user ? 'start_discussion' : 'guest_prompt'}`);
+    const ctaLabel = app.translator.trans('ernestdefoe-mosaic.forum.home.new_discussion');
 
     return (
       <div

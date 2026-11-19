@@ -203,12 +203,8 @@ class AddForumStatistics
     }
 
     /**
-     * Count of tickets in the resolved state from linkrobins/support.
-     *
-     * Returns null when the support extension's table isn't present
-     * (extension not installed or table name differs) so the hero
-     * tile renders "—" rather than a misleading 0. The table lookup is
-     * cached on its own (see supportTable()).
+     * Resolved tickets in linkrobins/support. Only called while that extension
+     * is enabled (SupportForumAttributes is registered conditionally).
      */
     public function resolvedTicketCount(User $actor): ?int
     {
@@ -217,63 +213,14 @@ class AddForumStatistics
         }
 
         return $this->cache->remember('mosaic.stats.resolvedTicketCount', self::CACHE_TTL, function () {
-            $table = $this->supportTable();
-            if ($table === null) {
-                return null;
-            }
-
             try {
-                return (int) SupportTicket::queryTable($table)
-                    ->where('status', 'resolved')
-                    ->count();
+                return SupportTicket::query()->where('status', 'resolved')->count();
             } catch (QueryException $e) {
                 $this->log->warning('[mosaic] resolvedTicketCount query failed', ['exception' => $e]);
 
                 return null;
             }
         });
-    }
-
-    /**
-     * Resolve the support-tickets table name, cached for the same 60 s
-     * as the stats. linkrobins/support's canonical table is
-     * `linkrobins_support_tickets`; very early installs used the
-     * shorter `support_tickets`. Either gets returned if present,
-     * with the canonical name preferred. Null when neither exists.
-     *
-     * Cached separately from the count so the schema lookup itself
-     * doesn't run on every cache miss.
-     */
-    private function supportTable(): ?string
-    {
-        $cached = $this->cache->get('mosaic.stats.supportTable');
-        if ($cached !== null) {
-            return $cached === '' ? null : $cached;
-        }
-
-        $schema = SupportTicket::query()->getConnection()->getSchemaBuilder();
-        $resolved = '';
-        foreach (['linkrobins_support_tickets', 'support_tickets'] as $candidate) {
-            try {
-                if ($schema->hasTable($candidate)) {
-                    $resolved = $candidate;
-                    break;
-                }
-            } catch (QueryException $e) {
-                // hasTable() on some drivers throws if the connection
-                // is gone — log and keep walking the candidates.
-                $this->log->warning('[mosaic] supportTable probe failed', [
-                    'table' => $candidate,
-                    'exception' => $e,
-                ]);
-            }
-        }
-
-        /* Cache the negative result too — null means "extension not
-         * installed" which doesn't change without an admin action. */
-        $this->cache->put('mosaic.stats.supportTable', $resolved, self::CACHE_TTL);
-
-        return $resolved === '' ? null : $resolved;
     }
 
     /**
@@ -291,14 +238,14 @@ class AddForumStatistics
 
         $limit = max(1, min($limit, 20));
 
-        return $this->cache->remember($this->audienceKey('topContributors.v2.'.$limit, $actor), self::CACHE_TTL, function () use ($actor, $limit) {
+        return $this->cache->remember($this->audienceKey('topContributors.v3.'.$limit, $actor), self::CACHE_TTL, function () use ($actor, $limit) {
             try {
                 return User::query()
                     ->whereVisibleTo($actor)
                     ->where('comment_count', '>', 0)
                     ->orderByDesc('comment_count')
                     ->orderByDesc('discussion_count')
-                    ->with(['groups' => fn ($q) => $q->where('is_hidden', false)])
+                    ->with(['groups' => fn ($q) => $q->where('is_hidden', false)->orderBy('groups.id')])
                     ->limit($limit)
                     ->get()
                     ->map(fn (User $u) => $this->serializeContributor($u))
@@ -321,22 +268,17 @@ class AddForumStatistics
         $comments = (int) $u->comment_count;
         $discussions = (int) $u->discussion_count;
 
-        // Surface a role badge only for staff-ish groups the public can see;
+        // A role badge for the first staff-ish group the public can see;
         // hidden groups are filtered out when the relation is loaded.
-        $role = null;
-        $group = $u->groups->first();
-        if ($group) {
-            $name = $group->name_singular ?? null;
-            if ($name && preg_match('/(staff|mod|admin|expert)/i', $name)) {
-                $role = $name;
-            }
-        }
+        $role = $u->groups
+            ->map(fn ($group) => (string) $group->name_singular)
+            ->first(fn (string $name) => (bool) preg_match('/(staff|mod|admin|expert)/i', $name));
 
         return [
             'name' => $displayName,
             'username' => $u->username,
             'role' => $role,
-            'meta' => $comments === 1 ? '1 post' : ($comments.' posts'),
+            'posts' => $comments,
             'points' => $comments + $discussions,
             'avatarUrl' => $avatarUrl,
             'href' => $this->url->to('forum')->path('u/'.rawurlencode((string) $u->username)),
@@ -359,7 +301,7 @@ class AddForumStatistics
 
         $limit = max(1, min($limit, 10));
 
-        return $this->cache->remember($this->groupKey('trending.'.$limit, $actor), self::CACHE_TTL, function () use ($actor, $limit) {
+        return $this->cache->remember($this->groupKey('trending.v2.'.$limit, $actor), self::CACHE_TTL, function () use ($actor, $limit) {
             try {
                 return $this->publicDiscussions($actor)
                     ->where('comment_count', '>', 0)
@@ -369,7 +311,7 @@ class AddForumStatistics
                     ->get()
                     ->map(fn (Discussion $d) => [
                         'title' => (string) $d->title,
-                        'meta' => ((int) $d->comment_count).' replies',
+                        'replies' => (int) $d->comment_count,
                         // d/{id} redirects to the canonical slug URL, so we
                         // avoid invoking the slug driver here. Built from the
                         // forum's base URL so sub-directory installs link right.

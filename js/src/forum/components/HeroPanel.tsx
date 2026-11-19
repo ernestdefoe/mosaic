@@ -4,7 +4,6 @@ import User from 'flarum/common/models/User';
 import app from 'flarum/forum/app';
 import type Mithril from 'mithril';
 import MosaicComposerTrigger from './MosaicComposerTrigger';
-import translate from '../utils/translate';
 
 /** Forum-wide counts the hero strip renders. null → the tile shows "—". */
 export interface ForumStats {
@@ -28,6 +27,8 @@ interface HeroPanelAttrs extends ComponentAttrs {
 }
 
 type IconStyle = Record<string, string | number>;
+
+const t = (key: string) => app.translator.trans(`ernestdefoe-mosaic.forum.${key}`);
 
 /* Inline icon helper — Flarum 2 removed flarum/common/helpers/icon. */
 const fa = (name: string, style?: IconStyle): Mithril.Children => <i className={`icon ${name}`} style={style} aria-hidden="true" />;
@@ -85,12 +86,9 @@ export default class HeroPanel extends Component<HeroPanelAttrs> {
 
   view() {
     const stats = this.attrs.stats ?? {};
-    /* Hero text resolution: Flarum's welcomeTitle/welcomeMessage admin
-     * attributes first, then translator keys, then hardcoded English. */
-    const heroTitle = app.forum.attribute<string | undefined>('welcomeTitle') || translate('hero.title', 'How can we help?');
-    const heroSub =
-      app.forum.attribute<string | undefined>('welcomeMessage') ||
-      translate('hero.subtitle', 'Search the community for answers, or start a new topic to get help from our team and other users.');
+    /* The forum's own welcome title and message when the admin set them. */
+    const heroTitle = app.forum.attribute<string | undefined>('welcomeTitle') || t('hero.title');
+    const heroSub = app.forum.attribute<string | undefined>('welcomeMessage') || t('hero.subtitle');
 
     return (
       <section className="MosaicHero">
@@ -100,15 +98,15 @@ export default class HeroPanel extends Component<HeroPanelAttrs> {
         {MosaicComposerTrigger.component()}
 
         <div className="MosaicHero-stats">
-          {this.renderStat('fa-solid fa-users', formatNumber(stats.members), translate('hero.stat_members', 'Members'))}
-          {this.renderStat('fa-regular fa-comments', formatNumber(stats.discussions), translate('hero.stat_discussions', 'Discussions'))}
+          {this.renderStat('fa-solid fa-users', formatNumber(stats.members), t('hero.stat_members'))}
+          {this.renderStat('fa-regular fa-comments', formatNumber(stats.discussions), t('hero.stat_discussions'))}
           {/* Tickets tile auto-hides when stats.resolved is null (support
            * extension not installed) and can be suppressed via the
            * mosaicHideTicketsTile admin toggle. */}
           {stats.resolved != null && !app.forum.attribute<boolean>('mosaicHideTicketsTile')
-            ? this.renderStat('fa-solid fa-ticket', formatNumber(stats.resolved), translate('hero.stat_resolved', 'Tickets resolved'))
+            ? this.renderStat('fa-solid fa-ticket', formatNumber(stats.resolved), t('hero.stat_resolved'))
             : null}
-          {this.renderStat('fa-regular fa-pen-to-square', formatNumber(stats.posts), translate('hero.stat_posts', 'Posts'))}
+          {this.renderStat('fa-regular fa-pen-to-square', formatNumber(stats.posts), t('hero.stat_posts'))}
           {this.renderOnlineNowStat(stats.online ?? null)}
         </div>
       </section>
@@ -151,6 +149,36 @@ export default class HeroPanel extends Component<HeroPanelAttrs> {
     return user;
   }
 
+  /** The popover under Online now: who was active in the last few minutes. */
+  renderOnlineList(users: OnlineUser[]): Mithril.Children {
+    return (
+      <div className="MosaicHero-onlinePopover" role="menu">
+        {users.length === 0 ? (
+          <div className="MosaicHero-onlinePopover-empty">{t('hero.online_empty')}</div>
+        ) : (
+          <ul className="MosaicHero-onlineList">
+            {users.map((u) => (
+              <li key={u.id}>
+                <a
+                  href={app.route('user', { username: u.username })}
+                  className="MosaicHero-onlineRow"
+                  role="menuitem"
+                  onclick={() => {
+                    this.onlineOpen = false;
+                  }}
+                >
+                  <Avatar user={this.userFor(u)} className="MosaicHero-onlineAvatar" />
+                  <span className="MosaicHero-onlineName">{u.displayName || u.username}</span>
+                  <span className="MosaicHero-onlineDot" aria-hidden="true" />
+                </a>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    );
+  }
+
   renderOnlineNowStat(rawCount: number | null): Mithril.Children {
     const users = (app.forum.attribute<OnlineUser[]>('mosaicOnlineUsers') || []) as OnlineUser[];
     const value = formatNumber(rawCount);
@@ -170,10 +198,10 @@ export default class HeroPanel extends Component<HeroPanelAttrs> {
           <div className="MosaicHero-stat-ic">{fa('fa-solid fa-circle', { fontSize: '8px', color: '#4ade80' })}</div>
           <div>
             <div className="MosaicHero-stat-val">
-              {value} <span className="MosaicHero-stat-live">live</span>
+              {value} <span className="MosaicHero-stat-live">{t('hero.live')}</span>
             </div>
             <div className="MosaicHero-stat-lbl">
-              {translate('hero.stat_online', 'Online now')}{' '}
+              {t('hero.stat_online')}{' '}
               {fa('fa-solid fa-chevron-down', {
                 fontSize: '9px',
                 marginLeft: '4px',
@@ -185,35 +213,7 @@ export default class HeroPanel extends Component<HeroPanelAttrs> {
           </div>
         </button>
 
-        {this.onlineOpen && (
-          <div className="MosaicHero-onlinePopover" role="menu">
-            {users.length === 0 ? (
-              <div className="MosaicHero-onlinePopover-empty">{app.translator.trans('ernestdefoe-mosaic.forum.hero.online_empty')}</div>
-            ) : (
-              <ul className="MosaicHero-onlineList">
-                {users.map((u) => {
-                  const userModel = this.userFor(u);
-                  return (
-                    <li key={u.id}>
-                      <a
-                        href={'/u/' + encodeURIComponent(u.username || '')}
-                        className="MosaicHero-onlineRow"
-                        role="menuitem"
-                        onclick={() => {
-                          this.onlineOpen = false;
-                        }}
-                      >
-                        <Avatar user={userModel} className="MosaicHero-onlineAvatar" />
-                        <span className="MosaicHero-onlineName">{u.displayName || u.username}</span>
-                        <span className="MosaicHero-onlineDot" aria-hidden="true" />
-                      </a>
-                    </li>
-                  );
-                })}
-              </ul>
-            )}
-          </div>
-        )}
+        {this.onlineOpen && this.renderOnlineList(users)}
       </div>
     );
   }

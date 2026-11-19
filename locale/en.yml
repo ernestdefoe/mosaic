@@ -9,6 +9,7 @@ ernestdefoe-mosaic:
       stat_posts: Posts
       stat_online: Online now
       online_empty: No one's online right now.
+      live: live
     marketplace_promo:
       kicker: NEW · Marketplace
       title: Premium themes & extensions
@@ -32,14 +33,13 @@ ernestdefoe-mosaic:
       start_discussion: Tell everyone what you are working on…
       guest_prompt: Sign in to start a discussion…
       new_discussion: New Discussion
+      recent_discussions: Recent Discussions
     nav:
       discussions: Discussions
       tickets: Tickets
       marketplace: Marketplace
-      tags: Tags
-      start_discussion: Start a Discussion
-      start_ticket: Start a Ticket
       blog: Blog
+      write_post: Write a Post
       sections_label: Sections
     sidebar:
       quick_actions_title: Quick Actions
@@ -51,6 +51,8 @@ ernestdefoe-mosaic:
       qa_write_blog: Write a Blog Post
       qa_support_ticket: Open a Support Ticket
       qa_marketplace: Visit the Marketplace
+      contributor_posts: "{count, plural, one {# post} other {# posts}}"
+      trending_replies: "{count, plural, one {# reply} other {# replies}}"
   admin:
     settings:
       hide_marketplace_promo_label: Hide the Marketplace promo sidebar widget

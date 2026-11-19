@@ -1,11 +1,14 @@
 import Component from 'flarum/common/Component';
 import app from 'flarum/forum/app';
 import type Mithril from 'mithril';
-import extractText from 'flarum/common/utils/extractText';
-import marketplaceUrlHelper, { hasMarketplace } from '../utils/marketplaceUrl';
-import translate from '../utils/translate';
+import marketplaceUrl, { hasMarketplace } from '../utils/marketplaceUrl';
+import { hasBlog, supportUrl } from '../utils/links';
 
 type IconStyle = Record<string, string | number>;
+
+const t = (key: string, params: Record<string, unknown> = {}) => app.translator.trans(`ernestdefoe-mosaic.forum.${key}`, params);
+/** Plain-string form, for labels built into data. */
+const ts = (key: string) => app.translator.trans(`ernestdefoe-mosaic.forum.${key}`, {}, true);
 
 /* Inline icon helper — Flarum 2 removed flarum/common/helpers/icon. */
 const fa = (name: string, style?: IconStyle): Mithril.Children => <i className={`icon ${name}`} style={style} aria-hidden="true" />;
@@ -19,6 +22,8 @@ interface QuickAction {
 interface Contributor {
   name: string;
   role?: string | null;
+  /** Comment count from the server; an admin-pinned entry may give `meta` text instead. */
+  posts?: number;
   meta?: string;
   points?: string | number;
   tone?: string;
@@ -30,9 +35,8 @@ interface Contributor {
  * SidebarPanels — the stack of right-sidebar cards:
  *   Marketplace · Quick Actions · Top Contributors · Trending
  *
- * Each panel pulls real data when an obvious source exists and falls back to
- * sensible defaults otherwise. Hide a panel by setting the corresponding
- * mosaicHide* forum attribute to true.
+ * Each panel can be switched off in the admin (the mosaicHide* attributes), and
+ * Top Contributors and Trending hide themselves when they have nothing to show.
  */
 export default class SidebarPanels extends Component {
   view() {
@@ -47,64 +51,16 @@ export default class SidebarPanels extends Component {
   }
 
   quickActions(): Mithril.Children {
-    /* Admin-configured rows win; otherwise built-in defaults plus
-     * auto-detected support/marketplace integrations. */
+    /* Admin-configured rows win over the built-in ones. */
     const fromAttr = app.forum.attribute<QuickAction[]>('mosaicQuickActions');
     const configured = Array.isArray(fromAttr) ? fromAttr.filter((a) => a && (a.label || '').trim() && (a.href || '').trim()) : [];
-
-    let links: QuickAction[];
-    if (configured.length) {
-      links = configured;
-    } else {
-      links = [
-        {
-          icon: 'fa-solid fa-plus',
-          label: extractText(translate('sidebar.qa_start_discussion', 'Start a Discussion')),
-          href: app.route('index') + '?composer',
-        },
-        {
-          icon: 'fa-solid fa-tags',
-          label: extractText(translate('sidebar.qa_browse_tags', 'Browse Tags')),
-          href: app.route('tags') || '/tags',
-        },
-        {
-          icon: 'fa-solid fa-clock',
-          label: extractText(translate('sidebar.qa_recent_activity', 'Recent Activity')),
-          href: '/all',
-        },
-      ];
-
-      // Blog post compose — shown when the user has permission to write posts.
-      if (app.forum.attribute<boolean>('canCreateBlogPost')) {
-        links.splice(1, 0, {
-          icon: 'fa-solid fa-pen-to-square',
-          label: extractText(translate('sidebar.qa_write_blog', 'Write a Blog Post')),
-          href: '/blog/compose',
-        });
-      }
-
-      const supportUrl = app.forum.attribute<string>('supportUrl');
-      if (supportUrl) {
-        links.unshift({
-          icon: 'fa-solid fa-headset',
-          label: extractText(translate('sidebar.qa_support_ticket', 'Open a Support Ticket')),
-          href: supportUrl,
-        });
-      }
-      if (hasMarketplace()) {
-        links.push({
-          icon: 'fa-solid fa-store',
-          label: extractText(translate('sidebar.qa_marketplace', 'Visit the Marketplace')),
-          href: marketplaceUrlHelper(),
-        });
-      }
-    }
+    const links = configured.length ? configured : defaultQuickActions();
 
     return (
       <div className="MosaicSideCard">
         <h3 className="MosaicSideCard-title">
           {fa('fa-solid fa-bolt', { color: 'var(--primary)' })}
-          <span>{translate('sidebar.quick_actions_title', 'Quick Actions')}</span>
+          <span>{t('sidebar.quick_actions_title')}</span>
         </h3>
         {/* Unkeyed on purpose: the admin's JSON may repeat an href, and Mithril
             throws on duplicate keys; the list never reorders between redraws. */}
@@ -119,11 +75,8 @@ export default class SidebarPanels extends Component {
   }
 
   topContributors(): Mithril.Children {
-    // Forum-wide list, computed + cached server-side and exposed as the
-    // mosaicTopContributors attribute — reliable on every page, unlike the old
-    // store snapshot (which only held the current page's ~20 records). An admin
-    // JSON override is honoured server-side. Tone (avatar colour) is assigned
-    // per row here from a fixed palette.
+    // The server's forum-wide list (or the admin's pinned one). Each row gets an
+    // avatar colour from a fixed palette.
     const fromAttr = app.forum.attribute<Contributor[]>('mosaicTopContributors');
     if (!Array.isArray(fromAttr) || !fromAttr.length) return null;
 
@@ -142,7 +95,7 @@ export default class SidebarPanels extends Component {
       <div className="MosaicSideCard">
         <h3 className="MosaicSideCard-title">
           {fa('fa-solid fa-trophy', { color: 'var(--primary)' })}
-          <span>{translate('sidebar.top_contributors_title', 'Top Contributors')}</span>
+          <span>{t('sidebar.top_contributors_title')}</span>
         </h3>
         {contributors.map((c) => (
           <a className="MosaicContribRow" href={c.href || '#'}>
@@ -156,7 +109,7 @@ export default class SidebarPanels extends Component {
                 {c.name}
                 {c.role && <span className={`MosaicRoleBadge MosaicRoleBadge--${String(c.role).toLowerCase()}`}>{c.role}</span>}
               </div>
-              <div className="MosaicContribRow-sub">{c.meta}</div>
+              <div className="MosaicContribRow-sub">{c.meta ?? (c.posts != null ? t('sidebar.contributor_posts', { count: c.posts }) : null)}</div>
             </div>
             <div className="MosaicContribRow-points">{c.points}</div>
           </a>
@@ -166,11 +119,8 @@ export default class SidebarPanels extends Component {
   }
 
   trending(): Mithril.Children {
-    // Forum-wide trending discussions, computed + cached server-side (against
-    // guest visibility, so nothing private leaks) and exposed as the
-    // mosaicTrending attribute. Reliable on every page, unlike the old store
-    // snapshot of the current page's discussions.
-    const items = app.forum.attribute<{ title: string; meta: string; href: string }[]>('mosaicTrending');
+    // The server's list, limited to discussions this visitor's groups can open.
+    const items = app.forum.attribute<{ title: string; replies: number; href: string }[]>('mosaicTrending');
 
     if (!Array.isArray(items) || !items.length) return null;
 
@@ -178,14 +128,14 @@ export default class SidebarPanels extends Component {
       <div className="MosaicSideCard">
         <h3 className="MosaicSideCard-title">
           {fa('fa-solid fa-fire', { color: 'var(--primary)' })}
-          <span>{translate('sidebar.trending_title', 'Trending')}</span>
+          <span>{t('sidebar.trending_title')}</span>
         </h3>
-        {items.map((t, i) => (
-          <a key={t.href} href={t.href} className="MosaicTrendRow">
+        {items.map((item, i) => (
+          <a key={item.href} href={item.href} className="MosaicTrendRow">
             <span className={`MosaicTrendRow-num ${i < 2 ? 'is-top' : ''}`}>{i + 1}</span>
             <div>
-              <div className="MosaicTrendRow-title">{t.title}</div>
-              <div className="MosaicTrendRow-meta">{t.meta}</div>
+              <div className="MosaicTrendRow-title">{item.title}</div>
+              <div className="MosaicTrendRow-meta">{t('sidebar.trending_replies', { count: item.replies })}</div>
             </div>
           </a>
         ))}
@@ -194,23 +144,45 @@ export default class SidebarPanels extends Component {
   }
 
   marketplacePromo(): Mithril.Children {
-    const url = marketplaceUrlHelper();
+    const url = marketplaceUrl();
     return (
       <a className="MosaicSideCard MosaicMarketplacePromo" href={url}>
         <div className="MosaicMarketplacePromo-bg">{fa('fa-solid fa-store')}</div>
         <div className="MosaicMarketplacePromo-inner">
-          <div className="MosaicMarketplacePromo-kicker">{translate('marketplace_promo.kicker', 'NEW · Marketplace')}</div>
-          <div className="MosaicMarketplacePromo-title">{translate('marketplace_promo.title', 'Premium themes & extensions')}</div>
-          <div className="MosaicMarketplacePromo-desc">
-            {translate('marketplace_promo.desc', 'Digital products, services, subscriptions, and private extensions from trusted sellers.')}
-          </div>
+          <div className="MosaicMarketplacePromo-kicker">{t('marketplace_promo.kicker')}</div>
+          <div className="MosaicMarketplacePromo-title">{t('marketplace_promo.title')}</div>
+          <div className="MosaicMarketplacePromo-desc">{t('marketplace_promo.desc')}</div>
           <div className="MosaicMarketplacePromo-cta">
-            {translate('marketplace_promo.cta', 'Browse the store')} {fa('fa-solid fa-arrow-right', { fontSize: '11px' })}
+            {t('marketplace_promo.cta')} {fa('fa-solid fa-arrow-right', { fontSize: '11px' })}
           </div>
         </div>
       </a>
     );
   }
+}
+
+/**
+ * The built-in Quick Actions: support first, then start a discussion, write a
+ * blog post, browse tags, recent activity and the marketplace, each only when
+ * its extension (or permission) is there.
+ */
+function defaultQuickActions(): QuickAction[] {
+  const support = supportUrl();
+  const links: (QuickAction | false)[] = [
+    !!support && { icon: 'fa-solid fa-headset', label: ts('sidebar.qa_support_ticket'), href: support },
+    { icon: 'fa-solid fa-plus', label: ts('sidebar.qa_start_discussion'), href: app.route('index') + '?composer' },
+    hasBlog() &&
+      app.forum.attribute<boolean>('canCreateBlogPost') && {
+        icon: 'fa-solid fa-pen-to-square',
+        label: ts('sidebar.qa_write_blog'),
+        href: app.route('linkrobins-blog.compose'),
+      },
+    'flarum-tags' in flarum.extensions && { icon: 'fa-solid fa-tags', label: ts('sidebar.qa_browse_tags'), href: app.route('tags') },
+    { icon: 'fa-solid fa-clock', label: ts('sidebar.qa_recent_activity'), href: app.route('index') },
+    hasMarketplace() && { icon: 'fa-solid fa-store', label: ts('sidebar.qa_marketplace'), href: marketplaceUrl() },
+  ];
+
+  return links.filter((link): link is QuickAction => !!link);
 }
 
 function initials(name: string): string {

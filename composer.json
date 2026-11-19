@@ -42,12 +42,26 @@
                 "name": "fas fa-shapes",
                 "backgroundColor": "#2563eb",
                 "color": "#ffffff"
-            }
+            },
+            "optional-dependencies": [
+                "flarum/tags",
+                "linkrobins/support",
+                "linkrobins/blog",
+                "ernestdefoe/page-builder",
+                "ramon/marketplace"
+            ]
         }
     },
     "require-dev": {
         "flarum/phpstan": "^2.0",
         "flarum/testing": "^2.0"
+    },
+    "suggest": {
+        "flarum/tags": "Category tiles show the forum's top-level tags.",
+        "linkrobins/support": "Adds the Tickets pill, the support quick action and the Tickets resolved tile.",
+        "linkrobins/blog": "Adds the Blog pill, the Write a Blog Post action and the section pills on blog pages.",
+        "ernestdefoe/page-builder": "Adds a pill for each Page Builder content type.",
+        "ramon/marketplace": "Adds the Marketplace pill, quick action and promo card."
     },
     "scripts": {
         "test": [

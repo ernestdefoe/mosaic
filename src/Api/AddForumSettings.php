@@ -15,21 +15,9 @@ use Flarum\Settings\SettingsRepositoryInterface;
 use Psr\Log\LoggerInterface;
 
 /**
- * Reads the theme's admin-configured settings out of Flarum's
- * `settings` table and exposes the values to ForumResource Schema
- * fields in extend.php.
- *
- * The JS Admin extender (js/src/admin/extend.js) writes settings
- * under their literal keys when an admin saves the panel; the JS
- * forum frontend reads them via `app.forum.attribute(key)`. The two
- * sides are bridged here — without this resolver, the admin saves
- * would never reach the forum runtime.
- *
- * Instance class with constructor-injected dependencies so the
- * container can wire it up (audit feedback — the previous version
- * used pure-static methods that resolve()'d at every call, which
- * hid the dependency on SettingsRepositoryInterface and made the
- * class unmockable in unit tests).
+ * Reads Mosaic's admin settings for MosaicForumAttributes. The admin panel
+ * saves them under their literal keys (mosaicHideTrending, mosaicQuickActions,
+ * …) and the forum frontend reads the matching forum attributes.
  */
 class AddForumSettings
 {
@@ -39,19 +27,13 @@ class AddForumSettings
     ) {
     }
 
-    /** True when the operator has chosen to hide a widget. */
+    /** A switch the admin turned on. The settings table stores booleans as "1" / "0". */
     public function bool(string $key): bool
     {
-        $val = $this->settings->get($key);
-        if ($val === null || $val === '') {
-            return false;
-        }
-
-        /* Flarum stores booleans as the strings "0" / "1". */
-        return $val === '1' || $val === 1 || $val === true || $val === 'true';
+        return in_array($this->settings->get($key), ['1', 'true'], true);
     }
 
-    /** Returns the string value or null when unset. */
+    /** The trimmed value, or null when it is unset or blank. */
     public function str(string $key): ?string
     {
         $val = $this->settings->get($key);
@@ -64,21 +46,14 @@ class AddForumSettings
     }
 
     /**
-     * Returns a JSON-decoded array value (e.g. the Quick Actions list).
-     * Falls back to the supplied default on missing/invalid/non-array
-     * input — the frontend handles an empty array by using its own
-     * built-in defaults, so returning [] is safe.
-     *
-     * Narrow catch: JSON malformation is the only error class we
-     * expect here. Wider failures (settings repo unavailable, store
-     * down) bubble up to Flarum's error handler so they show in the
-     * log instead of degrading silently.
+     * A JSON list setting (Quick Actions, pinned contributors), or [] when it
+     * is unset or not a JSON array. Malformed JSON is logged.
      */
-    public function json(string $key, array $default = []): array
+    public function json(string $key): array
     {
         $raw = $this->settings->get($key);
         if (! is_string($raw) || $raw === '') {
-            return $default;
+            return [];
         }
 
         try {
@@ -89,9 +64,9 @@ class AddForumSettings
                 'exception' => $e,
             ]);
 
-            return $default;
+            return [];
         }
 
-        return is_array($decoded) ? $decoded : $default;
+        return is_array($decoded) ? $decoded : [];
     }
 }
