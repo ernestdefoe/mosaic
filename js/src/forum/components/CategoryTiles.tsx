@@ -1,9 +1,7 @@
 import Component from 'flarum/common/Component';
 import app from 'flarum/forum/app';
-import type Mithril from 'mithril';
-
-/* Inline icon helper — Flarum 2 removed flarum/common/helpers/icon. */
-const fa = (name: string): Mithril.Children => <i className={`icon ${name}`} aria-hidden="true" />;
+import Icon from 'flarum/common/components/Icon';
+import Link from 'flarum/common/components/Link';
 
 interface Tile {
   title: string;
@@ -58,15 +56,15 @@ export default class CategoryTiles extends Component {
           const colored = !!t.color;
           const iconStyle = colored ? { background: hexToRgba(t.color as string, 0.12), color: t.color } : undefined;
           return (
-            <a className="MosaicCategoryTile" href={t.href}>
+            <Link className="MosaicCategoryTile" href={t.href}>
               <div className={'MosaicCategoryTile-icon' + (colored ? '' : ` MosaicCategoryTile-icon--${t.tone}`)} style={iconStyle}>
-                {fa(t.icon)}
+                <Icon name={t.icon} />
               </div>
               <div>
                 <div className="MosaicCategoryTile-title">{t.title}</div>
                 <div className="MosaicCategoryTile-meta">{t.meta}</div>
               </div>
-            </a>
+            </Link>
           );
         })}
       </div>

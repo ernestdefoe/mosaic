@@ -36,13 +36,14 @@ class MosaicForumAttributes
     /**
      * Counts and lists. They ride the forum payload on every page because the
      * hero and sidebar render on the index, which members reach by SPA
-     * navigation from anywhere; each list is capped (50 / 5 / 4) and cached
-     * 60 s, and is empty for a viewer who can't see the forum (or, for the
-     * user lists, can't search users).
+     * navigation from anywhere. Each list is capped (50 / 5 / 4), cached 60 s,
+     * not computed at all when the admin hid its widget, and empty for a
+     * viewer who can't see the forum. The computed user lists also need
+     * searchUsers; an admin-pinned contributor list needs only viewForum.
      */
     private function statistics(): array
     {
-        $hideOnlineUsers = $this->settings->bool('mosaicHideOnlineUsers');
+        $hidden = fn (string $key) => $this->settings->bool($key);
 
         return [
             Schema\Integer::make('mosaicUserCount')
@@ -62,11 +63,15 @@ class MosaicForumAttributes
                 ->get(fn ($forum, Context $context) => $this->stats->onlineCount($context->getActor())),
 
             Schema\Arr::make('mosaicOnlineUsers')
-                ->get(fn ($forum, Context $context) => $hideOnlineUsers ? [] : $this->stats->onlineUsers($context->getActor())),
+                ->get(fn ($forum, Context $context) => $hidden('mosaicHideOnlineUsers') ? [] : $this->stats->onlineUsers($context->getActor())),
 
             /* An admin-pinned JSON list (the mosaicTopContributors setting) wins over the computed one. */
             Schema\Arr::make('mosaicTopContributors')
-                ->get(function ($forum, Context $context) {
+                ->get(function ($forum, Context $context) use ($hidden) {
+                    if ($hidden('mosaicHideTopContributors')) {
+                        return [];
+                    }
+
                     $pinned = $this->settings->json('mosaicTopContributors');
                     if (empty($pinned)) {
                         return $this->stats->topContributors($context->getActor());
@@ -76,7 +81,7 @@ class MosaicForumAttributes
                 }),
 
             Schema\Arr::make('mosaicTrending')
-                ->get(fn ($forum, Context $context) => $this->stats->trending($context->getActor())),
+                ->get(fn ($forum, Context $context) => $hidden('mosaicHideTrending') ? [] : $this->stats->trending($context->getActor())),
         ];
     }
 

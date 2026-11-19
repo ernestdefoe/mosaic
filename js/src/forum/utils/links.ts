@@ -10,15 +10,21 @@ export function hasBlog(): boolean {
   return 'linkrobins-blog' in flarum.extensions;
 }
 
+/** A link target, and whether it is one of the forum's own routes (followed in-app) or a plain URL. */
+export interface Target {
+  href: string;
+  route: boolean;
+}
+
 /**
  * Where the Tickets pill and support quick action point: the Mosaic admin's
- * override, else linkrobins/support's own index page, else nothing.
+ * URL, else linkrobins/support's own index page, else nothing.
  */
-export function supportUrl(): string | null {
+export function supportTarget(): Target | null {
   const override = app.forum.attribute<string | null>('mosaicSupportUrl');
-  if (override) return override;
+  if (override) return { href: override, route: false };
 
-  return 'linkrobins-support' in flarum.extensions ? app.route('linkrobins-support.index') : null;
+  return 'linkrobins-support' in flarum.extensions ? { href: app.route('linkrobins-support.index'), route: true } : null;
 }
 
 /** The current page is one of linkrobins/blog's. */

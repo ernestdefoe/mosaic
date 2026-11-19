@@ -1,6 +1,7 @@
 import app from 'flarum/forum/app';
 import Component from 'flarum/common/Component';
 import Avatar from 'flarum/common/components/Avatar';
+import Icon from 'flarum/common/components/Icon';
 import openComposer from '../utils/openComposer';
 
 /**
@@ -34,7 +35,7 @@ export default class MosaicComposerTrigger extends Component {
             <Avatar user={user} className="MosaicComposerTrigger-avatar" />
           ) : (
             <div className="MosaicComposerTrigger-logo" aria-hidden="true">
-              <i className="fas fa-edit" />
+              <Icon name="fas fa-edit" />
             </div>
           )}
           <span className="MosaicComposerTrigger-placeholder">{placeholder}</span>
@@ -46,7 +47,7 @@ export default class MosaicComposerTrigger extends Component {
               this.open();
             }}
           >
-            <i className="fas fa-plus" aria-hidden="true" />
+            <Icon name="fas fa-plus" />
             <span className="MosaicComposerTrigger-newBtn-label">{ctaLabel}</span>
           </button>
         </div>

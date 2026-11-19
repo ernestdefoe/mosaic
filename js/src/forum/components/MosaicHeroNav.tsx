@@ -3,7 +3,7 @@ import Component from 'flarum/common/Component';
 import LinkButton from 'flarum/common/components/LinkButton';
 import type Mithril from 'mithril';
 import marketplaceUrl, { hasMarketplace } from '../utils/marketplaceUrl';
-import { hasBlog, supportUrl } from '../utils/links';
+import { hasBlog, supportTarget } from '../utils/links';
 
 interface ContentType {
   slug: string;
@@ -12,8 +12,9 @@ interface ContentType {
   icon?: string;
 }
 
-const pill = (href: string, icon: string, label: Mithril.Children): Mithril.Children => (
-  <LinkButton href={href} icon={icon} className="MosaicHeaderNav-item">
+/** `external` for a URL that isn't one of the forum's own routes. */
+const pill = (href: string, icon: string, label: Mithril.Children, external = false): Mithril.Children => (
+  <LinkButton href={href} icon={icon} className="MosaicHeaderNav-item" external={external}>
     {label}
   </LinkButton>
 );
@@ -30,16 +31,16 @@ export default class MosaicHeroNav extends Component {
         {pill(app.route('index'), 'fa-solid fa-comments', app.translator.trans('ernestdefoe-mosaic.forum.nav.discussions'))}
         {this.supportPill()}
         {this.blogPill()}
-        {hasMarketplace() && pill(marketplaceUrl(), 'fa-solid fa-store', app.translator.trans('ernestdefoe-mosaic.forum.nav.marketplace'))}
+        {hasMarketplace() && pill(marketplaceUrl(), 'fa-solid fa-store', app.translator.trans('ernestdefoe-mosaic.forum.nav.marketplace'), true)}
         {this.contentTypePills()}
       </nav>
     );
   }
 
   supportPill(): Mithril.Children {
-    const url = supportUrl();
+    const support = supportTarget();
 
-    return url ? pill(url, 'fa-solid fa-headset', app.translator.trans('ernestdefoe-mosaic.forum.nav.tickets')) : null;
+    return support ? pill(support.href, 'fa-solid fa-headset', app.translator.trans('ernestdefoe-mosaic.forum.nav.tickets'), !support.route) : null;
   }
 
   /** linkrobins/blog's own nav label and icon, when its admin set them. */

@@ -113,14 +113,12 @@ class ForumAttributesTest extends TestCase
     }
 
     #[Test]
-    public function contributor_and_trending_links_follow_a_sub_directory_install()
+    public function contributors_and_trending_carry_what_the_frontend_routes_by()
     {
-        $this->config('url', 'http://localhost/community');
-
         $forum = $this->forum();
 
-        $this->assertSame('http://localhost/community/u/online15', $forum['mosaicTopContributors'][0]['href']);
-        $this->assertSame('http://localhost/community/d/1', $forum['mosaicTrending'][0]['href']);
+        $this->assertArrayNotHasKey('href', $forum['mosaicTopContributors'][0], 'The frontend builds user links with app.route');
+        $this->assertSame([1, 2], array_column($forum['mosaicTrending'], 'id'));
     }
 
     #[Test]
@@ -136,6 +134,7 @@ class ForumAttributesTest extends TestCase
         $this->assertSame([['name' => 'Pinned']], $forum['mosaicTopContributors'], 'An admin override replaces the computed list');
         $this->assertSame([['label' => 'Rules', 'href' => '/rules']], $forum['mosaicQuickActions']);
         $this->assertTrue($forum['mosaicHideTrending']);
+        $this->assertSame([], $forum['mosaicTrending'], 'A hidden widget is not computed or sent');
         $this->assertFalse($forum['mosaicHideQuickActions']);
         $this->assertSame('https://help.example', $forum['mosaicSupportUrl']);
         $this->assertNull($forum['mosaicMarketplaceUrl']);
@@ -162,6 +161,7 @@ class ForumAttributesTest extends TestCase
         $stats = $this->app()->getContainer()->make(AddForumStatistics::class);
 
         $this->assertSame(2, $stats->resolvedTicketCount(User::find(1)));
+        $this->assertNull($stats->resolvedTicketCount(User::find(2)), 'Only support staff (handleTickets) see it, as in linkrobins/support');
 
         $this->revoke('viewForum');
         $this->assertNull($stats->resolvedTicketCount(new \Flarum\User\Guest()), 'Nothing for a visitor who cannot view the forum');

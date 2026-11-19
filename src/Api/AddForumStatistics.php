@@ -14,7 +14,6 @@ namespace Ernestdefoe\Mosaic\Api;
 use Carbon\Carbon;
 use Ernestdefoe\Mosaic\SupportTicket;
 use Flarum\Discussion\Discussion;
-use Flarum\Http\UrlGenerator;
 use Flarum\User\User;
 use Illuminate\Contracts\Cache\Repository as CacheRepository;
 use Illuminate\Database\Eloquent\Builder;
@@ -26,10 +25,11 @@ use Psr\Log\LoggerInterface;
  * nothing for someone who can't view the forum, no user lists for someone
  * who can't search users, and only what the viewer's groups may see.
  *
- * Every read goes through a 60 s cache keyed by audience (guest, member,
- * admin for user stats; the permission group set for discussion stats), so
- * concurrent page loads share one query and one audience's result is never
- * served to another.
+ * Every read goes through a 60 s cache, so concurrent page loads share one
+ * query. User stats are cached per audience (guest, member, admin) and
+ * discussion stats per permission group set, so one audience's result is
+ * never served to another; the resolved-ticket count, shown to support staff
+ * only, has one shared entry.
  */
 class AddForumStatistics
 {
@@ -45,7 +45,6 @@ class AddForumStatistics
     public function __construct(
         private CacheRepository $cache,
         private LoggerInterface $log,
-        private UrlGenerator $url,
     ) {
     }
 
@@ -196,19 +195,18 @@ class AddForumStatistics
             'id' => (int) $u->id,
             'username' => $u->username,
             'displayName' => $u->display_name ?: $u->username,
-            // The avatar_url attribute: User has no avatarUrl() method, and
-            // calling one threw (into a catch that hid it) for every user.
             'avatarUrl' => $u->avatar_url,
         ];
     }
 
     /**
-     * Resolved tickets in linkrobins/support. Only called while that extension
-     * is enabled (SupportForumAttributes is registered conditionally).
+     * Resolved tickets in linkrobins/support, for its support staff only (its
+     * `handleTickets` ability), as that extension shows its own ticket counts.
+     * Only called while it is enabled (SupportForumAttributes is conditional).
      */
     public function resolvedTicketCount(User $actor): ?int
     {
-        if ($actor->cannot('viewForum')) {
+        if ($actor->cannot('viewForum') || $actor->cannot('handleTickets')) {
             return null;
         }
 
@@ -238,7 +236,7 @@ class AddForumStatistics
 
         $limit = max(1, min($limit, 20));
 
-        return $this->cache->remember($this->audienceKey('topContributors.v3.'.$limit, $actor), self::CACHE_TTL, function () use ($actor, $limit) {
+        return $this->cache->remember($this->audienceKey('topContributors.v4.'.$limit, $actor), self::CACHE_TTL, function () use ($actor, $limit) {
             try {
                 return User::query()
                     ->whereVisibleTo($actor)
@@ -281,7 +279,6 @@ class AddForumStatistics
             'posts' => $comments,
             'points' => $comments + $discussions,
             'avatarUrl' => $avatarUrl,
-            'href' => $this->url->to('forum')->path('u/'.rawurlencode((string) $u->username)),
         ];
     }
 
@@ -301,7 +298,7 @@ class AddForumStatistics
 
         $limit = max(1, min($limit, 10));
 
-        return $this->cache->remember($this->groupKey('trending.v2.'.$limit, $actor), self::CACHE_TTL, function () use ($actor, $limit) {
+        return $this->cache->remember($this->groupKey('trending.v3.'.$limit, $actor), self::CACHE_TTL, function () use ($actor, $limit) {
             try {
                 return $this->publicDiscussions($actor)
                     ->where('comment_count', '>', 0)
@@ -310,12 +307,9 @@ class AddForumStatistics
                     ->limit($limit)
                     ->get()
                     ->map(fn (Discussion $d) => [
+                        'id' => (int) $d->id,
                         'title' => (string) $d->title,
                         'replies' => (int) $d->comment_count,
-                        // d/{id} redirects to the canonical slug URL, so we
-                        // avoid invoking the slug driver here. Built from the
-                        // forum's base URL so sub-directory installs link right.
-                        'href' => $this->url->to('forum')->path('d/'.(int) $d->id),
                     ])
                     ->values()
                     ->toArray();
