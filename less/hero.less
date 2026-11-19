@@ -1,9 +1,9 @@
 /* =====================================================================
-   Hero panel — replaces stock IndexPage hero
-   Includes search bar and forum-wide stats strip
+   Hero panel — replaces the stock IndexPage hero (HeroPanel.tsx):
+   title, composer card and the forum-wide stats strip
    ===================================================================== */
 
-/* Hide stock Flarum hero — we render our own via HeroPanel.js */
+/* Hide the stock welcome hero; HeroPanel.tsx renders Mosaic's own. */
 .Hero.WelcomeHero { display: none; }
 
 .MosaicHero {
@@ -48,50 +48,9 @@
     }
   }
 
-  .MosaicHero-search {
-    position: relative;
-    background: rgba(255, 255, 255, 0.98);
-    border-radius: var(--r-pill);
-    padding: 6px 6px 6px 22px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.18);
-    max-width: 640px;
-
-    input {
-      flex: 1;
-      border: none;
-      outline: none;
-      background: none;
-      font-family: inherit;
-      font-size: 15px;
-      color: var(--text);
-      padding: 10px 0;
-
-      &::placeholder { color: var(--text-muted); }
-    }
-
-    .MosaicHero-searchBtn {
-      height: 42px;
-      padding: 0 22px;
-      border-radius: var(--r-pill);
-      background: var(--primary);
-      color: #fff;
-      font-weight: 600;
-      font-size: 14px;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      border: none;
-      transition: background 0.15s;
-
-      &:hover { background: var(--primary-dark); }
-    }
-  }
 }
 
-/* Forum stats strip — sits below the search inside the hero */
+/* Forum stats strip — sits below the composer card inside the hero */
 .MosaicHero-stats {
   position: relative;
   margin-top: 28px;
@@ -154,7 +113,7 @@
  * The wrap is the absolute-positioning anchor; the trigger looks
  * indistinguishable from the other stat tiles until hovered; the
  * popover floats below it and slides into view. Click-outside +
- * Escape close it (HeroPanel.js). */
+ * Escape close it (HeroPanel.tsx). */
 .MosaicHero-onlineWrap {
   position: relative;
 
@@ -221,13 +180,6 @@
   to   { opacity: 1; transform: translateY(0); }
 }
 
-.MosaicHero-onlinePopover-empty {
-  padding: 18px 14px;
-  font-size: 13px;
-  color: var(--text-muted);
-  text-align: center;
-}
-
 .MosaicHero-onlineList {
   list-style: none;
   margin: 0;
@@ -257,13 +209,8 @@
  * or a <span> with a one-letter initial colored from User.color() —
  * which auto-derives from displayName via stringToColor(). Sizing
  * applies to either form via the .Avatar base class; we just need to
- * pin the dimensions used inside the popover row.
- *
- * Earlier this rule (and a `--fallback` modifier) hand-rolled both
- * shapes — the fallback used a primary-color gradient on EVERY user,
- * which collided visually with the per-user colored circles the rest
- * of the forum draws. Letting Avatar own the bg color removes the
- * inconsistency. */
+ * pin the dimensions used inside the popover row. Avatar keeps its own
+ * per-user colour, matching the rest of the forum. */
 .MosaicHero-onlineAvatar.Avatar,
 .MosaicHero-onlineAvatar {
   width: 30px;

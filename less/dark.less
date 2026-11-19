@@ -9,11 +9,8 @@
      1.x:  body.App--dark-mode  →  2.x:  [data-theme^=dark]
      1.x:  body.App--coloredHeader  →  2.x:  [data-colored-header=true]
 
-   The earlier class-based selectors (.App--dark-mode, .theme-dark,
-   body.dark-mode) NEVER matched on Flarum 2, which is why our dark
-   tokens stayed dormant while Flarum's own CSS painted the body dark
-   from its [data-theme^=dark] rules — leaving the page half light,
-   half dark.
+   Class-based selectors (.App--dark-mode, .theme-dark, body.dark-mode)
+   never match on Flarum 2; only [data-theme^=dark] does.
 
    This file must remain LAST in forum.less's @import chain so the
    `[data-theme^=dark]` block wins the cascade over the default
@@ -81,7 +78,6 @@
   background: linear-gradient(135deg, #0f1d3a 0%, #1d3a73 60%, #2d5fbe 100%);
 }
 
-[data-theme^='dark'] .MosaicMarketHero,
 [data-theme^='dark'] .MarketplacePage .MpShop-header,
 [data-theme^='dark'] .MarketplaceShopPage .MpShop-header {
   background: linear-gradient(135deg, #2a0f4a 0%, #5b21b6 60%, #8b5cf6 100%);

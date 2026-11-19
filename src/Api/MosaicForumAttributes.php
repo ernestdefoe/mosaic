@@ -38,8 +38,7 @@ class MosaicForumAttributes
      * hero and sidebar render on the index, which members reach by SPA
      * navigation from anywhere. Each list is capped (50 / 5 / 4), cached 60 s,
      * not computed at all when the admin hid its widget, and empty for a
-     * viewer who can't see the forum. The computed user lists also need
-     * searchUsers; an admin-pinned contributor list needs only viewForum.
+     * viewer who can't see the forum; the user lists also need searchUsers.
      */
     private function statistics(): array
     {
@@ -65,20 +64,8 @@ class MosaicForumAttributes
             Schema\Arr::make('mosaicOnlineUsers')
                 ->get(fn ($forum, Context $context) => $hidden('mosaicHideOnlineUsers') ? [] : $this->stats->onlineUsers($context->getActor())),
 
-            /* An admin-pinned JSON list (the mosaicTopContributors setting) wins over the computed one. */
             Schema\Arr::make('mosaicTopContributors')
-                ->get(function ($forum, Context $context) use ($hidden) {
-                    if ($hidden('mosaicHideTopContributors')) {
-                        return [];
-                    }
-
-                    $pinned = $this->settings->json('mosaicTopContributors');
-                    if (empty($pinned)) {
-                        return $this->stats->topContributors($context->getActor());
-                    }
-
-                    return $context->getActor()->can('viewForum') ? $pinned : [];
-                }),
+                ->get(fn ($forum, Context $context) => $hidden('mosaicHideTopContributors') ? [] : $this->stats->topContributors($context->getActor())),
 
             Schema\Arr::make('mosaicTrending')
                 ->get(fn ($forum, Context $context) => $hidden('mosaicHideTrending') ? [] : $this->stats->trending($context->getActor())),

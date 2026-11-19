@@ -46,7 +46,7 @@ class AddForumSettings
     }
 
     /**
-     * A JSON list setting (Quick Actions, pinned contributors), or [] when it
+     * A JSON list setting (the Quick Actions), or [] when it
      * is unset or not a JSON array. Malformed JSON is logged.
      */
     public function json(string $key): array

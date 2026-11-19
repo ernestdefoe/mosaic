@@ -54,11 +54,9 @@
 
 /* Flarum core hard-codes `.sideNav, .sideNav > ul { width: 190px }`
  * on the support sidebar. Our IndexPage grid gives the right column
- * 320px — so the sidebar's 190px content sat flush LEFT inside its
- * 320px slot, leaving ~130px of dead space to the right of every
- * filter chip. Push the nav and its UL right by auto-marginning the
- * left edge; chips now sit flush against the right rail of the
- * content area instead of floating mid-column.
+ * 320px, so the 190px nav would sit flush left with ~130px of empty
+ * space beside it. Auto-margining the left edge keeps the chips flush
+ * against the right rail of the content area.
  *
  * `width: auto` on `.sideNav > ul` lets the ul follow the chip
  * widths so the right edge stays clean. */

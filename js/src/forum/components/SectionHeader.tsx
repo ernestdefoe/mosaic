@@ -6,13 +6,13 @@ import abbreviate from '../utils/abbreviate';
 
 /**
  * SectionHeader — the "Recent Discussions" title and count badge above the
- * IndexPage toolbar. The count is the tag's own count on a tag page, else the
- * hero's discussion figure; without either there is no badge.
+ * IndexPage toolbar. The badge shows the tag's own count on a tag page and the
+ * forum-wide figure on the unfiltered index; filtered lists (Following,
+ * search results) get no badge, since neither figure would match them.
  */
 export default class SectionHeader extends Component {
   view() {
-    const tag = currentTag();
-    const count = tag ? (tag.discussionCount() ?? null) : forumStats().discussions;
+    const count = listCount();
 
     return (
       <div className="MosaicSectionHead">
@@ -21,4 +21,13 @@ export default class SectionHeader extends Component {
       </div>
     );
   }
+}
+
+function listCount(): number | null {
+  const tag = currentTag();
+  if (tag) return tag.discussionCount() ?? null;
+
+  const filtered = Object.keys(m.route.param() || {}).some((key) => key !== 'sort');
+
+  return app.current.get('routeName') === 'index' && !filtered ? forumStats().discussions : null;
 }

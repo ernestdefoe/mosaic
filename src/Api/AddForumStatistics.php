@@ -91,8 +91,8 @@ class AddForumStatistics
     /**
      * Comment total across the public discussions the viewer's groups can
      * see: the sum of each discussion's comment_count, which already leaves
-     * out event posts (renames, tag changes) and hidden replies. One indexed
-     * query instead of a visibility-scoped scan of every post.
+     * out event posts (renames, tag changes) and hidden replies. One query
+     * over discussions instead of a visibility-scoped scan of every post.
      */
     public function postCount(User $actor): ?int
     {
@@ -153,8 +153,8 @@ class AddForumStatistics
      *     dedicated "online users" page rather than ballooning the
      *     forum payload, which rides every page.
      *
-     * Returns [] on any failure so the JS dropdown shows an
-     * empty-state hint instead of breaking the hero render.
+     * Returns [] on a query failure (logged); the hero then shows Online
+     * now as a plain figure, without the list.
      */
     public function onlineUsers(User $actor, int $limit = 50): array
     {

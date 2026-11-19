@@ -124,14 +124,12 @@ class ForumAttributesTest extends TestCase
     #[Test]
     public function the_admin_settings_are_served()
     {
-        $this->setting('mosaicTopContributors', json_encode([['name' => 'Pinned']]));
         $this->setting('mosaicQuickActions', json_encode([['label' => 'Rules', 'href' => '/rules']]));
         $this->setting('mosaicHideTrending', '1');
         $this->setting('mosaicSupportUrl', '  https://help.example  ');
 
         $forum = $this->forum();
 
-        $this->assertSame([['name' => 'Pinned']], $forum['mosaicTopContributors'], 'An admin override replaces the computed list');
         $this->assertSame([['label' => 'Rules', 'href' => '/rules']], $forum['mosaicQuickActions']);
         $this->assertArrayNotHasKey('mosaicHideTrending', $forum);
         $this->assertSame([], $forum['mosaicTrending'], 'A hidden widget is not computed or sent');
@@ -168,11 +166,12 @@ class ForumAttributesTest extends TestCase
     }
 
     #[Test]
-    public function the_url_settings_move_to_mosaic_prefixed_keys_and_back()
+    public function the_url_settings_are_copied_to_mosaic_prefixed_keys_and_the_pinned_list_removed()
     {
         $this->setting('supportUrl', '/help');
         $this->setting('mosaicMarketplaceUrl', '/store');
         $this->setting('marketplaceUrl', '/old-store');
+        $this->setting('mosaicTopContributors', json_encode([['name' => 'Pinned']]));
         $this->app();
 
         $migration = require __DIR__.'/../../../migrations/2026_11_19_000000_prefix_mosaic_url_settings.php';
@@ -180,10 +179,19 @@ class ForumAttributesTest extends TestCase
         $settings = fn () => $this->database()->table('settings')->whereIn('key', ['supportUrl', 'marketplaceUrl', 'mosaicSupportUrl', 'mosaicMarketplaceUrl'])->pluck('value', 'key')->sortKeys()->all();
 
         $migration['up']($schema);
-        $this->assertSame(['mosaicMarketplaceUrl' => '/store', 'mosaicSupportUrl' => '/help'], $settings(), 'An existing prefixed value wins');
+        $this->assertSame(
+            ['marketplaceUrl' => '/old-store', 'mosaicMarketplaceUrl' => '/store', 'mosaicSupportUrl' => '/help', 'supportUrl' => '/help'],
+            $settings(),
+            'Copied, an existing prefixed value wins, and the generic keys stay for whoever else uses them'
+        );
+        $this->assertFalse($this->database()->table('settings')->where('key', 'mosaicTopContributors')->exists());
 
         $migration['down']($schema);
-        $this->assertSame(['marketplaceUrl' => '/store', 'supportUrl' => '/help'], $settings());
+        $this->assertSame(
+            ['marketplaceUrl' => '/old-store', 'mosaicMarketplaceUrl' => '/store', 'supportUrl' => '/help'],
+            $settings(),
+            'Only the untouched copy is removed'
+        );
     }
 
     #[Test]
@@ -227,8 +235,6 @@ class ForumAttributesTest extends TestCase
         $this->assertNull($forum['mosaicPostCount']);
         $this->assertStringNotContainsString('online1', json_encode($forum));
 
-        $this->setting('mosaicTopContributors', json_encode([['name' => 'Pinned']]));
-        $this->assertSame([], $this->forum(null)['mosaicTopContributors'], 'Nor the admin-pinned list');
     }
 
     #[Test]

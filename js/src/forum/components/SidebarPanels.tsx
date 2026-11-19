@@ -24,16 +24,11 @@ interface QuickAction {
 
 interface Contributor {
   name: string;
-  /** Set for computed rows; an admin-pinned row may give its own `href` instead. */
-  username?: string;
-  href?: string;
-  role?: string | null;
-  /** Comment count from the server; an admin-pinned row may give `meta` text instead. */
-  posts?: number;
-  meta?: string;
-  points?: string | number;
-  tone?: string;
-  avatarUrl?: string | null;
+  username: string;
+  role: string | null;
+  posts: number;
+  points: number;
+  avatarUrl: string | null;
 }
 
 interface TrendingDiscussion {
@@ -113,7 +108,7 @@ export default class SidebarPanels extends Component {
     );
   }
 
-  /** The server's forum-wide list (or the admin's pinned one), empty when the admin hid it. */
+  /** The server's forum-wide list, empty when the admin hid it. */
   topContributors(): Mithril.Children {
     const contributors = app.forum.attribute<Contributor[]>('mosaicTopContributors');
     if (!Array.isArray(contributors) || !contributors.length) return null;
@@ -122,25 +117,23 @@ export default class SidebarPanels extends Component {
       <div className="MosaicSideCard">
         {cardTitle('fa-solid fa-trophy', t('sidebar.top_contributors_title'))}
         {contributors.map((c, i) => {
-          const href = c.username ? app.route('user', { username: c.username }) : c.href;
-          const route = !!c.username;
           const row = [
             c.avatarUrl ? (
               <img className="MosaicContribRow-avatar MosaicContribRow-avatar--img" src={c.avatarUrl} alt="" />
             ) : (
-              <div className={`MosaicContribRow-avatar av-${c.tone || TONES[i % TONES.length]}`}>{initials(c.name)}</div>
+              <div className={`MosaicContribRow-avatar av-${TONES[i % TONES.length]}`}>{initials(c.name)}</div>
             ),
             <div className="MosaicContribRow-meta">
               <div className="MosaicContribRow-name">
                 {c.name}
                 {c.role && <span className={`MosaicRoleBadge MosaicRoleBadge--${String(c.role).toLowerCase()}`}>{c.role}</span>}
               </div>
-              <div className="MosaicContribRow-sub">{c.meta ?? (c.posts != null ? t('sidebar.contributor_posts', { count: c.posts }) : null)}</div>
+              <div className="MosaicContribRow-sub">{t('sidebar.contributor_posts', { count: c.posts })}</div>
             </div>,
-            <div className="MosaicContribRow-points">{typeof c.points === 'number' ? abbreviate(c.points) : c.points}</div>,
+            <div className="MosaicContribRow-points">{abbreviate(c.points)}</div>,
           ];
 
-          return href ? anyLink(href, route, 'MosaicContribRow', row) : <div className="MosaicContribRow">{row}</div>;
+          return anyLink(app.route('user', { username: c.username }), true, 'MosaicContribRow', row);
         })}
       </div>
     );

@@ -13,23 +13,41 @@ use Illuminate\Database\Schema\Builder;
 
 /*
  * The Support and Marketplace URL settings were saved as `supportUrl` and
- * `marketplaceUrl`; they now live under Mosaic's own prefix. The old rows are
- * moved, and moved back on rollback.
+ * `marketplaceUrl`; they now live under Mosaic's own prefix. Their values are
+ * copied (an existing prefixed value wins) and the old rows are left alone,
+ * since those generic keys may belong to another extension. Rolling back
+ * removes only copies that still match their original.
+ *
+ * The pinned Top Contributors list (`mosaicTopContributors`) had no admin
+ * setting and is no longer read, so its row is removed.
  */
 $renames = ['supportUrl' => 'mosaicSupportUrl', 'marketplaceUrl' => 'mosaicMarketplaceUrl'];
 
-$move = function (Builder $schema, array $map) {
-    $db = $schema->getConnection();
-
-    $rows = $db->table('settings')->whereIn('key', array_keys($map))->get();
-
-    $db->table('settings')->insertOrIgnore(
-        $rows->map(fn ($row) => ['key' => $map[$row->key], 'value' => $row->value])->all()
-    );
-    $db->table('settings')->whereIn('key', $rows->pluck('key')->all())->delete();
-};
-
 return [
-    'up' => fn (Builder $schema) => $move($schema, $renames),
-    'down' => fn (Builder $schema) => $move($schema, array_flip($renames)),
+    'up' => function (Builder $schema) use ($renames) {
+        $db = $schema->getConnection();
+
+        $copies = $db->table('settings')
+            ->whereIn('key', array_keys($renames))
+            ->get()
+            ->map(fn ($row) => ['key' => $renames[$row->key], 'value' => $row->value])
+            ->all();
+
+        $db->table('settings')->insertOrIgnore($copies);
+        $db->table('settings')->where('key', 'mosaicTopContributors')->delete();
+    },
+    'down' => function (Builder $schema) use ($renames) {
+        $db = $schema->getConnection();
+
+        $originals = $db->table('settings')->whereIn('key', array_keys($renames))->pluck('value', 'key');
+
+        $copied = $db->table('settings')
+            ->whereIn('key', array_values($renames))
+            ->get()
+            ->filter(fn ($row) => $originals->get(array_search($row->key, $renames, true)) === $row->value)
+            ->pluck('key')
+            ->all();
+
+        $db->table('settings')->whereIn('key', $copied)->delete();
+    },
 ];

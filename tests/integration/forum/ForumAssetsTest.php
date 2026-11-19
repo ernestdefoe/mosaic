@@ -50,7 +50,7 @@ class ForumAssetsTest extends TestCase
         $css = $this->page('/', [], 'forum.css')['forum.css'];
 
         $this->assertStringContainsString('.MosaicHero-title', $css);
-        $this->assertStringContainsString('.MosaicHero-search', $css);
+        $this->assertStringContainsString('.MosaicHero-stats', $css);
     }
 
     #[Test]

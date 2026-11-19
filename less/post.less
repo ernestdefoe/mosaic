@@ -37,9 +37,8 @@
  *     --hero-bg via inline style, and ramon/colored extends this),
  *     defer to the tag color so the colored treatment flows through
  *
- * Earlier versions of this rule used `background: var(--surface)
- * !important` and `--hero-bg: var(--surface)` which stomped colored's
- * tag-tinted hero entirely. */
+ * So no `!important` and no `--hero-bg` override here: either would
+ * replace colored's tag-tinted hero. */
 .DiscussionHero {
   background: var(--hero-bg, var(--surface));
   border: 1px solid var(--border);
@@ -143,9 +142,8 @@
   box-shadow: var(--shadow-sm);
   /* `overflow` MUST stay visible — dropdowns (Post controls kebab,
      Edit menu) and the reactions popup are absolutely positioned and
-     need to escape the card's bounds. Earlier overflow:hidden was
-     set to mask the best-answer banner's top corners; that's now
-     handled by giving the banner its own top border-radius below. */
+     need to escape the card's bounds. The best-answer banner rounds
+     its own top corners (below) instead of relying on overflow. */
   overflow: visible;
   transition: border-color 0.15s, box-shadow 0.15s;
 
@@ -543,15 +541,10 @@ nav.DiscussionPage-nav {
  * The post that IS the marked best answer gets a 1px green border + a
  * full-width banner at the top reading "✓ Marked as solution".
  *
- * Earlier versions tried `content: '\f058  Marked as solution'` with
- * font-family: 'Font Awesome 6 Free' — that broke because Flarum 2
- * ships FA7 (not FA6), and mixing the FA codepoint with text in a
- * single content string forced the label characters to render in the
- * icon font as missing-glyph boxes.
- *
- * Switched to Unicode U+2713 (✓) for the check — it renders in any
- * system font, so the banner shows correctly regardless of which FA
- * version (or none) is loaded. The banner sits at the top via
+ * An icon-font codepoint can't share one `content` string with the label
+ * (the text would render in the icon font as missing glyphs), so the
+ * check is Unicode U+2713 (✓), which renders in any system font whatever
+ * Font Awesome version (or none) is loaded. The banner sits at the top via
  * position:absolute on ::before, with .Post-container padding-top
  * reserving space so the post body doesn't overlap it.
  */
@@ -579,14 +572,10 @@ nav.DiscussionPage-nav {
   /* Pull fof/best-answer's indicator OUT of the post header's flex
    * flow and onto the top of the card as a full-width banner.
    *
-   * Live probe revealed the earlier compact-pill rule
-   * (.Post .item-isBestAnswer) was leaving its `display:
-   * inline-flex`, `padding: 2px 8px 2px 6px`, `margin: 3px 0 0`,
-   * `background`, `border`, and `border-radius` properties applied —
-   * which collapsed the li to content-width and pushed it inward
-   * from the card edges. Every layout-affecting property is
-   * explicitly overridden below with !important so the banner can
-   * actually span the card edge-to-edge. */
+   * fof/best-answer gives the item an inline-flex pill shape (padding,
+   * margin, background, border, radius), which would shrink it to
+   * content width. Every layout property is overridden below with
+   * !important so the banner spans the card edge to edge. */
   .item-isBestAnswer {
     position: absolute !important;
     top: -1px !important;
@@ -643,12 +632,9 @@ nav.DiscussionPage-nav {
   }
 }
 
-/* fof/best-answer's "Best Answer / set by USER N minutes ago" pill
- * was being rendered in EVERY post header in the discussion, not
- * just the best-answer post — a 330x26 chip pointing to the
- * solution. Even slimmed to a compact pill it crowded the post
- * header, fought the timestamp for space, and was redundant with
- * the full-width banner we now paint on the actual .Post--bestAnswer.
+/* fof/best-answer renders its "Best Answer / set by USER" pill in every
+ * post header of the discussion, which crowds the header and repeats
+ * the full-width banner on the actual .Post--bestAnswer.
  *
  * Hide it on all non-best-answer posts. The user sees: a clear
  * banner on the actual solution post (handled by the banner rule
