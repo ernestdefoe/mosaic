@@ -24,36 +24,18 @@
   gap: 10px;
 }
 
-/* Header layout — defer to Flarum's stock styling.
- *
- * Mosaic used to inject nav tabs into .Header-primary and reshape the
- * header icon buttons into 36x36 squares to make them feel like a
- * native nav row. Since nav moved to MosaicHeroNav (desktop pill row
- * under the hero) + the stock .App-titleControl SelectDropdown (phone),
- * the header is back to being just logo + search + notifications +
- * user dropdown — which Flarum's stock CSS already styles correctly.
- *
- * One thing we DO override: the header's .container max-width. By
- * default Flarum's .container clamps to ~1140px regardless of
- * viewport, but our IndexPage hero/grid live in a 1600px container
- * (see layout.less). Without matching the header, the logo sits ~190
- * px from the viewport edge while the hero's left edge is ~32px out —
- * a noticeable misalignment. Widen the header container to match. */
+/* Header layout: Flarum's stock styling. The header holds only the logo,
+ * search, notifications and the user menu; Mosaic's nav is the pill row
+ * under the hero (MosaicHeroNav) and, on phones, core's title dropdown. */
 
 /* Flarum's .container in scaffolding.less sets a FIXED width per
  * breakpoint (`width: 1100px` at @desktop-hd, etc.), which beats our
  * `max-width: 1600px` no matter how many !importants we throw at it.
  *
- * The previous attempt used `width: auto !important` to neutralise
- * core's fixed width — but `width: auto` on a flex container makes it
- * shrink-to-fit its children, which broke the header layout: core's
- * `.Header-secondary { margin-left: auto }` (the rule that pushes
- * search / notifications / user dropdown to the right edge) has zero
- * leftover space to push into when the container is content-width, so
- * the logo + Header-primary + Header-secondary all bunched together
- * and read as "centered". `width: 100%` instead makes the container
- * expand to its parent's full width up to the 1600px cap — and
- * Header-secondary now has the runway it needs. */
+ * `width: 100%` (not `auto`) lets the container fill its parent up to the
+ * 1600px cap: as a content-width flex container, core's
+ * `.Header-secondary { margin-left: auto }` would have no space to push
+ * search and the user menu to the right edge. */
 .App-header .container {
   max-width: 1600px !important;
   width: 100% !important;
@@ -78,13 +60,8 @@
 
 /* ── Composer trigger ──────────────────────────────────────────────────
  * Click-to-open card with avatar + prompt + "+ New Discussion" button.
- * Lives INSIDE the hero panel (HeroPanel.js renders it between subtitle
- * and stats — same slot the search bar used to occupy) so it inherits
- * the hero's gradient backdrop. The pill shape + drop shadow visually
- * matches the previous search box, but now opens the composer instead.
- *
- * Standalone fallback shape (outside .MosaicHero) is kept for safety
- * in case the component is mounted elsewhere later. */
+ * HeroPanel renders it between the subtitle and the stats, so it sits on
+ * the hero's gradient; the base rules also style it outside the hero. */
 .MosaicComposerTrigger {
   background: rgba(255, 255, 255, 0.98);
   border: none;
@@ -106,6 +83,16 @@
   &:focus-visible {
     outline: 2px solid var(--primary, var(--primary-color));
     outline-offset: 2px;
+  }
+}
+
+/* Members who may not start discussions: shown, but not clickable. */
+.MosaicComposerTrigger.is-disabled {
+  cursor: default;
+
+  .MosaicComposerTrigger-newBtn {
+    opacity: 0.5;
+    cursor: not-allowed;
   }
 }
 
@@ -360,12 +347,6 @@
   }
 }
 
-/* Header action icons (notifications, search, user dropdown) inherit
- * Flarum's stock styling — circular avatar, native icon button sizing,
- * default hover treatment. No mosaic overrides; the previous 36×36
- * icon-square reshape was tied to the now-removed nav row and made the
- * header feel different from default Flarum without adding value. */
-
 /* ── Log In / Sign Up buttons (guest HeaderSecondary) ─────────────────
  * Flarum core renders these as plain text buttons (.Button .Button--link).
  * We polish them into a paired set: Sign Up as the primary CTA pill,
@@ -468,17 +449,6 @@
     }
   }
 }
-
-/* MosaicMobileSession was a separately-mounted body-level Mithril root
- * that rendered a top-right avatar (or "Log In" pill for guests) on
- * mobile, because Flarum 2's .App-header lives inside #drawer.App-drawer
- * which is transform-translated off-screen — so position:fixed children
- * inside the drawer can't escape the transform's containing block.
- *
- * Removed: the guest "Log In" pill read as grayed-out/non-interactive
- * (the pill chrome competed with the actual touch target). Mobile
- * session affordances now live inside the hamburger drawer alongside
- * Notifications and Search, which is Flarum 2's intended pattern. */
 
 /* Primary CTA button (New Ticket, etc.) */
 .Button--primary {

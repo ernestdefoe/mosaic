@@ -8,7 +8,6 @@ ernestdefoe-mosaic:
       stat_resolved: Tickets resolved
       stat_posts: Posts
       stat_online: Online now
-      online_empty: No one's online right now.
       live: live
     marketplace_promo:
       kicker: NEW · Marketplace
@@ -64,17 +63,18 @@ ernestdefoe-mosaic:
       hide_trending_label: Hide the Trending sidebar widget
       hide_trending_help: Removes the trending-discussions card from the index sidebar.
       hide_online_users_label: Suppress the Online Users payload
-      hide_online_users_help: 'Stops the forum bootstrap from including the list of recently-active usernames. The "Online now" count tile still works; only the user-list popover goes empty. Useful on large communities where the extra payload bytes matter, or on forums that prefer not to surface usernames to guests.'
+      hide_online_users_help: 'Stops the forum from sending the list of recently active usernames. The "Online now" count still shows, without the list of names. Visitors who cannot search users never get the list.'
       hide_tickets_tile_label: Hide the Tickets resolved hero tile
-      hide_tickets_tile_help: 'Removes the "Tickets resolved" stat tile from the hero strip. The tile auto-hides when linkrobins/support is not installed, so you only need this toggle if you DO run the support extension but prefer not to surface the resolved-ticket count.'
+      hide_tickets_tile_help: 'Removes the "Tickets resolved" stat tile from the hero strip. The tile only appears with linkrobins/support enabled, and only to its support staff, so you only need this to hide it from them too.'
       support_url_label: Support extension URL
       support_url_help: "Base URL for the Tickets link and support quick action. Leave blank to use linkrobins/support's /support page automatically when that extension is enabled; fill it in to point somewhere else."
       marketplace_url_label: Marketplace URL
       marketplace_url_help: "Base URL for ramon/marketplace (auto-detected from marketplace_shop_path). Leave blank if you do not run a marketplace extension."
     quick_actions:
       label: Quick Actions
-      help: "Sidebar links shown in the Quick Actions widget. Each row needs an icon class (e.g. <code>fa-solid fa-bolt</code>), a label, and a URL. Leave the editor empty to use built-in defaults (Start a Discussion / Browse Tags / Recent Activity, plus Support and Marketplace links when those extensions are detected)."
+      help: "Sidebar links shown in the Quick Actions widget. Each row needs an icon class (e.g. <code>fa-solid fa-bolt</code>), a label, and a URL. Leave the editor empty to use built-in defaults (Start a Discussion / Browse Tags / Recent Activity, plus Support, Write a Blog Post and Marketplace links when those extensions are detected)."
       empty: No custom actions configured — using built-in defaults.
+      invalid_json: The saved Quick Actions could not be read, so the editor starts empty. Saving replaces them.
       add: Add action
       label_placeholder: Label shown to visitors
       href_placeholder: /path or https://…

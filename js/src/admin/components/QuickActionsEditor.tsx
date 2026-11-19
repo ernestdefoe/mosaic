@@ -25,8 +25,8 @@ interface QuickActionsEditorAttrs extends ComponentAttrs {
  * buttons. Values are stored as a JSON-encoded array of {icon,label,href}
  * under the `mosaicQuickActions` setting key.
  *
- * The prop is named `valueStream` (not `bidi`) because Mithril 2 intercepts
- * the literal attr name `bidi`. Empty/incomplete rows are preserved during
+ * The prop is named `valueStream` (not `bidi`) because Flarum's Mithril
+ * patch treats an attr named `bidi` as two-way binding. Empty/incomplete rows are preserved during
  * editing (so inputs don't lose focus) and filtered out at the read site
  * (SidebarPanels) on the forum frontend.
  */
@@ -43,6 +43,7 @@ export default class QuickActionsEditor extends Component<QuickActionsEditorAttr
       parsed = raw ? JSON.parse(raw) : [];
     } catch (e) {
       parsed = [];
+      app.alerts.show({ type: 'warning' }, t('invalid_json'));
     }
     this.actions = Array.isArray(parsed) ? (parsed as QuickAction[]).map((a) => ({ ...a })) : [];
   }

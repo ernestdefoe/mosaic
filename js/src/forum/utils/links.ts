@@ -31,3 +31,15 @@ export function supportTarget(): Target | null {
 export function onBlogPage(): boolean {
   return String(app.current.get('routeName') || '').startsWith('linkrobins-blog.');
 }
+
+/** What flarum/tags tells about the tag page being shown, when it is enabled. */
+interface CurrentTag {
+  discussionCount(): number | undefined;
+}
+
+/** The tag page being shown, when flarum/tags is enabled and this is one. */
+export function currentTag(): CurrentTag | null {
+  if (!('flarum-tags' in flarum.extensions)) return null;
+
+  return (app as typeof app & { currentTag?: () => CurrentTag | undefined }).currentTag?.() ?? null;
+}

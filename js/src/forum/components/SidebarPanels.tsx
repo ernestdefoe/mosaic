@@ -5,7 +5,7 @@ import app from 'flarum/forum/app';
 import type Mithril from 'mithril';
 import marketplaceUrl, { hasMarketplace } from '../utils/marketplaceUrl';
 import { hasBlog, supportTarget } from '../utils/links';
-import openComposer from '../utils/openComposer';
+import openComposer, { canStartDiscussion } from '../utils/openComposer';
 import abbreviate from '../utils/abbreviate';
 
 const t = (key: string, params: Record<string, unknown> = {}) => app.translator.trans(`ernestdefoe-mosaic.forum.${key}`, params);
@@ -68,8 +68,9 @@ const cardTitle = (icon: string, title: Mithril.Children): Mithril.Children => (
  * SidebarPanels — the stack of right-sidebar cards:
  *   Marketplace · Quick Actions · Top Contributors · Trending
  *
- * Each panel can be switched off in the admin (the mosaicHide* attributes), and
- * Top Contributors and Trending hide themselves when they have nothing to show.
+ * Each panel can be switched off in the admin. The Marketplace promo and Quick
+ * Actions switches arrive as forum attributes; Top Contributors and Trending
+ * arrive empty when switched off, and hide whenever they have nothing to show.
  */
 export default class SidebarPanels extends Component {
   view() {
@@ -186,7 +187,7 @@ export default class SidebarPanels extends Component {
 /**
  * The built-in Quick Actions: support first, then start a discussion, write a
  * blog post, browse tags, recent activity and the marketplace, each only when
- * its extension (or permission) is there.
+ * its extension (or the visitor's permission) is there.
  */
 function defaultQuickActions(): QuickAction[] {
   const support = supportTarget();
@@ -196,7 +197,13 @@ function defaultQuickActions(): QuickAction[] {
   };
   const links: (QuickAction | false)[] = [
     !!support && { icon: 'fa-solid fa-headset', label: ts('sidebar.qa_support_ticket'), href: support.href, route: support.route },
-    { icon: 'fa-solid fa-plus', label: ts('sidebar.qa_start_discussion'), href: app.route('index'), route: true, onclick: startDiscussion },
+    canStartDiscussion() && {
+      icon: 'fa-solid fa-plus',
+      label: ts('sidebar.qa_start_discussion'),
+      href: app.route('index'),
+      route: true,
+      onclick: startDiscussion,
+    },
     hasBlog() &&
       app.forum.attribute<boolean>('canCreateBlogPost') && {
         icon: 'fa-solid fa-pen-to-square',

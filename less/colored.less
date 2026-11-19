@@ -23,23 +23,10 @@
      --header-control-color
      --header-colored-color
 
-   Note: --colored-bg (which I'd previously assumed existed) is NOT a
-   thing in this extension. Removed the speculative deferrals that
-   referenced it.
-
-   Our integration here is small now — the bulk of the work was making
-   .DiscussionHero in post.less stop overriding --hero-bg. These rules
-   complement that by:
-     - making header nav tabs readable when colored tints the header
+   These rules keep Mosaic's rows working with it:
      - clearing our row separator when colored paints a full row border
      - honoring colored--instant by suppressing our transitions
    ===================================================================== */
-
-/* Header tint integration removed: the previous MosaicHeaderNav-item /
- * MosaicHeaderNav-start contrast overrides targeted nav tabs that used
- * to live inside .Header-primary. Nav now renders in the hero pill row
- * (MosaicHeroNav) below the tinted header, so the colored extension's
- * header treatment doesn't need any mosaic-side compensation. */
 
 /* When the discussion list opts into a full colored row border, our
    row-separator bottom border doubles up — clear it. */

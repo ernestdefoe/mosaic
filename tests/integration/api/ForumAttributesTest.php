@@ -94,7 +94,7 @@ class ForumAttributesTest extends TestCase
         $forum = $this->forum();
 
         $this->assertSame([], $forum['mosaicOnlineUsers']);
-        $this->assertTrue($forum['mosaicHideOnlineUsers']);
+        $this->assertArrayNotHasKey('mosaicHideOnlineUsers', $forum, 'Applied on the server, so not sent');
     }
 
     #[Test]
@@ -133,7 +133,7 @@ class ForumAttributesTest extends TestCase
 
         $this->assertSame([['name' => 'Pinned']], $forum['mosaicTopContributors'], 'An admin override replaces the computed list');
         $this->assertSame([['label' => 'Rules', 'href' => '/rules']], $forum['mosaicQuickActions']);
-        $this->assertTrue($forum['mosaicHideTrending']);
+        $this->assertArrayNotHasKey('mosaicHideTrending', $forum);
         $this->assertSame([], $forum['mosaicTrending'], 'A hidden widget is not computed or sent');
         $this->assertFalse($forum['mosaicHideQuickActions']);
         $this->assertSame('https://help.example', $forum['mosaicSupportUrl']);

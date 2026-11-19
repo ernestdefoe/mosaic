@@ -12,14 +12,17 @@ import MosaicHeroNav from './components/MosaicHeroNav';
 import SidebarPanels from './components/SidebarPanels';
 import SectionHeader from './components/SectionHeader';
 import forumStats from './utils/forumStats';
-import { hasBlog, onBlogPage } from './utils/links';
+import { currentTag, hasBlog, onBlogPage } from './utils/links';
 
 app.initializers.add('ernestdefoe-mosaic', () => {
   /*
    * Replace the IndexPage hero with Mosaic's panel, category tiles and
-   * section pills, side by side in the hero slot above the page grid.
+   * section pills, side by side in the hero slot above the page grid. A tag
+   * page keeps flarum/tags' own tag hero.
    */
-  override(IndexPage.prototype, 'hero', function () {
+  override(IndexPage.prototype, 'hero', function (original: () => Mithril.Children) {
+    if (currentTag()) return original();
+
     return [HeroPanel.component({ stats: forumStats() }), CategoryTiles.component(), MosaicHeroNav.component()];
   });
 

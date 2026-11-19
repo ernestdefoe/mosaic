@@ -85,11 +85,15 @@ class MosaicForumAttributes
         ];
     }
 
-    /** Admin settings: widget switches, section URLs and the Quick Actions list. */
+    /**
+     * Admin settings the frontend reads: the two widget switches it applies
+     * itself (the other widgets are left out on the server), the section URLs
+     * and the Quick Actions list.
+     */
     private function settingFields(): array
     {
         $fields = [];
-        foreach (['mosaicHideMarketplacePromo', 'mosaicHideQuickActions', 'mosaicHideTopContributors', 'mosaicHideTrending', 'mosaicHideOnlineUsers', 'mosaicHideTicketsTile'] as $key) {
+        foreach (['mosaicHideMarketplacePromo', 'mosaicHideQuickActions'] as $key) {
             $fields[] = Schema\Boolean::make($key)->get(fn () => $this->settings->bool($key));
         }
 

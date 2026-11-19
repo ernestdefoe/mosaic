@@ -1,15 +1,10 @@
 /* =====================================================================
    Composer — Flarum 2 reply/post composer
 
-   IMPORTANT: keep this file color-only. Earlier rules in here set
-   `.TextEditor-controls .Button { display: grid; width: 30px;
-   height: 30px }` which were written against Flarum 1.x markup and
-   ended up forcing Flarum 2's markdown toolbar into a vertical stack
-   of serif-text glyphs (H, B, I, S in a column rather than icon
-   buttons in a horizontal row). The composer ships with its own
-   internal layout that's responsive to the editor in use (TextArea,
-   ProseMirror, etc.) — we override only colors via token vars, never
-   sizing or display.
+   IMPORTANT: keep this file color-only. The composer lays itself out
+   for the editor in use (TextArea, ProseMirror, …); sizing or display
+   rules on its toolbar buttons stack them into a column. Override
+   colours via token vars only.
 
    Custom inline composer surfaces in our static preview HTML keep
    their styles inline in preview/theme.css; this file is for the

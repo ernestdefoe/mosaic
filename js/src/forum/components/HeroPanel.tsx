@@ -84,7 +84,7 @@ export default class HeroPanel extends Component<HeroPanelAttrs> {
     return (
       <section className="MosaicHero">
         <h1 className="MosaicHero-title">{heroTitle}</h1>
-        <p className="MosaicHero-sub">{welcomeMessage ? m.trust(welcomeMessage) : t('hero.subtitle')}</p>
+        <div className="MosaicHero-sub">{welcomeMessage ? m.trust(welcomeMessage) : t('hero.subtitle')}</div>
 
         {MosaicComposerTrigger.component()}
 
@@ -142,35 +142,62 @@ export default class HeroPanel extends Component<HeroPanelAttrs> {
   renderOnlineList(users: OnlineUser[]): Mithril.Children {
     return (
       <div className="MosaicHero-onlinePopover" role="menu">
-        {users.length === 0 ? (
-          <div className="MosaicHero-onlinePopover-empty">{t('hero.online_empty')}</div>
-        ) : (
-          <ul className="MosaicHero-onlineList">
-            {users.map((u) => (
-              <li key={u.id}>
-                <Link
-                  href={app.route('user', { username: u.username })}
-                  className="MosaicHero-onlineRow"
-                  role="menuitem"
-                  onclick={() => {
-                    this.onlineOpen = false;
-                  }}
-                >
-                  <Avatar user={this.userFor(u)} className="MosaicHero-onlineAvatar" />
-                  <span className="MosaicHero-onlineName">{u.displayName || u.username}</span>
-                  <span className="MosaicHero-onlineDot" aria-hidden="true" />
-                </Link>
-              </li>
-            ))}
-          </ul>
-        )}
+        <ul className="MosaicHero-onlineList">
+          {users.map((u) => (
+            <li key={u.id}>
+              <Link
+                href={app.route('user', { username: u.username })}
+                className="MosaicHero-onlineRow"
+                role="menuitem"
+                onclick={() => {
+                  this.onlineOpen = false;
+                }}
+              >
+                <Avatar user={this.userFor(u)} className="MosaicHero-onlineAvatar" />
+                <span className="MosaicHero-onlineName">{u.displayName || u.username}</span>
+                <span className="MosaicHero-onlineDot" aria-hidden="true" />
+              </Link>
+            </li>
+          ))}
+        </ul>
       </div>
     );
   }
 
+  /**
+   * The Online now tile. It opens the list of who is online when the visitor
+   * may see it (the list is empty for those who can't search users, or when
+   * the admin turned it off); otherwise it is a plain figure.
+   */
   renderOnlineNowStat(rawCount: number | null): Mithril.Children {
-    const users = (app.forum.attribute<OnlineUser[]>('mosaicOnlineUsers') || []) as OnlineUser[];
-    const value = formatNumber(rawCount);
+    const users = app.forum.attribute<OnlineUser[]>('mosaicOnlineUsers') || [];
+    const figure = (chevron: boolean) => [
+      <div className="MosaicHero-stat-ic">
+        <Icon name="fa-solid fa-circle" style={{ fontSize: '8px', color: '#4ade80' }} />
+      </div>,
+      <div>
+        <div className="MosaicHero-stat-val">
+          {formatNumber(rawCount)} <span className="MosaicHero-stat-live">{t('hero.live')}</span>
+        </div>
+        <div className="MosaicHero-stat-lbl">
+          {t('hero.stat_online')}{' '}
+          {chevron && (
+            <Icon
+              name="fa-solid fa-chevron-down"
+              style={{
+                fontSize: '9px',
+                marginLeft: '4px',
+                transition: 'transform 0.15s',
+                transform: this.onlineOpen ? 'rotate(180deg)' : 'none',
+                opacity: 0.7,
+              }}
+            />
+          )}
+        </div>
+      </div>,
+    ];
+
+    if (!users.length) return <div className="MosaicHero-stat">{figure(false)}</div>;
 
     return (
       <div className={`MosaicHero-stat MosaicHero-onlineWrap ${this.onlineOpen ? 'is-open' : ''}`}>
@@ -184,27 +211,7 @@ export default class HeroPanel extends Component<HeroPanelAttrs> {
             this.onlineOpen = !this.onlineOpen;
           }}
         >
-          <div className="MosaicHero-stat-ic">
-            <Icon name="fa-solid fa-circle" style={{ fontSize: '8px', color: '#4ade80' }} />
-          </div>
-          <div>
-            <div className="MosaicHero-stat-val">
-              {value} <span className="MosaicHero-stat-live">{t('hero.live')}</span>
-            </div>
-            <div className="MosaicHero-stat-lbl">
-              {t('hero.stat_online')}{' '}
-              <Icon
-                name="fa-solid fa-chevron-down"
-                style={{
-                  fontSize: '9px',
-                  marginLeft: '4px',
-                  transition: 'transform 0.15s',
-                  transform: this.onlineOpen ? 'rotate(180deg)' : 'none',
-                  opacity: 0.7,
-                }}
-              />
-            </div>
-          </div>
+          {figure(true)}
         </button>
 
         {this.onlineOpen && this.renderOnlineList(users)}
