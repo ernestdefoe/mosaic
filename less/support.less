@@ -2,11 +2,6 @@
    linkrobins/support — ticket extension overrides
    Adds visual treatment for the 5-state workflow, staff control bar,
    internal notes, and ticket detail page.
-
-   NOTE: Class names below are written against expected conventions —
-   verify against linkrobins/support's actual DOM and rename selectors
-   as needed. The token-driven styles will still apply via the shared
-   .StatusPill and .Post components.
    ===================================================================== */
 
 /* Ticket index page wrapper */
@@ -71,10 +66,8 @@
 /* linkrobins/support reuses Flarum core's .IndexPage-nav scaffold and
  * inherits the stock nav items (All Discussions / Groups / Following /
  * Support self-link / Tags) above its own SUPPORT heading + status
- * filter chips. Those stock items are already in our HeaderPrimary nav
- * (Discussions / Tickets / Tags), so re-rendering them in the support
- * sidebar is pure duplication — and the "Support" self-link is a link
- * to the page the visitor is currently on.
+ * filter chips. Mosaic's pill row already links those sections, and the
+ * "Support" self-link points at the page the visitor is on.
  *
  * Hide them so the sidebar reads cleanly: [+ New ticket] then the
  * SUPPORT heading + filter chips. Scoped to .LinkRobinsSupport-sidebar

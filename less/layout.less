@@ -24,11 +24,8 @@
  * width while the grid sits inside Flarum's narrower default
  * container, giving misaligned edges.
  *
- * We use !important here because Flarum's .container is defined with
- * breakpoint-scoped rules that match more specifically at large
- * viewports (e.g. `@media (min-width:1200px) .container { max-width
- * 1170px }`). Without !important those media-query rules end up
- * stomping our override. */
+ * !important because core's .container (scaffolding.less) pins a width
+ * per breakpoint band, which would otherwise win at large viewports. */
 .IndexPage .Page-container.container,
 .IndexPage .Page-hero {
   max-width: 1600px !important;

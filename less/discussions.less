@@ -95,6 +95,12 @@
       height: 0;
       order: 1;
     }
+
+    /* On phones core pins the reply count to the row's top-right corner
+       and keeps the text clear of it with this padding; keep that room. */
+    @media (max-width: 767.98px) {
+      padding-right: 40px;
+    }
   }
 
   .DiscussionListItem-title {
@@ -172,26 +178,6 @@
     padding: 2px 9px;
     border-radius: var(--r-pill);
   }
-}
-
-/* Status pills (used by both discussions and tickets) */
-.StatusPill {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 4px 10px;
-  border-radius: var(--r-pill);
-  font-size: 11.5px;
-  font-weight: 600;
-  letter-spacing: 0.01em;
-  white-space: nowrap;
-
-  &--open     { background: var(--status-open-bg);     color: var(--status-open); }
-  &--progress { background: var(--status-progress-bg); color: var(--status-progress); }
-  &--awaiting { background: var(--status-awaiting-bg); color: var(--status-awaiting); }
-  &--resolved { background: var(--status-resolved-bg); color: var(--status-resolved); }
-  &--solved   { background: var(--status-solved-bg);   color: var(--status-solved); }
-  &--closed   { background: var(--status-closed-bg);   color: var(--status-closed); }
 }
 
 /* =====================================================================

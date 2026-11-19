@@ -103,16 +103,9 @@
               transform 0.18s cubic-bezier(0.4, 0, 0.2, 1),
               visibility 0s linear 0.18s;
 
-  /* Invisible bridge spanning the gap between the popup and the
-     trigger button below.
-     Live probe showed the actual rendered gap between popup bottom
-     and trigger top is ~19px (the 10px margin-bottom plus the
-     translate transform offset and button padding interactions). A
-     10px bridge left a 9px dead zone — small but enough that real-
-     world cursor movement crossed it, dropped hover, and the popup
-     snapped shut before reach. Bumped the bridge to 30px so it
-     comfortably overlaps the trigger area; extra coverage doesn't
-     hurt because the bridge is transparent. */
+  /* Invisible 30px bridge over the ~19px gap between the popup and the
+     trigger below, so moving the cursor up to the popup keeps hover.
+     It is transparent, so the extra overlap costs nothing. */
   &::after {
     content: '';
     position: absolute;
@@ -157,11 +150,9 @@
   display: inline-flex;
 }
 
-/* The list of emoji choices inside the popup. Force a single row so
-   all reactions sit side-by-side regardless of how many the
-   extension registers — by default fof/reactions had been wrapping
-   into a 3-per-row 2D grid because the popup's auto width capped
-   the flex container. */
+/* The list of emoji choices inside the popup, on one row however many
+   the extension registers (the popup's auto width would otherwise wrap
+   them into a grid). */
 .Reactions .CommentPost--Reactions .Reactions--Ul {
   display: flex;
   flex-wrap: nowrap;

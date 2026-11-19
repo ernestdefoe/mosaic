@@ -1,9 +1,6 @@
 /* =====================================================================
    Marketplace (ramon/marketplace) — storefront, product cards,
    product detail page styling.
-
-   Class names follow expected conventions. Adjust selectors to match
-   the actual extension DOM when verified.
    ===================================================================== */
 
 /* Marketplace hero — purple gradient.
@@ -244,21 +241,7 @@
   letter-spacing: -0.005em;
   white-space: nowrap;
   transition: background 0.15s, border-color 0.15s, color 0.15s;
-
-  /* "Free" highlight — any priceBtn whose text content is exactly "Free"
-   * (rendered server-side) gets the resolved-green treatment. */
-  &:where(:not(:has(*))):where([data-free], .MpShop-priceBtn--free) {
-    background: rgba(16, 185, 129, 0.12);
-    border-color: rgba(16, 185, 129, 0.35);
-    color: var(--status-resolved);
-  }
 }
-
-/* Fallback for browsers without :has — match when the text is "Free" via
- * a content-attribute-style trick: the extension doesn't set a modifier so
- * we use a JS-free approach. Color the Free pill via a sibling check: if
- * the card has no other paid signal, tint. This is best-effort visual; the
- * extension can add .MpShop-priceBtn--free for guaranteed accuracy. */
 
 .MpShop-cardDesc {
   margin: 0;

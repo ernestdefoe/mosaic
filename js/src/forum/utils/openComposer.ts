@@ -1,12 +1,18 @@
 import app from 'flarum/forum/app';
 import IndexSidebar from 'flarum/forum/components/IndexSidebar';
+import { currentTag } from './links';
 
 /**
  * Whether the composer can open: guests get the log-in modal, members need
- * permission to start discussions (core disables its own button otherwise).
+ * permission to start discussions, in the tag on a tag page (core disables
+ * its own button otherwise).
  */
 export function canStartDiscussion(): boolean {
-  return !app.session.user || !!app.forum.attribute<boolean>('canStartDiscussion');
+  if (!app.session.user) return true;
+
+  const tag = currentTag();
+
+  return tag ? tag.canStartDiscussion() : !!app.forum.attribute<boolean>('canStartDiscussion');
 }
 
 /**

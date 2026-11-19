@@ -35,6 +35,7 @@ export function onBlogPage(): boolean {
 /** What flarum/tags tells about the tag page being shown, when it is enabled. */
 interface CurrentTag {
   discussionCount(): number | undefined;
+  canStartDiscussion(): boolean;
 }
 
 /** The tag page being shown, when flarum/tags is enabled and this is one. */

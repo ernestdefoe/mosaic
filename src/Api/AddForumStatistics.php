@@ -25,8 +25,8 @@ use Psr\Log\LoggerInterface;
  * nothing for someone who can't view the forum, no user lists for someone
  * who can't search users, and only what the viewer's groups may see.
  *
- * Every read goes through a 60 s cache, so concurrent page loads share one
- * query. User stats are cached per audience (guest, member, admin) and
+ * Every read goes through a 60 s cache, so page loads within that minute
+ * reuse one result. User stats are cached per audience (guest, member, admin) and
  * discussion stats per permission group set, so one audience's result is
  * never served to another; the resolved-ticket count, shown to support staff
  * only, has one shared entry.

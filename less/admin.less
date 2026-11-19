@@ -1,13 +1,9 @@
 /* =====================================================================
    Admin frontend theming.
 
-   The admin frontend's LESS pipeline doesn't reliably follow @import
-   into the partial files this extension ships for the forum frontend
-   — live probe of the deployed admin.css showed only ~500 bytes,
-   suggesting `@import 'tokens'` was silently dropped. This file is
-   intentionally self-contained: it inlines the design tokens (so
-   admin doesn't need to walk forum partials) and styles the admin
-   surfaces using the same palette as the forum.
+   Self-contained on purpose: the admin bundle doesn't import the forum
+   partials, so the design tokens are inlined here and the admin
+   surfaces use the same palette as the forum.
 
    Dark mode tracks Flarum's canonical [data-theme^=dark] selector on
    the html element (same mechanism the forum theme uses).
@@ -176,9 +172,7 @@ body {
    core's default .FormControl background AND any extension (e.g. fof/extend's
    extension-manager) whose admin CSS happens to load after this file. Without
    the #app id bump these rules sit at the same (0,1,0) specificity as the
-   overrides and lose on a load-order tie — which is why the inputs rendered
-   white on the live install but stayed themed locally (asset load order
-   differs between installs). */
+   overrides and lose whenever that CSS loads later. */
 #app {
   .FormControl,
   input[type='text'],
